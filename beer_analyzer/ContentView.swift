@@ -8,6 +8,7 @@
 import SwiftUI
 import PhotosUI // PhotosPickerを使用するために必要
 import FirebaseRemoteConfig
+import Kingfisher
 
 struct ContentView: View {
     @State private var selectedImage: PhotosPickerItem? // iOS 16+ の PhotosPicker 用
@@ -392,24 +393,14 @@ struct BeerRecordRow: View {
         HStack(alignment: .top, spacing: 10) {
             // MARK: - ビール画像を表示
             if let imageUrlString = beer.imageUrl, let imageUrl = URL(string: imageUrlString) {
-                AsyncImage(url: imageUrl) { phase in
-                    if let image = phase.image {
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill) // 画像の表示モードを調整
-                            .frame(width: 80, height: 80) // サイズを調整
-                            .clipShape(RoundedRectangle(cornerRadius: 10)) // 角を丸くする
-                    } else if phase.error != nil {
-                        Image(systemName: "photo.fill") // エラー時のプレースホルダー
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 80, height: 80)
-                            .foregroundColor(.gray)
-                    } else {
-                        ProgressView() // ロード中のプレースホルダー
-                            .frame(width: 80, height: 80)
-                    }
-                }
+                KFImage(imageUrl) // URL を渡すだけで Kingfisher が処理
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 80, height: 80)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    // MARK: - キャッシュのオプション（必要に応じて）
+                    // .cacheOriginalImage() // オリジナル画像をキャッシュする（デフォルトで有効）
+                    // .fade(duration: 0.2) // フェードイン効果
             } else {
                 Image(systemName: "photo.fill") // 画像がない場合のプレースホルダー
                     .resizable()
