@@ -6,20 +6,96 @@
 //
 
 import Foundation
+import FirebaseRemoteConfig
 
 class GeminiAPIService: ObservableObject {
-    // Canvas 環境から提供される API キーを使用するか、開発用に直接記述
-    // ⚠️ 本番アプリではAPIキーをコードに直接埋め込まず、サーバーサイドや安全な方法で管理してください
-    private let apiKey: String = {
-        // 環境変数や設定ファイルから読み込むことを推奨
-        // Canvas環境の場合は、`__api_key` グローバル変数が設定される可能性があります
-        if let key = ProcessInfo.processInfo.environment["GEMINI_API_KEY"] {
-            return key
-        }
-        // または、直接ここにAPIキーを記述 (開発目的のみ)
-        return "YOUR_GEMINI_API_KEY" // ここにあなたのGemini APIキーを貼り付けてください
-    }()
+    // @Published を追加して、APIキーの変更を監視可能にする
+    @Published private(set) var apiKey: String? = nil // 初期値はnil
+    private var remoteConfig: RemoteConfig! // RemoteConfigインスタンス
 
+    init() {
+        remoteConfig = RemoteConfig.remoteConfig()
+        let settings = RemoteConfigSettings()
+        
+        // Debug モードでは 0 で即時フェッチを許可する
+        settings.minimumFetchInterval = 0
+        remoteConfig.configSettings = settings
+        
+        remoteConfig.setDefaults(fromPlist: "RemoteConfigDefaults")
+        
+        fetchAPIKey()
+    }
+    
+    func fetchAPIKey() {
+        remoteConfig.fetchAndActivate { [weak self] (status, error) in
+            guard let self = self else { return }
+            if let error = error {
+                print("Error fetching remote config: \(error.localizedDescription)")
+                self.apiKey = self.remoteConfig.configValue(forKey: "gemini_api_key").stringValue
+                return
+            }
+            
+            if status == .successFetchedFromRemote || status == .successUsingPreFetchedData {
+                // フェッチ成功後、キーを取得
+                self.apiKey = self.remoteConfig.configValue(forKey: "gemini_api_key").stringValue
+                print("Gemini API Key fetched from Remote Config")
+            } else {
+                // フェッチに失敗した場合や、未フェッチの場合
+                print("Remote Config fetch status: \(status.rawValue)")
+                self.apiKey = self.remoteConfig.configValue(forKey: "gemini_api_key").stringValue // フォールバックを使用
+            }
+        }
+    }
+    
+    private func makeRequest(url: URL, httpBody: Data) async throws -> Data {
+        // APIキーが取得されるまで待機する
+        guard let validApiKey = await withCheckedContinuation({ continuation in
+            // apiKey がすでに存在するか、または変更を監視して取得するまで待つ
+            if let key = self.apiKey {
+                continuation.resume(returning: key)
+            } else {
+                // apiKey が設定されるのを待つ (例: @Published の変更を監視)
+                // この部分のより堅牢な実装は、Combine を使うか、直接 fetchAPIKey() の完了を待つロジックが必要
+                // 簡単なデモでは、nilの場合にエラーをスローするか、数秒待つなど
+                // ここでは、fetchAPIKey()がすぐに呼ばれることを前提に、初回の呼び出しでAPIキーがnilの場合はエラーとしています
+                print("Waiting for API key to be fetched...")
+                // 実際には、非同期でapiKeyが設定されるのを待つメカニズムが必要
+                // 例: タイムアウト付きのループや、Combineのsinkなど
+                Task { // タイムアウト付きで待機する簡易的な例
+                    var attempts = 0
+                    while self.apiKey == nil && attempts < 10 { // 最大5秒待つ (0.5秒*10回)
+                        try await Task.sleep(nanoseconds: 500_000_000) // 0.5秒待機
+                        attempts += 1
+                    }
+                    continuation.resume(returning: self.apiKey)
+                }
+            }
+        }) else {
+            throw BeerError.apiError("Gemini API キーが利用できません。")
+        }
+
+        // URLにAPIキーを追加
+        guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            throw BeerError.networkError("URLの構成に失敗しました。")
+        }
+        urlComponents.queryItems = [URLQueryItem(name: "key", value: validApiKey)]
+        guard let finalUrl = urlComponents.url else {
+            throw BeerError.networkError("最終的なURLの生成に失敗しました。")
+        }
+
+        var request = URLRequest(url: finalUrl)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = httpBody
+    
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            let errorData = String(data: data, encoding: .utf8) ?? "不明なエラーデータ"
+            throw BeerError.networkError("APIリクエストが失敗しました: HTTP Status \( (response as? HTTPURLResponse)?.statusCode ?? -1), Data: \(errorData)")
+        }
+        return data
+    }
 
     private let apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
@@ -61,9 +137,11 @@ class GeminiAPIService: ObservableObject {
             ]
         ]
 
-        guard let url = URL(string: "\(apiUrl)?key=\(apiKey)") else {
+        guard let url = URL(string: "\(apiUrl)?key=\(self.apiKey?.description ?? "")") else {
             throw BeerError.networkError("無効なAPI URLです。")
         }
+        
+        print("url: \(url)")
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -126,7 +204,7 @@ class GeminiAPIService: ObservableObject {
             ]
         ]
 
-        guard let url = URL(string: "\(apiUrl)?key=\(apiKey)") else {
+        guard let url = URL(string: "\(apiUrl)?key=\(self.apiKey?.description ?? "")") else {
             throw BeerError.networkError("無効なAPI URLです。")
         }
 

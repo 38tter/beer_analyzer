@@ -261,6 +261,7 @@ struct ContentView: View {
                 }
             } catch {
                 DispatchQueue.main.async {
+                    print("error object: \(error)") // ここに詳細を出力
                     self.errorMessage = "ビールの解析に失敗しました: \(error.localizedDescription)"
                 }
             }

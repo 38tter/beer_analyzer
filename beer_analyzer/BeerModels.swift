@@ -9,8 +9,7 @@ import Foundation
 import FirebaseFirestore // Firestoreから直接Decodable/Encodableに変換するために必要
 
 // ビール解析結果のモデル
-struct BeerAnalysisResult: Codable, Identifiable {
-    @DocumentID var id: String? = UUID().uuidString // FirestoreのID
+struct BeerAnalysisResult: Codable {
     let brand: String
     let manufacturer: String
     let abv: String
@@ -37,24 +36,26 @@ struct BeerRecord: Codable, Identifiable {
 
     // Decodable のカスタムイニシャライザ
     // FirebaseFirestoreSwift で @DocumentID が自動的にIDを注入してくれる
-    enum CodingKeys: String, CodingKey {
-        case brand
-        case manufacturer
-        case abv
-        case hops
-        case timestamp
-        case userId
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.brand = try container.decode(String.self, forKey: .brand)
-        self.manufacturer = try container.decode(String.self, forKey: .manufacturer)
-        self.abv = try container.decode(String.self, forKey: .abv)
-        self.hops = try container.decode(String.self, forKey: .hops)
-        self.timestamp = try container.decode(Date.self, forKey: .timestamp)
-        self.userId = try container.decode(String.self, forKey: .userId)
-    }
+//    enum CodingKeys: String, CodingKey {
+//        case id
+//        case brand
+//        case manufacturer
+//        case abv
+//        case hops
+//        case timestamp
+//        case userId
+//    }
+//
+//    init(from decoder: Decoder) throws {
+//        let container = try decoder.container(keyedBy: CodingKeys.self)
+//        self.id = try container.decode(String.self, forKey: .id)
+//        self.brand = try container.decode(String.self, forKey: .brand)
+//        self.manufacturer = try container.decode(String.self, forKey: .manufacturer)
+//        self.abv = try container.decode(String.self, forKey: .abv)
+//        self.hops = try container.decode(String.self, forKey: .hops)
+//        self.timestamp = try container.decode(Date.self, forKey: .timestamp)
+//        self.userId = try container.decode(String.self, forKey: .userId)
+//    }
 
     // Encodable のカスタムエンコーダ (Firestoreに保存する際に必要)
     func encode(to encoder: Encoder) throws {
