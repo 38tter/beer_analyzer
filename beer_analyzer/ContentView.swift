@@ -252,7 +252,7 @@ struct ContentView: View {
         }
     }
     
-    // MARK: - 新しい削除ヘルパー関数
+    // MARK: - 削除ヘルパー関数
     private func deleteBeerRecord(idToDelete: String) async {
         guard let currentUserId = userId else {
             errorMessage = "ユーザーが認証されていないため、ビールを削除できません。"
@@ -276,18 +276,30 @@ struct ContentView: View {
             errorMessage = "解析する画像がありません。"
             return
         }
+        guard let currentUserId = userId else {
+            errorMessage = "ユーザーが認証されていません。しばらくお待ちください。"
+            return
+        }
 
         isLoadingAnalysis = true
         errorMessage = nil
+        analysisResult = nil
+        pairingSuggestion = nil
 
         Task {
             do {
+                // まずは画像を Storage にアップロードする
+                // ユニークなIDを生成 (FirestoreのドキュメントIDとして使われる可能性のあるUUID)
+                let tempBeerId = UUID().uuidString
+                let uploadedImageUrl = try await firestoreService.uploadImage(image: uiImage, userId: currentUserId, beerId: tempBeerId)
+                print("Image uploaded. URL: \(uploadedImageUrl)")
+
                 if let base64String = uiImage.toBase64() {
                     let result = try await geminiService.analyzeBeer(imageData: base64String, imageType: uiImage.toMimeType())
                     DispatchQueue.main.async { // UI更新はメインスレッドで
                         self.analysisResult = result
                         Task { // Firestoreに保存
-                            await firestoreService.saveBeerRecord(result)
+                            await firestoreService.saveBeerRecord(result, imageUrl: uploadedImageUrl)
                         }
                     }
                 } else {
@@ -295,7 +307,6 @@ struct ContentView: View {
                 }
             } catch {
                 DispatchQueue.main.async {
-                    print("error object: \(error)") // ここに詳細を出力
                     self.errorMessage = "ビールの解析に失敗しました: \(error.localizedDescription)"
                 }
             }
@@ -378,22 +389,53 @@ struct BeerRecordRow: View {
     var onDelete: (String) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(beer.brand)
-                .font(.headline)
-                .foregroundColor(.indigo)
-            Text("製造者: \(beer.manufacturer)")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-            Text("ABV: \(beer.abv)")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-            Text("ホップ: \(beer.hops)")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-            Text("記録日時: \(beer.timestamp.formatted())")
-                .font(.caption)
-                .foregroundColor(.gray)
+        HStack(alignment: .top, spacing: 10) {
+            // MARK: - ビール画像を表示
+            if let imageUrlString = beer.imageUrl, let imageUrl = URL(string: imageUrlString) {
+                AsyncImage(url: imageUrl) { phase in
+                    if let image = phase.image {
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill) // 画像の表示モードを調整
+                            .frame(width: 80, height: 80) // サイズを調整
+                            .clipShape(RoundedRectangle(cornerRadius: 10)) // 角を丸くする
+                    } else if phase.error != nil {
+                        Image(systemName: "photo.fill") // エラー時のプレースホルダー
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 80, height: 80)
+                            .foregroundColor(.gray)
+                    } else {
+                        ProgressView() // ロード中のプレースホルダー
+                            .frame(width: 80, height: 80)
+                    }
+                }
+            } else {
+                Image(systemName: "photo.fill") // 画像がない場合のプレースホルダー
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 80, height: 80)
+                    .foregroundColor(.gray)
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(beer.brand)
+                    .font(.headline)
+                    .foregroundColor(.indigo)
+                Text("製造者: \(beer.manufacturer)")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                Text("ABV: \(beer.abv)")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                Text("ホップ: \(beer.hops)")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                Text("記録日時: \(beer.timestamp.formatted())")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+            Spacer()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 8)
@@ -402,7 +444,7 @@ struct BeerRecordRow: View {
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
         .contentShape(Rectangle())
-        // MARK: - スワイプアクションを追加
+        // スワイプ削除アクション
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
                 if let id = beer.id {

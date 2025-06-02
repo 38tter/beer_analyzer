@@ -8,23 +8,54 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth // userId取得のため
+import FirebaseStorage
 
 class FirestoreService: ObservableObject {
     private let db = Firestore.firestore()
     private var listenerRegistration: ListenerRegistration? // リアルタイムリスナーを保持
+    private let storage = Storage.storage() // MARK: - Storage インスタンスを追加
 
     // アプリIDは、Canvas 環境で提供されるものを想定
     // または、Xcodeプロジェクトのビルド設定やInfo.plistから取得
     private let appId = "default-app-id" // 必要に応じて適切なIDを設定
+    
+    // MARK: - 画像を Storage にアップロードするメソッド
+    func uploadImage(image: UIImage, userId: String, beerId: String) async throws -> String {
+        // 画像データを JPEG または PNG に変換
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            throw BeerError.imageConversionFailed
+        }
+
+        // Storage の参照を作成: 例 users/{userId}/beers/{beerId}.jpg
+        let storageRef = storage.reference().child("users/\(userId)/beers/\(beerId).jpg")
+
+        // メタデータ (Optional)
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg" // または image/png
+
+        do {
+            // 画像データをアップロード
+            let uploadTask = try await storageRef.putDataAsync(imageData, metadata: metadata)
+            print("Storage: Image uploaded successfully.")
+
+            // ダウンロードURLを取得
+            let downloadURL = try await storageRef.downloadURL()
+            print("Storage: Download URL: \(downloadURL.absoluteString)")
+            return downloadURL.absoluteString // URL を文字列として返す
+        } catch {
+            print("Storage: Error uploading image: \(error.localizedDescription)")
+            throw error
+        }
+    }
 
     // ビール記録を保存する
-    func saveBeerRecord(_ result: BeerAnalysisResult) async {
+    func saveBeerRecord(_ result: BeerAnalysisResult, imageUrl: String?) async {
         guard let userId = AuthService.shared.getCurrentUserId() else {
             print("Error: User not authenticated for Firestore saving.")
             return
         }
 
-        let beerRecord = BeerRecord(analysisResult: result, userId: userId, timestamp: Date())
+        let beerRecord = BeerRecord(analysisResult: result, userId: userId, timestamp: Date(), imageUrl: imageUrl ?? "")
 
         do {
             // DocumentIDはBeerRecordの@DocumentIDプロパティによって自動的に生成/設定される
