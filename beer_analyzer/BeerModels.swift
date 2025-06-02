@@ -34,29 +34,6 @@ struct BeerRecord: Codable, Identifiable {
     let timestamp: Date // 記録日時
     let userId: String // どのユーザーが記録したか
 
-    // Decodable のカスタムイニシャライザ
-    // FirebaseFirestoreSwift で @DocumentID が自動的にIDを注入してくれる
-//    enum CodingKeys: String, CodingKey {
-//        case id
-//        case brand
-//        case manufacturer
-//        case abv
-//        case hops
-//        case timestamp
-//        case userId
-//    }
-//
-//    init(from decoder: Decoder) throws {
-//        let container = try decoder.container(keyedBy: CodingKeys.self)
-//        self.id = try container.decode(String.self, forKey: .id)
-//        self.brand = try container.decode(String.self, forKey: .brand)
-//        self.manufacturer = try container.decode(String.self, forKey: .manufacturer)
-//        self.abv = try container.decode(String.self, forKey: .abv)
-//        self.hops = try container.decode(String.self, forKey: .hops)
-//        self.timestamp = try container.decode(Date.self, forKey: .timestamp)
-//        self.userId = try container.decode(String.self, forKey: .userId)
-//    }
-
     // Encodable のカスタムエンコーダ (Firestoreに保存する際に必要)
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
