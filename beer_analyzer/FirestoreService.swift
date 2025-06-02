@@ -77,6 +77,23 @@ class FirestoreService: ObservableObject {
             completion(.success(beers))
         }
     }
+    
+    // MARK: - 新しいビール削除メソッド
+    func deleteBeer(id documentId: String, userId: String) async throws {
+        // ドキュメントのパスを構築
+        let documentRef = db.collection("artifacts").document(appId)
+            .collection("users").document(userId)
+            .collection("beers").document(documentId)
+
+        do {
+            // ドキュメントを削除
+            try await documentRef.delete()
+            print("Firestore: Document successfully deleted for ID: \(documentId)")
+        } catch {
+            print("Firestore: Error deleting document \(documentId): \(error.localizedDescription)")
+            throw error // エラーを呼び出し元に伝播させる
+        }
+    }
 
     // リスナーを停止する（アプリ終了時などにメモリリーク防止のため）
     deinit {

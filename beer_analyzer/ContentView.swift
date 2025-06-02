@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI // PhotosPickerを使用するために必要
+import FirebaseRemoteConfig
 
 struct ContentView: View {
     @State private var selectedImage: PhotosPickerItem? // iOS 16+ の PhotosPicker 用
@@ -214,9 +215,22 @@ struct ContentView: View {
                                 .foregroundColor(.gray)
                                 .padding(.horizontal)
                         } else {
-                            ForEach(recordedBeers.sorted(by: { $0.timestamp > $1.timestamp })) { beer in
-                                BeerRecordRow(beer: beer)
+                            List{
+                                ForEach(recordedBeers.sorted(by: { $0.timestamp > $1.timestamp })) { beer in
+                                    BeerRecordRow(beer: beer) { idToDelete in
+                                        Task {
+                                            await deleteBeerRecord(idToDelete: idToDelete)
+                                        }
+                                    }
+                                    // List のスタイルをリセットして、既存の BeerRecordRow のスタイルを尊重する
+                                    .listRowSeparator(.hidden) // 区切り線を非表示
+                                    .listRowBackground(Color.clear) // 背景を透明にして、BeerRecordRow の背景が見えるようにする
+                                    .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0)) // 行の余白を調整
+                                }
                             }
+                            .listStyle(.plain) // iOS 15+ 推奨: デフォルトのリストスタイルを無効化
+                            .frame(height: min(CGFloat(recordedBeers.count) * 100 + 20, 400)) // リストの高さを調整 (内容に応じて)
+                            // List を ScrollView 内に入れる場合は、高さの指定が重要
                         }
                     }
                     .padding()
@@ -235,6 +249,24 @@ struct ContentView: View {
             }
             .navigationBarHidden(true) // トップのナビゲーションバーを隠す
             .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.indigo.opacity(0.2)]), startPoint: .topLeading, endPoint: .bottomTrailing).ignoresSafeArea())
+        }
+    }
+    
+    // MARK: - 新しい削除ヘルパー関数
+    private func deleteBeerRecord(idToDelete: String) async {
+        guard let currentUserId = userId else {
+            errorMessage = "ユーザーが認証されていないため、ビールを削除できません。"
+            return
+        }
+
+        do {
+            // FirestoreService の削除メソッドを呼び出す
+            try await firestoreService.deleteBeer(id: idToDelete, userId: currentUserId)
+            print("Successfully deleted beer record with ID: \(idToDelete)")
+            // observeBeers() がリアルタイムリスナーなので、自動的にリストが更新されるはず
+        } catch {
+            errorMessage = "ビールの削除に失敗しました: \(error.localizedDescription)"
+            print("Error deleting beer record: \(error.localizedDescription)")
         }
     }
 
@@ -342,6 +374,8 @@ struct InfoRow: View {
 
 struct BeerRecordRow: View {
     let beer: BeerRecord
+    // 削除アクションを親ビューに通知するためのクロージャ
+    var onDelete: (String) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -361,12 +395,23 @@ struct BeerRecordRow: View {
                 .font(.caption)
                 .foregroundColor(.gray)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
         .background(Color.white)
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+        .contentShape(Rectangle())
+        // MARK: - スワイプアクションを追加
+        .swipeActions(edge: .trailing) {
+            Button(role: .destructive) {
+                if let id = beer.id {
+                    onDelete(id)
+                }
+            } label: {
+                Label("削除", systemImage: "trash")
+            }
+        }
     }
 }
 
