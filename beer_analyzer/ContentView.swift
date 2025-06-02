@@ -29,9 +29,11 @@ struct ContentView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
-                    Text("🍻 ビールアナライザー 🍻")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
+                    // MARK: - タイトルロゴ画像を追加
+                    Image("AppTitleLogo")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 320, height: 180)
                         .padding(.bottom, 10)
 
                     Text("ユーザーID: \(userId ?? "認証中...")")
