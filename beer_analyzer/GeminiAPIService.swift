@@ -180,6 +180,7 @@ class GeminiAPIService: ObservableObject {
         return try decoder.decode(BeerAnalysisResult.self, from: jsonData)
     }
 
+
     // MARK: - ペアリング提案API
     func generatePairingSuggestion(for beer: BeerAnalysisResult) async throws -> String {
         let pairingPrompt = """

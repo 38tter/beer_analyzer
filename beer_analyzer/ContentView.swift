@@ -359,6 +359,7 @@ struct BeerRecordRow: View {
                 .font(.caption)
                 .foregroundColor(.gray)
         }
+        .frame(maxWidth: .infinity)
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
         .background(Color.white)
