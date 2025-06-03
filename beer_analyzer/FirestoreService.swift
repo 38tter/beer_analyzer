@@ -96,8 +96,7 @@ class FirestoreService: ObservableObject {
             let beers = documents.compactMap { doc -> BeerRecord? in
                 do {
                     let beer = try doc.data(as: BeerRecord.self)
-                    // ここで id の値を出力して確認します
-                    print("Decoded BeerRecord ID: \(beer.id ?? "NIL ID") for brand: \(beer.brand)") // IDとブランド名を出力
+
                     return beer
                 } catch {
                     print("Full decoding error object: \(error)")

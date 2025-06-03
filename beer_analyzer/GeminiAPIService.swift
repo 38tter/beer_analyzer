@@ -140,8 +140,6 @@ class GeminiAPIService: ObservableObject {
         guard let url = URL(string: "\(apiUrl)?key=\(self.apiKey?.description ?? "")") else {
             throw BeerError.networkError("無効なAPI URLです。")
         }
-        
-        print("url: \(url)")
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
