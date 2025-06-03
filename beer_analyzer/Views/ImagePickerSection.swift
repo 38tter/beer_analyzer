@@ -11,6 +11,11 @@ struct ImagePickerSection: View {
     @Binding var selectedImage: PhotosPickerItem?
     @Binding var uiImage: UIImage?
     @Binding var errorMessage: String?
+    @Binding var analysisResult: BeerAnalysisResult?
+    @Binding var pairingSuggestion: String?
+    @Binding var showingImagePicker: Bool
+    
+    @State private var selectedImageForPreview: UIImage? // プレビュー用画像
     
     var onImageSelected: () -> Void
     
@@ -42,7 +47,11 @@ struct ImagePickerSection: View {
 
             // カメラからの撮影
             Button {
-                errorMessage = "カメラ機能は現在デモ版では未実装です。写真を選択してください。"
+                self.showingImagePicker = true
+                self.selectedImageForPreview = nil
+                self.analysisResult = nil
+                self.pairingSuggestion = nil
+                self.errorMessage = nil
             } label: {
                 Label("カメラで撮影", systemImage: "camera")
                     .font(.title3)

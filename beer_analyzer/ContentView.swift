@@ -20,9 +20,8 @@ struct ContentView: View {
     @State private var isLoadingPairing = false
     @State private var recordedBeers: [BeerRecord] = []
     @State private var userId: String?
-
-    // カメラ/フォトライブラリのシート表示状態
-    @State private var showingImagePicker: Bool = false
+    @State private var showingImagePicker = false
+    
     // 選択されたソースタイプ（カメラまたはフォトライブラリ）
     @State private var sourceType: UIImagePickerController.SourceType = .camera
     
@@ -48,7 +47,10 @@ struct ContentView: View {
                     ImagePickerSection(
                         selectedImage: $selectedImage,
                         uiImage: $uiImage,
-                        errorMessage: $errorMessage
+                        errorMessage: $errorMessage,
+                        analysisResult: $analysisResult,
+                        pairingSuggestion: $pairingSuggestion,
+                        showingImagePicker: $showingImagePicker
                     ) {
                         resetAnalysisResults()
                     }
@@ -97,6 +99,12 @@ struct ContentView: View {
                 .onAppear {
                     authenticateAnonymously()
                     observeRecordedBeers()
+                }
+                // MARK: - CameraPicker のシート表示
+                .sheet(isPresented: $showingImagePicker) {
+                    CameraPicker(
+                        selectedImage: $uiImage
+                    )
                 }
             }
             .navigationBarHidden(true)
