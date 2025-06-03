@@ -6,32 +6,29 @@
 //
 
 import SwiftUI
-import PhotosUI // PhotosPickerを使用するために必要
+import PhotosUI
 import FirebaseRemoteConfig
 import Kingfisher
 
 struct ContentView: View {
-    @State private var selectedImage: PhotosPickerItem? // iOS 16+ の PhotosPicker 用
-    @State private var uiImage: UIImage? // 選択または撮影した画像を保持
+    @State private var selectedImage: PhotosPickerItem?
+    @State private var uiImage: UIImage?
     @State private var analysisResult: BeerAnalysisResult?
     @State private var pairingSuggestion: String?
     @State private var errorMessage: String?
     @State private var isLoadingAnalysis = false
     @State private var isLoadingPairing = false
     @State private var recordedBeers: [BeerRecord] = []
-
-    @StateObject private var geminiService = GeminiAPIService() // APIサービス
-    @StateObject private var firestoreService = FirestoreService() // Firestoreサービス
-
-    // Firebase認証とFirestoreリスナーの設定
-    // 初期化はAppDelegateで行い、ユーザーIDの取得とFirestoreの購読をここで行う
     @State private var userId: String?
+
+    @StateObject private var geminiService = GeminiAPIService()
+    @StateObject private var firestoreService = FirestoreService()
 
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
-                    // MARK: - タイトルロゴ画像を追加
+                    // MARK: - Title Logo
                     Image("AppTitleLogo")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -42,218 +39,80 @@ struct ContentView: View {
                         .font(.caption)
                         .foregroundColor(.gray)
 
-                    // MARK: - 画像選択/撮影
-                    VStack(alignment: .leading) {
-                        Text("ビールの写真をアップロードまたは撮影")
-                            .font(.headline)
-
-                        // iOS 16+ の PhotosPicker
-                        PhotosPicker(selection: $selectedImage, matching: .images) {
-                            Label("写真を選択", systemImage: "photo")
-                                .font(.title3)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color.blue.opacity(0.8))
-                                .foregroundColor(.white)
-                                .cornerRadius(15)
-                        }
-                        .onChange(of: selectedImage) { newItem in
-                            Task {
-                                if let data = try? await newItem?.loadTransferable(type: Data.self) {
-                                    if let image = UIImage(data: data) {
-                                        uiImage = image
-                                        analysisResult = nil // 新しい画像で結果をリセット
-                                        pairingSuggestion = nil // ペアリングもリセット
-                                        errorMessage = nil
-                                    }
-                                }
-                            }
-                        }
-
-                        // カメラからの撮影 (簡略化: 実際にはAVFoundationでカメラビューを実装)
-                        Button {
-                            // TODO: ここにカメラ起動ロジックを追加
-                            // UIImagePickerControllerRepresentable を使用するか、AVFoundation でカスタムカメラビューを実装
-                            errorMessage = "カメラ機能は現在デモ版では未実装です。写真を選択してください。"
-                        } label: {
-                            Label("カメラで撮影", systemImage: "camera")
-                                .font(.title3)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color.green.opacity(0.8))
-                                .foregroundColor(.white)
-                                .cornerRadius(15)
-                        }
+                    // MARK: - Image Selection
+                    ImagePickerSection(
+                        selectedImage: $selectedImage,
+                        uiImage: $uiImage,
+                        errorMessage: $errorMessage
+                    ) {
+                        resetAnalysisResults()
                     }
-                    .padding()
-                    .background(Color.white.opacity(0.8))
-                    .cornerRadius(20)
-                    .shadow(radius: 5)
 
-
-                    // MARK: - 画像プレビュー
+                    // MARK: - Image Preview
                     if let uiImage = uiImage {
-                        VStack {
-                            Text("プレビュー")
-                                .font(.title2)
-                                .fontWeight(.semibold)
-                                .padding(.bottom, 5)
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(maxHeight: 300)
-                                .cornerRadius(10)
-                                .shadow(radius: 3)
-                        }
-                        .padding()
-                        .background(Color.white.opacity(0.8))
-                        .cornerRadius(20)
-                        .shadow(radius: 5)
+                        ImagePreviewSection(image: uiImage)
                     }
 
-                    // MARK: - ビール解析ボタン
-                    Button {
+                    // MARK: - Analysis Button
+                    AnalysisButton(
+                        isLoading: isLoadingAnalysis,
+                        isEnabled: uiImage != nil && !isLoadingAnalysis
+                    ) {
                         analyzeBeer()
-                    } label: {
-                        HStack {
-                            if isLoadingAnalysis {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                    .scaleEffect(1.2)
-                            }
-                            Text(isLoadingAnalysis ? "解析中..." : "ビールを解析")
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                        }
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(isLoadingAnalysis || uiImage == nil ? Color.gray : Color.indigo)
-                        .foregroundColor(.white)
-                        .cornerRadius(15)
                     }
-                    .disabled(isLoadingAnalysis || uiImage == nil)
-                    .padding(.horizontal)
 
-                    // MARK: - エラーメッセージ
+                    // MARK: - Error Message
                     if let errorMessage = errorMessage {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .padding()
-                            .background(Color.red.opacity(0.1))
-                            .cornerRadius(10)
+                        ErrorMessageView(message: errorMessage)
                     }
 
-                    // MARK: - 解析結果表示
+                    // MARK: - Analysis Result
                     if let analysisResult = analysisResult {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("解析結果")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .padding(.bottom, 5)
-
-                            InfoRow(label: "銘柄", value: analysisResult.brand)
-                            InfoRow(label: "製造者", value: analysisResult.manufacturer)
-                            InfoRow(label: "ABV", value: analysisResult.abv)
-                            InfoRow(label: "ホップ", value: analysisResult.hops)
-
-                            // MARK: - ペアリング提案ボタン
-                            Button {
-                                generatePairingSuggestion()
-                            } label: {
-                                HStack {
-                                    if isLoadingPairing {
-                                        ProgressView()
-                                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                            .scaleEffect(1.0)
-                                    }
-                                    Text(isLoadingPairing ? "提案生成中..." : "ペアリングを提案 ✨")
-                                        .font(.title3)
-                                        .fontWeight(.semibold)
-                                }
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(isLoadingPairing ? Color.gray : Color.purple)
-                                .foregroundColor(.white)
-                                .cornerRadius(15)
-                            }
-                            .disabled(isLoadingPairing)
-                            .padding(.top, 10)
-
+                        AnalysisResultView(
+                            analysisResult: analysisResult,
+                            isLoadingPairing: isLoadingPairing
+                        ) {
+                            generatePairingSuggestion()
                         }
-                        .padding()
-                        .background(Color.white.opacity(0.8))
-                        .cornerRadius(20)
-                        .shadow(radius: 5)
                     }
 
-                    // MARK: - ペアリング提案表示
+                    // MARK: - Pairing Suggestion
                     if let pairingSuggestion = pairingSuggestion {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("ペアリング提案")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .padding(.bottom, 5)
-
-                            Text(pairingSuggestion)
-                                .font(.body)
-                                .padding(.horizontal)
-                        }
-                        .padding()
-                        .background(Color.white.opacity(0.8))
-                        .cornerRadius(20)
-                        .shadow(radius: 5)
+                        PairingSuggestionView(pairingSuggestion: pairingSuggestion)
                     }
 
-                    // MARK: - 記録されたビールリスト
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("記録されたビール")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .padding(.bottom, 5)
-
-                        if recordedBeers.isEmpty {
-                            Text("まだ記録されたビールはありません。")
-                                .foregroundColor(.gray)
-                                .padding(.horizontal)
-                        } else {
-                            List{
-                                ForEach(recordedBeers.sorted(by: { $0.timestamp > $1.timestamp })) { beer in
-                                    BeerRecordRow(beer: beer) { idToDelete in
-                                        Task {
-                                            await deleteBeerRecord(idToDelete: idToDelete)
-                                        }
-                                    }
-                                    // List のスタイルをリセットして、既存の BeerRecordRow のスタイルを尊重する
-                                    .listRowSeparator(.hidden) // 区切り線を非表示
-                                    .listRowBackground(Color.clear) // 背景を透明にして、BeerRecordRow の背景が見えるようにする
-                                    .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0)) // 行の余白を調整
-                                }
-                            }
-                            .listStyle(.plain) // iOS 15+ 推奨: デフォルトのリストスタイルを無効化
-                            .frame(height: min(CGFloat(recordedBeers.count) * 100 + 20, 400)) // リストの高さを調整 (内容に応じて)
-                            // List を ScrollView 内に入れる場合は、高さの指定が重要
+                    // MARK: - Recorded Beers List
+                    BeerRecordsList(recordedBeers: recordedBeers) { idToDelete in
+                        Task {
+                            await deleteBeerRecord(idToDelete: idToDelete)
                         }
                     }
-                    .padding()
-                    .background(Color.white.opacity(0.8))
-                    .cornerRadius(20)
-                    .shadow(radius: 5)
-
                 }
                 .padding()
                 .onAppear {
-                    // ユーザー認証の試行
                     authenticateAnonymously()
-                    // Firestoreの購読を開始
                     observeRecordedBeers()
                 }
             }
-            .navigationBarHidden(true) // トップのナビゲーションバーを隠す
-            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.indigo.opacity(0.2)]), startPoint: .topLeading, endPoint: .bottomTrailing).ignoresSafeArea())
+            .navigationBarHidden(true)
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.indigo.opacity(0.2)]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+            )
         }
     }
-    
-    // MARK: - 削除ヘルパー関数
+
+    // MARK: - Helper Methods
+    private func resetAnalysisResults() {
+        analysisResult = nil
+        pairingSuggestion = nil
+        errorMessage = nil
+    }
+
     private func deleteBeerRecord(idToDelete: String) async {
         guard let currentUserId = userId else {
             errorMessage = "ユーザーが認証されていないため、ビールを削除できません。"
@@ -261,17 +120,14 @@ struct ContentView: View {
         }
 
         do {
-            // FirestoreService の削除メソッドを呼び出す
             try await firestoreService.deleteBeer(id: idToDelete, userId: currentUserId)
             print("Successfully deleted beer record with ID: \(idToDelete)")
-            // observeBeers() がリアルタイムリスナーなので、自動的にリストが更新されるはず
         } catch {
             errorMessage = "ビールの削除に失敗しました: \(error.localizedDescription)"
             print("Error deleting beer record: \(error.localizedDescription)")
         }
     }
 
-    // MARK: - ヘルパー関数
     private func analyzeBeer() {
         guard let uiImage = uiImage else {
             errorMessage = "解析する画像がありません。"
@@ -289,17 +145,22 @@ struct ContentView: View {
 
         Task {
             do {
-                // まずは画像を Storage にアップロードする
-                // ユニークなIDを生成 (FirestoreのドキュメントIDとして使われる可能性のあるUUID)
                 let tempBeerId = UUID().uuidString
-                let uploadedImageUrl = try await firestoreService.uploadImage(image: uiImage, userId: currentUserId, beerId: tempBeerId)
+                let uploadedImageUrl = try await firestoreService.uploadImage(
+                    image: uiImage,
+                    userId: currentUserId,
+                    beerId: tempBeerId
+                )
                 print("Image uploaded. URL: \(uploadedImageUrl)")
 
                 if let base64String = uiImage.toBase64() {
-                    let result = try await geminiService.analyzeBeer(imageData: base64String, imageType: uiImage.toMimeType())
-                    DispatchQueue.main.async { // UI更新はメインスレッドで
+                    let result = try await geminiService.analyzeBeer(
+                        imageData: base64String,
+                        imageType: uiImage.toMimeType()
+                    )
+                    DispatchQueue.main.async {
                         self.analysisResult = result
-                        Task { // Firestoreに保存
+                        Task {
                             await firestoreService.saveBeerRecord(result, imageUrl: uploadedImageUrl)
                         }
                     }
@@ -363,6 +224,70 @@ struct ContentView: View {
                 self.errorMessage = "記録されたビールの読み込みエラー: \(error.localizedDescription)"
             }
         }
+    }
+}
+
+// MARK: - Supporting Views
+struct ImagePreviewSection: View {
+    let image: UIImage
+
+    var body: some View {
+        VStack {
+            Text("プレビュー")
+                .font(.title2)
+                .fontWeight(.semibold)
+                .padding(.bottom, 5)
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(maxHeight: 300)
+                .cornerRadius(10)
+                .shadow(radius: 3)
+        }
+        .padding()
+        .background(Color.white.opacity(0.8))
+        .cornerRadius(20)
+        .shadow(radius: 5)
+    }
+}
+
+struct AnalysisButton: View {
+    let isLoading: Bool
+    let isEnabled: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                if isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(1.2)
+                }
+                Text(isLoading ? "解析中..." : "ビールを解析")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(isEnabled ? Color.indigo : Color.gray)
+            .foregroundColor(.white)
+            .cornerRadius(15)
+        }
+        .disabled(!isEnabled)
+        .padding(.horizontal)
+    }
+}
+
+struct ErrorMessageView: View {
+    let message: String
+
+    var body: some View {
+        Text(message)
+            .foregroundColor(.red)
+            .padding()
+            .background(Color.red.opacity(0.1))
+            .cornerRadius(10)
     }
 }
 
@@ -469,4 +394,166 @@ extension UIImage {
 }
 #Preview {
     ContentView()
+}
+struct AnalysisResultView: View {
+    let analysisResult: BeerAnalysisResult
+    let isLoadingPairing: Bool
+    let generatePairingSuggestion: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("解析結果")
+                .font(.title2)
+                .fontWeight(.bold)
+                .padding(.bottom, 5)
+
+            InfoRow(label: "銘柄", value: analysisResult.brand)
+            InfoRow(label: "製造者", value: analysisResult.manufacturer)
+            InfoRow(label: "ABV", value: analysisResult.abv)
+            InfoRow(label: "ホップ", value: analysisResult.hops)
+
+            // MARK: - ペアリング提案ボタン
+            Button {
+                generatePairingSuggestion()
+            } label: {
+                HStack {
+                    if isLoadingPairing {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(1.0)
+                    }
+                    Text(isLoadingPairing ? "提案生成中..." : "ペアリングを提案 ✨")
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(isLoadingPairing ? Color.gray : Color.purple)
+                .foregroundColor(.white)
+                .cornerRadius(15)
+            }
+            .disabled(isLoadingPairing)
+            .padding(.top, 10)
+
+        }
+        .padding()
+        .background(Color.white.opacity(0.8))
+        .cornerRadius(20)
+        .shadow(radius: 5)
+    }
+}
+
+struct PairingSuggestionView: View {
+    let pairingSuggestion: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("ペアリング提案")
+                .font(.title2)
+                .fontWeight(.bold)
+                .padding(.bottom, 5)
+
+            Text(pairingSuggestion)
+                .font(.body)
+                .padding(.horizontal)
+        }
+        .padding()
+        .background(Color.white.opacity(0.8))
+        .cornerRadius(20)
+        .shadow(radius: 5)
+    }
+}
+
+struct BeerRecordsList: View {
+    let recordedBeers: [BeerRecord]
+    let onDelete: (String) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("記録されたビール")
+                .font(.title2)
+                .fontWeight(.bold)
+                .padding(.bottom, 5)
+
+            if recordedBeers.isEmpty {
+                Text("まだ記録されたビールはありません。")
+                    .foregroundColor(.gray)
+                    .padding(.horizontal)
+            } else {
+                List{
+                    ForEach(recordedBeers.sorted(by: { $0.timestamp > $1.timestamp })) { beer in
+                        BeerRecordRow(beer: beer) { idToDelete in
+                            onDelete(idToDelete)
+                        }
+                        // List のスタイルをリセットして、既存の BeerRecordRow のスタイルを尊重する
+                        .listRowSeparator(.hidden) // 区切り線を非表示
+                        .listRowBackground(Color.clear) // 背景を透明にして、BeerRecordRow の背景が見えるようにする
+                        .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0)) // 行の余白を調整
+                    }
+                }
+                .listStyle(.plain) // iOS 15+ 推奨: デフォルトのリストスタイルを無効化
+                .frame(height: min(CGFloat(recordedBeers.count) * 100 + 20, 400)) // リストの高さを調整 (内容に応じて)
+                // List を ScrollView 内に入れる場合は、高さの指定が重要
+            }
+        }
+        .padding()
+        .background(Color.white.opacity(0.8))
+        .cornerRadius(20)
+        .shadow(radius: 5)
+    }
+}
+
+struct ImagePickerSection: View {
+    @Binding var selectedImage: PhotosPickerItem?
+    @Binding var uiImage: UIImage?
+    @Binding var errorMessage: String?
+    let onImageChange: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("ビールの写真をアップロードまたは撮影")
+                .font(.headline)
+
+            // iOS 16+ の PhotosPicker
+            PhotosPicker(selection: $selectedImage, matching: .images) {
+                Label("写真を選択", systemImage: "photo")
+                    .font(.title3)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue.opacity(0.8))
+                    .foregroundColor(.white)
+                    .cornerRadius(15)
+            }
+            .onChange(of: selectedImage) { newItem in
+                Task {
+                    if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                        if let image = UIImage(data: data) {
+                            uiImage = image
+                            onImageChange()
+                            errorMessage = nil
+                        }
+                    }
+                }
+            }
+
+            // カメラからの撮影 (簡略化: 実際にはAVFoundationでカメラビューを実装)
+            Button {
+                // TODO: ここにカメラ起動ロジックを追加
+                // UIImagePickerControllerRepresentable を使用するか、AVFoundation でカスタムカメラビューを実装
+                errorMessage = "カメラ機能は現在デモ版では未実装です。写真を選択してください。"
+            } label: {
+                Label("カメラで撮影", systemImage: "camera")
+                    .font(.title3)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.green.opacity(0.8))
+                    .foregroundColor(.white)
+                    .cornerRadius(15)
+            }
+        }
+        .padding()
+        .background(Color.white.opacity(0.8))
+        .cornerRadius(20)
+        .shadow(radius: 5)
+    }
 }
