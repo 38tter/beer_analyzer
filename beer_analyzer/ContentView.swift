@@ -21,6 +21,11 @@ struct ContentView: View {
     @State private var recordedBeers: [BeerRecord] = []
     @State private var userId: String?
 
+    // カメラ/フォトライブラリのシート表示状態
+    @State private var showingImagePicker: Bool = false
+    // 選択されたソースタイプ（カメラまたはフォトライブラリ）
+    @State private var sourceType: UIImagePickerController.SourceType = .camera
+    
     @StateObject private var geminiService = GeminiAPIService()
     @StateObject private var firestoreService = FirestoreService()
 
