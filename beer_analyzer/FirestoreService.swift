@@ -75,6 +75,9 @@ class FirestoreService: ObservableObject {
             return
         }
 
+        // 既存のリスナーがあれば削除してメモリリークを防ぐ
+        listenerRegistration?.remove()
+
         let beersCollectionRef = db.collection("artifacts").document(appId)
             .collection("users").document(userId)
             .collection("beers")
@@ -125,6 +128,12 @@ class FirestoreService: ObservableObject {
         }
     }
 
+    // リスナーを手動で停止する
+    func stopObservingBeers() {
+        listenerRegistration?.remove()
+        listenerRegistration = nil
+    }
+    
     // リスナーを停止する（アプリ終了時などにメモリリーク防止のため）
     deinit {
         listenerRegistration?.remove()
