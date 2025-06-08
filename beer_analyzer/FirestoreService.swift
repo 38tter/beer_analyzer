@@ -15,6 +15,9 @@ class FirestoreService: ObservableObject {
     private var listenerRegistration: ListenerRegistration? // リアルタイムリスナーを保持
     private let storage = Storage.storage() // MARK: - Storage インスタンスを追加
 
+    // MARK: - Firestore からの更新を自動的にビューに通知
+    @Published var recordedBeers: [BeerRecord] = []
+    
     // アプリIDは、Canvas 環境で提供されるものを想定
     // または、Xcodeプロジェクトのビルド設定やInfo.plistから取得
     private let appId = "default-app-id" // 必要に応じて適切なIDを設定
@@ -74,6 +77,7 @@ class FirestoreService: ObservableObject {
     func observeBeers(completion: @escaping (Result<[BeerRecord], Error>) -> Void) {
         guard let userId = AuthService.shared.getCurrentUserId() else {
             completion(.failure(BeerError.apiError("ユーザーが認証されていません。"))) // または適切なエラー
+            self.recordedBeers.removeAll()
             return
         }
 

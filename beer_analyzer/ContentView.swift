@@ -31,103 +31,112 @@ struct ContentView: View {
     @StateObject private var firestoreService = FirestoreService()
 
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 20) {
-                    // MARK: - Title Logo
-                    Image("AppTitleLogo")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 320, height: 180)
-                        .padding(.bottom, 10)
-
-                    Text("ユーザーID: \(userId ?? "認証中...")")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-
-                    // MARK: - Image Selection
-                    ImagePickerSection(
-                        selectedImage: $selectedImage,
-                        uiImage: $uiImage,
-                        errorMessage: $errorMessage,
-                        analysisResult: $analysisResult,
-                        pairingSuggestion: $pairingSuggestion,
-                        showingImagePicker: $showingImagePicker
-                    ) {
-                        resetAnalysisResults()
-                    }
-
-                    // MARK: - Image Preview
-                    if let uiImage = uiImage {
-                        ImagePreviewSection(image: uiImage)
-                    }
-
-                    // MARK: - Analysis Button
-                    AnalysisButton(
-                        isLoading: isLoadingAnalysis,
-                        isEnabled: uiImage != nil && !isLoadingAnalysis
-                    ) {
-                        analyzeBeer()
-                    }
-
-                    // MARK: - Error Message
-                    if let errorMessage = errorMessage {
-                        ErrorMessageView(message: errorMessage)
-                    }
-
-                    // MARK: - Analysis Result
-                    if let analysisResult = analysisResult {
-                        AnalysisResultView(
-                            analysisResult: analysisResult,
-                            isLoadingPairing: isLoadingPairing
+        TabView {
+            NavigationView {
+                ScrollView {
+                    VStack(spacing: 20) {
+                        // MARK: - Title Logo
+                        Image("AppTitleLogo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 320, height: 180)
+                            .padding(.bottom, 10)
+                        
+                        Text("ユーザーID: \(userId ?? "認証中...")")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        
+                        // MARK: - Image Selection
+                        ImagePickerSection(
+                            selectedImage: $selectedImage,
+                            uiImage: $uiImage,
+                            errorMessage: $errorMessage,
+                            analysisResult: $analysisResult,
+                            pairingSuggestion: $pairingSuggestion,
+                            showingImagePicker: $showingImagePicker
                         ) {
-                            generatePairingSuggestion()
+                            resetAnalysisResults()
+                        }
+                        
+                        // MARK: - Image Preview
+                        if let uiImage = uiImage {
+                            ImagePreviewSection(image: uiImage)
+                        }
+                        
+                        // MARK: - Analysis Button
+                        AnalysisButton(
+                            isLoading: isLoadingAnalysis,
+                            isEnabled: uiImage != nil && !isLoadingAnalysis
+                        ) {
+                            analyzeBeer()
+                        }
+                        
+                        // MARK: - Error Message
+                        if let errorMessage = errorMessage {
+                            ErrorMessageView(message: errorMessage)
+                        }
+                        
+                        // MARK: - Analysis Result
+                        if let analysisResult = analysisResult {
+                            AnalysisResultView(
+                                analysisResult: analysisResult,
+                                isLoadingPairing: isLoadingPairing
+                            ) {
+                                generatePairingSuggestion()
+                            }
+                        }
+                        
+                        // MARK: - Pairing Suggestion
+                        if let pairingSuggestion = pairingSuggestion {
+                            PairingSuggestionView(pairingSuggestion: pairingSuggestion)
                         }
                     }
-
-                    // MARK: - Pairing Suggestion
-                    if let pairingSuggestion = pairingSuggestion {
-                        PairingSuggestionView(pairingSuggestion: pairingSuggestion)
+                    .padding()
+                    .onAppear {
+                        authenticateAnonymously()
+                        observeRecordedBeers()
                     }
-
-                    // MARK: - Recorded Beers List
-                    BeerRecordsList(recordedBeers: recordedBeers) { idToDelete in
-                        Task {
-                            await deleteBeerRecord(idToDelete: idToDelete)
-                        }
+                    // MARK: - CameraPicker のシート表示
+                    .sheet(isPresented: $showingImagePicker) {
+                        CameraPicker(
+                            selectedImage: $uiImage
+                        )
                     }
                 }
-                .padding()
-                .onAppear {
-                    authenticateAnonymously()
-                    observeRecordedBeers()
-                }
-                // MARK: - CameraPicker のシート表示
-                .sheet(isPresented: $showingImagePicker) {
-                    CameraPicker(
-                        selectedImage: $uiImage
+                .navigationBarHidden(true)
+                .background(
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.indigo.opacity(0.2)]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
+                    .ignoresSafeArea()
+                )
+                
+                .alert("ビールの解析に失敗しました", isPresented: $showingNoBeerAlert) {
+                    // アクションボタンを定義 (ここではOKボタンのみ)
+                    Button("OK") {
+                        // OKが押されたときの処理
+                        // 何もしなければアラートが閉じるだけ
+                    }
+                } message: {
+                    // アラートのメッセージ
+                    Text("ビールが検出されない、もしくはビールの解析に失敗しました")
                 }
             }
-            .navigationBarHidden(true)
-            .background(
-                LinearGradient(
-                    gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.indigo.opacity(0.2)]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
-            )
+            .tabItem {
+                Label("追加", systemImage: "magnifyingglass")
+            }
             
-            .alert("ビールの解析に失敗しました", isPresented: $showingNoBeerAlert) {
-                // アクションボタンを定義 (ここではOKボタンのみ)
-                Button("OK") {
-                    // OKが押されたときの処理
-                    // 何もしなければアラートが閉じるだけ
+            // MARK: - 2 つ目のタブ
+            // MARK: - Recorded Beers List
+            BeerRecordsList(recordedBeers: recordedBeers) { idToDelete in
+                Task {
+                    await deleteBeerRecord(idToDelete: idToDelete)
                 }
-            } message: {
-                // アラートのメッセージ
-                Text("ビールが検出されない、もしくはビールの解析に失敗しました")
+            }
+            .tabItem {
+                Label("記録", systemImage: "list.bullet")
             }
         }
     }
@@ -238,6 +247,12 @@ struct ContentView: View {
     }
 
     private func authenticateAnonymously() {
+        if let currentFirebaseUserId = AuthService.shared.getCurrentUserId() {
+            self.userId = currentFirebaseUserId
+            print("Already signed in anonymously with UID: \(currentFirebaseUserId)")
+            return
+        }
+        
         AuthService.shared.signInAnonymously { result in
             switch result {
             case .success(let uid):
