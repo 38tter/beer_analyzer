@@ -18,9 +18,11 @@ struct AnalysisResultView: View {
                 .fontWeight(.bold)
                 .padding(.bottom, 5)
 
+            InfoRow(label: "ビール名", value: analysisResult.beerName)
             InfoRow(label: "銘柄", value: analysisResult.brand)
             InfoRow(label: "製造者", value: analysisResult.manufacturer)
             InfoRow(label: "ABV", value: analysisResult.abv)
+            InfoRow(label: "容量", value: analysisResult.capacity)
             InfoRow(label: "ホップ", value: analysisResult.hops)
 
             // MARK: - ペアリング提案ボタン

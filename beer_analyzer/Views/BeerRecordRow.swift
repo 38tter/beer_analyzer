@@ -13,7 +13,6 @@ struct BeerRecordRow: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
-            // MARK: - ビール画像を表示
             if let imageUrlString = beer.imageUrl, let imageUrl = URL(string: imageUrlString) {
                 KFImage(imageUrl)
                     .resizable()
@@ -29,13 +28,19 @@ struct BeerRecordRow: View {
             }
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(beer.brand)
+                Text(beer.beerName)
                     .font(.headline)
                     .foregroundColor(.indigo)
+                Text("ブランド: \(beer.brand)")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
                 Text("製造者: \(beer.manufacturer)")
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 Text("ABV: \(beer.abv)")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                Text("容量: \(beer.capacity)")
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 Text("ホップ: \(beer.hops)")
