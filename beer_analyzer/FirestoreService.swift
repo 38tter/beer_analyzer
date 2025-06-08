@@ -56,6 +56,8 @@ class FirestoreService: ObservableObject {
         }
 
         let beerRecord = BeerRecord(analysisResult: result, userId: userId, timestamp: Date(), imageUrl: imageUrl ?? "")
+        
+        print("Saving beer record to Firestore: \(beerRecord)")
 
         do {
             // DocumentIDはBeerRecordの@DocumentIDプロパティによって自動的に生成/設定される

@@ -10,27 +10,36 @@ import FirebaseFirestore // Firestoreから直接Decodable/Encodableに変換す
 
 // ビール解析結果のモデル
 struct BeerAnalysisResult: Codable {
+    let beerName: String
     let brand: String
     let manufacturer: String
     let abv: String
+    let capacity: String
     let hops: String
+    let isNotBeer: Bool
 
     // FirestoreのIDを自動生成するためにinitを追加
-    init(brand: String, manufacturer: String, abv: String, hops: String) {
+    init(beerName: String, brand: String, manufacturer: String, abv: String, capacity: String, hops: String, isNotBeer: Bool) {
+        self.beerName = beerName
         self.brand = brand
         self.manufacturer = manufacturer
         self.abv = abv
+        self.capacity = capacity
         self.hops = hops
+        self.isNotBeer = isNotBeer
     }
 }
 
 // 記録されたビールのモデル (Firestore用)
 struct BeerRecord: Codable, Identifiable {
     @DocumentID var id: String? // FirestoreのドキュメントID
+    let beerName: String
     let brand: String
     let manufacturer: String
     let abv: String
+    let capacity: String
     let hops: String
+    let isNotBeer: Bool
     let timestamp: Date // 記録日時
     let userId: String // どのユーザーが記録したか
     // MARK: - 画像URLを追加
@@ -39,10 +48,13 @@ struct BeerRecord: Codable, Identifiable {
     // Encodable のカスタムエンコーダ (Firestoreに保存する際に必要)
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(beerName, forKey: .beerName)
         try container.encode(brand, forKey: .brand)
         try container.encode(manufacturer, forKey: .manufacturer)
         try container.encode(abv, forKey: .abv)
+        try container.encode(capacity, forKey: .capacity)
         try container.encode(hops, forKey: .hops)
+        try container.encode(isNotBeer, forKey: .isNotBeer)
         try container.encode(timestamp, forKey: .timestamp)
         try container.encode(userId, forKey: .userId)
         try container.encode(imageUrl, forKey: .imageUrl)
@@ -50,10 +62,13 @@ struct BeerRecord: Codable, Identifiable {
 
     // FirebaseのaddDocなどで使用するためのinit (FireStoreServiceで使用)
     init(analysisResult: BeerAnalysisResult, userId: String, timestamp: Date, imageUrl: String) {
+        self.beerName = analysisResult.beerName
         self.brand = analysisResult.brand
         self.manufacturer = analysisResult.manufacturer
         self.abv = analysisResult.abv
+        self.capacity = analysisResult.capacity
         self.hops = analysisResult.hops
+        self.isNotBeer = analysisResult.isNotBeer
         self.userId = userId
         self.timestamp = timestamp
         self.imageUrl = imageUrl

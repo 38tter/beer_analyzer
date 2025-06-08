@@ -99,17 +99,65 @@ class GeminiAPIService: ObservableObject {
 
     private let apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
+    // MARK: - response 型定義
+    // レスポンスの 'parts' 配列内の各要素
+    struct GeminiResponsePart: Codable {
+        let text: String? // テキスト内容
+    }
+
+    // レスポンスの 'content' オブジェクト
+    struct GeminiResponseContent: Codable {
+        let parts: [GeminiResponsePart] // parts 配列
+        // 他にも "role" などがある場合がありますが、今回は抽出に不要なので省略
+    }
+
+    // レスポンスの 'candidates' 配列内の各要素
+    struct GeminiResponseCandidate: Codable {
+        let content: GeminiResponseContent // content オブジェクト
+        // 他にも "finishReason", "groundingMetadata" などがある場合がありますが、今回は抽出に不要なので省略
+    }
+
+    // Gemini API の最上位レスポンス構造
+    struct GeminiAPIResponse: Codable {
+        let candidates: [GeminiResponseCandidate] // candidates 配列
+        // 他にも "usageMetadata", "modelVersion", "responseId" などがある場合がありますが、今回は抽出に不要なので省略
+    }
+
     // MARK: - ビール解析API
     func analyzeBeer(imageData: String, imageType: String) async throws -> BeerAnalysisResult {
         let prompt = """
-        このビールの銘柄、製造者、アルコール度数（ABV）、使用されているホップを特定し、JSON形式で提供してください。情報が見つからない場合は、対応するフィールドを空の文字列にしてください。
-        例:
-        {
-          "brand": "アサヒスーパードライ",
-          "manufacturer": "アサヒビール",
-          "abv": "5%",
-          "hops": "不明"
-        }
+        この画像には、ビールが映っています。ビールの名称、製造者、アルコール度数（ABV）、容量、使用されているホップを特定してください。
+        もし画像から特定できない場合は、与えられたキーワード（ビールの名称、製造者、アルコール度数、容量）を元に以下を参照し、情報を検索して整理して出力してください。
+
+        ## 要件
+        - ブルワリー名は通称とする。
+        - 本社の住所を採用する。
+        - JSON 形式でまとめてください。
+        - 情報が存在しない場合は "不明" とする。
+        - ホップについては「ホップ」のみの回答は避ける。それ以上わからない場合は "不明" と返す。
+        - 複数のビールが映っている場合は、画像の中心に最も近いビールのみを対象とする。
+        - もしビールが映っていない場合は、is_not_beer を true と返す。それ以外は false と返す。
+
+        ## 参照する情報の優先順位
+        1. クラビ連サイト: https://0423craft.beer/expo2025/?id=brewery で探す
+        2. 日本産ホップ推進委員会サイト: https://japanhop.jp/brewery/ で探す
+        3. 公式ホームページを探す
+        4. facebook または instagram の公式アカウントを探す
+        5. Wikipedia で探す
+
+        ## 取得する情報
+        - ビールの名称: beer_name
+        - ブルワリーの名称: brand
+        - 企業の名称: manufacturer
+        - 企業の住所: address
+        - 国名: country
+        - 公式ホームページURL: url
+        - instagramアカウント: instagram_account
+        - Xアカウント: x_account
+        - ビールのアルコール度数 : abv
+        - ビールの容量 : capacity
+        - ホップ : hops
+        - 画像にビールが映ってない : is_not_beer
         """
 
         let requestBody: [String: Any] = [
@@ -122,19 +170,11 @@ class GeminiAPIService: ObservableObject {
                     ]
                 ]
             ],
-            "generationConfig": [
-                "responseMimeType": "application/json",
-                "responseSchema": [
-                    "type": "OBJECT",
-                    "properties": [
-                        "brand": ["type": "STRING"],
-                        "manufacturer": ["type": "STRING"],
-                        "abv": ["type": "STRING"],
-                        "hops": ["type": "STRING"]
-                    ],
-                    "propertyOrdering": ["brand", "manufacturer", "abv", "hops"]
+            "tools": [
+                [
+                    "googleSearch": [:]
                 ]
-            ]
+            ],
         ]
 
         guard let url = URL(string: "\(apiUrl)?key=\(self.apiKey?.description ?? "")") else {
@@ -147,46 +187,141 @@ class GeminiAPIService: ObservableObject {
         request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
 
         let (data, response) = try await URLSession.shared.data(for: request)
+        
+        print(String(data: data, encoding: .utf8) ?? "不明なエラーデータ")
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             let errorData = String(data: data, encoding: .utf8) ?? "不明なエラーデータ"
             throw BeerError.networkError("APIリクエストが失敗しました: HTTP Status \( (response as? HTTPURLResponse)?.statusCode ?? -1), Data: \(errorData)")
         }
+        
+        let detailedBreweryInfo = try parseGeminiBreweryResponse(jsonData: data)
+        
+        return BeerAnalysisResult(
+            beerName: detailedBreweryInfo.beerName ?? "不明",
+            brand: detailedBreweryInfo.brand ?? "不明",
+            manufacturer: detailedBreweryInfo.manufacturer ?? "不明",
+            abv: detailedBreweryInfo.abv ?? "不明",
+            capacity: detailedBreweryInfo.capacity ?? "不明",
+            hops: detailedBreweryInfo.hops ?? "不明",
+            isNotBeer: detailedBreweryInfo.isNotBeer ?? false
+        )
+    }
+    
+    // MARK: - 2. 抽出する JSON データの構造を定義 (より詳細なブルワリー情報)
 
-        // Gemini APIのレスポンス構造に合わせたデコード
-        struct GeminiResponse: Decodable {
-            struct Candidate: Decodable {
-                struct Content: Decodable {
-                    struct Part: Decodable {
-                        let text: String? // JSON文字列が含まれる
-                    }
-                    let parts: [Part]
-                }
-                let content: Content
-            }
-            let candidates: [Candidate]
+    // Gemini が返した JSON コードブロック内のデータ構造
+    struct DetailedBreweryInfo: Codable {
+        let beerName: String?
+        let brand: String?
+        let manufacturer: String?
+        let address: String?
+        let country: String?
+        let countryEn: String? // country_en に対応
+        let countryCode: String? // country_code に対応
+        let url: URL? // URL型にパース
+        let facebookAccount: URL? // facebook_account に対応
+        let instagramAccount: URL? // instagram_account に対応
+        let xAccount: URL? // x_account に対応
+        let beerBreweryNameEn: String? // beer_brewery_name_en に対応
+        let companyNameEn: String? // company_name_en に対応
+        let abv: String?
+        let capacity: String?
+        let hops: String? // JSONではnullなのでOptional String
+        let isNotBeer: Bool?
+
+        // JSONのキー名とSwiftのプロパティ名が異なる場合にマッピング
+        private enum CodingKeys: String, CodingKey {
+            case beerName = "beer_name"
+            case brand
+            case manufacturer
+            case address
+            case country
+            case countryEn = "country_en"
+            case countryCode = "country_code"
+            case url
+            case facebookAccount = "facebook_account"
+            case instagramAccount = "instagram_account"
+            case xAccount = "x_account"
+            case beerBreweryNameEn = "beer_brewery_name_en"
+            case companyNameEn = "company_name_en"
+            case abv
+            case capacity
+            case hops
+            case isNotBeer = "is_not_beer"
         }
-
-        let geminiResponse = try JSONDecoder().decode(GeminiResponse.self, from: data)
-
-        guard let jsonString = geminiResponse.candidates.first?.content.parts.first?.text,
-              let jsonData = jsonString.data(using: .utf8) else {
-            throw BeerError.jsonParsingError
-        }
-
+    }
+    
+    func parseGeminiBreweryResponse(jsonData: Data) throws -> DetailedBreweryInfo {
         let decoder = JSONDecoder()
-        return try decoder.decode(BeerAnalysisResult.self, from: jsonData)
+
+        // 1. レスポンス全体の構造をデコード
+        let apiResponse = try decoder.decode(GeminiAPIResponse.self, from: jsonData)
+
+        print("before getting: \(String(data: jsonData, encoding: .utf8) ?? "(JSONデータが正しく解釈できませんでした)")")
+        
+        // 2. 必要な 'parts' 配列の3番目の要素 (インデックス2) を取得
+        guard let candidate = apiResponse.candidates.first else {
+            throw ParsingError.invalidResponseStructure("candidate がありません")
+        }
+        var jsonCodeBlockText = ""
+        if let matchingPart = candidate.content.parts.first(where: { part in
+            // part.text が nil でない場合に contains(_:) を実行
+            part.text?.contains("json") ?? false
+        }) {
+            jsonCodeBlockText = matchingPart.text!
+        } else {
+            print("first(where:) 結果: JSONコードブロックは見つかりませんでした。")
+            throw ParsingError.invalidResponseStructure("必要なJSONコードブロックが見つかりませんでした。")
+        }
+        
+        print("before fixing: \(jsonCodeBlockText)")
+
+        // 3. Markdown コードブロックのデリミタを削除して、純粋な JSON 文字列を抽出
+        let cleanedJsonString = jsonCodeBlockText
+            .replacingOccurrences(of: "```json\n", with: "")
+            .replacingOccurrences(of: "\n```", with: "")
+            .trimmingCharacters(in: .whitespacesAndNewlines) // 前後の空白や改行を削除
+
+        guard let extractedJsonData = cleanedJsonString.data(using: .utf8) else {
+            throw ParsingError.invalidJsonString("抽出された文字列をデータに変換できませんでした。")
+        }
+        
+        print("before parsing: \(String(data: extractedJsonData, encoding: .utf8))")
+
+        // 4. 抽出した JSON データを DetailedBreweryInfo 構造体にパース
+        return try decoder.decode(DetailedBreweryInfo.self, from: extractedJsonData)
+    }
+
+    // カスタムエラーの定義 (オプション)
+    enum ParsingError: Error, LocalizedError {
+        case invalidResponseStructure(String)
+        case invalidJsonString(String)
+        case decodingFailed(Error)
+
+        var errorDescription: String? {
+            switch self {
+            case .invalidResponseStructure(let message): return "レスポンス構造が不正です: \(message)"
+            case .invalidJsonString(let message): return "抽出されたJSON文字列が不正です: \(message)"
+            case .decodingFailed(let underlyingError): return "JSONのデコードに失敗しました: \(underlyingError.localizedDescription)"
+            }
+        }
     }
 
 
     // MARK: - ペアリング提案API
     func generatePairingSuggestion(for beer: BeerAnalysisResult) async throws -> String {
         let pairingPrompt = """
-        以下のビールの情報に基づいて、そのビールに合う食べ物やシーンのペアリングを3つ提案してください。各提案は箇条書きで簡潔に記述し、提案が見つからない場合は「不明」と記述してください。
+        以下のビールの情報に基づいて、そのビールに合う料理を検索し、最大で3つ提案してください。各提案は箇条書きで簡潔に記述し、提案が見つからない場合は「不明」と記述してください。
+        ビールの名称: \(beer.beerName)
         ビールの銘柄: \(beer.brand)
         製造者: \(beer.manufacturer)
         アルコール度数 (ABV): \(beer.abv)
+        容量: \(beer.capacity)
         ホップ: \(beer.hops)
+        
+        ## 要件
+        - それぞれの料理について「料理名」をタイトルとし、「理由」「おすすめのシーン」を箇条書きで書いてください。
         """
 
         let requestBody: [String: Any] = [
@@ -196,6 +331,11 @@ class GeminiAPIService: ObservableObject {
                     "parts": [
                         ["text": pairingPrompt]
                     ]
+                ]
+            ],
+            "tools": [
+                [
+                    "googleSearch": [:]
                 ]
             ],
             "generationConfig": [
