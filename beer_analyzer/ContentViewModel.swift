@@ -15,7 +15,8 @@ class ContentViewModel: ObservableObject {
     @Published var recordedBeers: [BeerRecord] = []
     @Published var userId: String? = nil
     @Published var showingImagePicker: Bool = false
-    @Published var sourceType: UIImagePickerController.SourceType = .camera
+    // sourceType is no longer needed as PhotosPicker handles library
+    // and AVFoundationCameraView handles direct camera access.
 
     // MARK: - Services
     let geminiService = GeminiAPIService()

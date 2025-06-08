@@ -82,12 +82,10 @@ struct ContentView: View {
                 }
                 .padding()
                 // .onAppear block is removed as this logic is now in ContentViewModel's init
-                // MARK: - CameraPicker のシート表示
+                // MARK: - AVFoundationCameraView Sheet (replaces CameraPicker)
                 .sheet(isPresented: $viewModel.showingImagePicker) { // Bind to ViewModel's property
-                    CameraPicker(
-                        selectedImage: $viewModel.uiImage // Bind to ViewModel's property
-                        // Assuming CameraPicker directly modifies the uiImage or selectedImage
-                    )
+                    AVFoundationCameraView(capturedImage: $viewModel.uiImage) // Use the new AVFoundation based camera
+                        .edgesIgnoringSafeArea(.all) // Recommended for full-screen camera views
                 }
             }
             .navigationBarHidden(true)
