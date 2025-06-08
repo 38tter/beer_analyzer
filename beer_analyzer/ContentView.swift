@@ -25,6 +25,8 @@ struct ContentView: View {
     // 選択されたソースタイプ（カメラまたはフォトライブラリ）
     @State private var sourceType: UIImagePickerController.SourceType = .camera
     
+    @State private var showingNoBeerAlert: Bool = false
+    
     @StateObject private var geminiService = GeminiAPIService()
     @StateObject private var firestoreService = FirestoreService()
 
@@ -116,6 +118,17 @@ struct ContentView: View {
                 )
                 .ignoresSafeArea()
             )
+            
+            .alert("ビールの解析に失敗しました", isPresented: $showingNoBeerAlert) {
+                // アクションボタンを定義 (ここではOKボタンのみ)
+                Button("OK") {
+                    // OKが押されたときの処理
+                    // 何もしなければアラートが閉じるだけ
+                }
+            } message: {
+                // アラートのメッセージ
+                Text("ビールが検出されない、もしくはビールの解析に失敗しました")
+            }
         }
     }
 
@@ -155,6 +168,7 @@ struct ContentView: View {
         errorMessage = nil
         analysisResult = nil
         pairingSuggestion = nil
+        showingNoBeerAlert = false
 
         Task {
             do {
@@ -171,10 +185,15 @@ struct ContentView: View {
                         imageData: base64String,
                         imageType: uiImage.toMimeType()
                     )
-                    DispatchQueue.main.async {
-                        self.analysisResult = result
-                        Task {
-                            await firestoreService.saveBeerRecord(result, imageUrl: uploadedImageUrl)
+                    
+                    if result.isNotBeer {
+                        showingNoBeerAlert = true
+                    } else {
+                        DispatchQueue.main.async {
+                            self.analysisResult = result
+                            Task {
+                                await firestoreService.saveBeerRecord(result, imageUrl: uploadedImageUrl)
+                            }
                         }
                     }
                 } else {
@@ -184,6 +203,7 @@ struct ContentView: View {
                 DispatchQueue.main.async {
                     self.errorMessage = "ビールの解析に失敗しました: \(error.localizedDescription)"
                 }
+                showingNoBeerAlert = true
             }
             DispatchQueue.main.async {
                 self.isLoadingAnalysis = false
