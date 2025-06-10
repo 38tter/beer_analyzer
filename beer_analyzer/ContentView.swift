@@ -21,7 +21,6 @@ struct ContentView: View {
     @State private var recordedBeers: [BeerRecord] = []
     @State private var userId: String?
     @State private var showingImagePicker = false
-    @State private var showingTermsOfUse = false // New state variable
     
     // 選択されたソースタイプ（カメラまたはフォトライブラリ）
     @State private var sourceType: UIImagePickerController.SourceType = .camera
@@ -137,32 +136,14 @@ struct ContentView: View {
             }
 
             // New "About" Tab
-            TermsOfUseView(onAccept: {}, isPresentedForAcceptance: false) // onAccept can be empty as button is hidden
+            TermsOfUseView(onAccept: {}, isPresentedForAcceptance: false)
                 .tabItem {
                     Label("About", systemImage: "info.circle")
                 }
         }
-        .onAppear { // This onAppear might be on TabView or a sub-view, adjust as needed
+        .onAppear {
             authenticateAnonymously()
             observeRecordedBeers()
-
-            // New logic for Terms of Use
-            if !UserDefaultsService.hasAcceptedTerms() {
-                // DispatchQueue.main.async might be needed if onAppear is called
-                // during a view update cycle that prevents immediate state change.
-                // For simplicity, try without first.
-                self.showingTermsOfUse = true
-            }
-        }
-        .sheet(isPresented: $showingTermsOfUse) {
-            TermsOfUseView(
-                onAccept: {
-                    UserDefaultsService.setTermsAccepted(true)
-                    self.showingTermsOfUse = false
-                },
-                isPresentedForAcceptance: true // Ensure this is true
-            )
-            .interactiveDismissDisabled() // Prevent dismissing by swipe
         }
     }
 
