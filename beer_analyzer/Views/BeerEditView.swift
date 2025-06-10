@@ -19,6 +19,7 @@ struct BeerEditView: View {
     @State private var abv: String
     @State private var capacity: String
     @State private var hops: String
+    @State private var hasDrunk: Bool
     
     // サービスへのアクセス
     @EnvironmentObject var firestoreService: FirestoreService
@@ -39,6 +40,7 @@ struct BeerEditView: View {
         _abv = State(initialValue: beer.abv)
         _capacity = State(initialValue: beer.capacity)
         _hops = State(initialValue: beer.hops)
+        _hasDrunk = State(initialValue: beer.hasDrunk)
     }
 
     var body: some View {
@@ -92,6 +94,45 @@ struct BeerEditView: View {
                     }
                     .autocorrectionDisabled() // 自動修正を無効にする（ビール名などに不要な場合）
                     .textInputAutocapitalization(.never) // 自動大文字化を無効にする
+
+                    // MARK: - 飲んだかどうかのトグル
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("飲んだかどうか")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Toggle("", isOn: $hasDrunk)
+                                .toggleStyle(SwitchToggleStyle())
+                        }
+                        .padding(.horizontal)
+                        
+                        if hasDrunk {
+                            HStack {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                                Text("飲みました！🍺")
+                                    .font(.subheadline)
+                                    .foregroundColor(.green)
+                                Spacer()
+                            }
+                            .padding(.horizontal)
+                        } else {
+                            HStack {
+                                Image(systemName: "circle")
+                                    .foregroundColor(.gray)
+                                Text("まだ飲んでいません")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                                Spacer()
+                            }
+                            .padding(.horizontal)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(10)
+                    .padding(.horizontal)
 
                     // MARK: - 保存ボタン
                     Button {
@@ -174,7 +215,8 @@ struct BeerEditView: View {
                     ),
                     userId: originalBeer.userId, // UserIDは元のまま
                     timestamp: originalBeer.timestamp, // タイムスタンプは元のまま
-                    imageUrl: originalBeer.imageUrl ?? ""
+                    imageUrl: originalBeer.imageUrl ?? "",
+                    hasDrunk: hasDrunk // 飲んだかどうかの状態を反映
                 )
                 
                 try await firestoreService.updateBeer(documentId: originalBeer.id ?? "", beer: updatedBeer)

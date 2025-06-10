@@ -55,7 +55,24 @@ struct BeerRecordRow: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
-        .background(Color.white)
+        .background(
+            ZStack {
+                Color.white
+                // 飲んだビールの場合は背景にビール絵文字を表示
+                if beer.hasDrunk {
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Text("🍺")
+                                .font(.system(size: 40))
+                                .opacity(0.3)
+                                .offset(x: -10, y: -10)
+                        }
+                        Spacer()
+                    }
+                }
+            }
+        )
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
         .contentShape(Rectangle())
