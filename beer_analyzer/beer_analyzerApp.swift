@@ -24,12 +24,28 @@ struct beer_analyzerApp: App {
     // register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var firestoreService = FirestoreService()
+    @State private var isLoading = true
     
     var body: some Scene {
         WindowGroup {
-            NavigationView {
-                ContentView()
-                    .environmentObject(firestoreService)
+            Group {
+                if isLoading {
+                    LaunchScreenView()
+                        .onAppear {
+                            // スプラッシュスクリーン表示時間（2.5秒）
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    isLoading = false
+                                }
+                            }
+                        }
+                } else {
+                    NavigationView {
+                        ContentView()
+                            .environmentObject(firestoreService)
+                    }
+                    .transition(.opacity)
+                }
             }
         }
     }
