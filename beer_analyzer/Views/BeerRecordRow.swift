@@ -62,13 +62,24 @@ struct BeerRecordRow: View {
                     Button {
                         showingSafari = true
                     } label: {
-                        Image(systemName: "link.circle.fill")
-                            .font(.system(size: 24))
-                            .foregroundColor(.blue)
-                            .background(Color.white)
-                            .clipShape(Circle())
-                            .shadow(radius: 2)
+                        VStack(spacing: 4) {
+                            Image(systemName: "link.circle.fill")
+                                .font(.system(size: 30))
+                                .foregroundColor(.blue)
+                            Text("公式サイト")
+                                .font(.caption2)
+                                .foregroundColor(.blue)
+                                .fontWeight(.medium)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.blue.opacity(0.1))
+                                .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+                        )
                     }
+                    .buttonStyle(PlainButtonStyle())
                     .padding(.top, 4)
                 }
                 Spacer()
