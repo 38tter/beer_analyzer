@@ -9,42 +9,149 @@ import SwiftUI
 struct BeerRecordsList: View {
     @EnvironmentObject var firestoreService: FirestoreService
     
-    let recordedBeers: [BeerRecord]
+    @State private var beers: [BeerRecord] = []
+    @State private var isLoading = false
+    @State private var hasMoreData = true
+    
     let onDelete: (String) -> Void
     
     var body: some View {
         NavigationView {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("記録されたビール")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .padding(.bottom, 5)
-
-                if recordedBeers.isEmpty {
-                    Text("まだ記録されたビールはありません。")
-                        .foregroundColor(.gray)
-                        .padding(.horizontal)
+            VStack(spacing: 0) {
+                // ヘッダー
+                HStack {
+                    Text("記録されたビール")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                    Spacer()
+                    Text("\(beers.count)件")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color(.systemBackground))
+                
+                if beers.isEmpty && !isLoading {
+                    // 空の状態
+                    VStack(spacing: 20) {
+                        Image(systemName: "wineglass")
+                            .font(.system(size: 60))
+                            .foregroundColor(.gray)
+                        Text("まだ記録されたビールはありません")
+                            .font(.title2)
+                            .foregroundColor(.secondary)
+                        Text("ビールを解析して記録を開始しましょう！")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(.systemGroupedBackground))
                 } else {
+                    // ビールリスト
                     List {
-                        ForEach(recordedBeers.sorted(by: { $0.timestamp > $1.timestamp })) { beer in
+                        ForEach(beers) { beer in
                             NavigationLink(destination: BeerEditView(beer: beer).environmentObject(firestoreService)) {
                                 BeerRecordRow(beer: beer) { idToDelete in
                                     onDelete(idToDelete)
+                                    // ローカルのリストからも削除
+                                    beers.removeAll { $0.id == idToDelete }
                                 }
                             }
                             .listRowSeparator(.hidden)
                             .listRowBackground(Color.clear)
-                            .listRowInsets(EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                            .onAppear {
+                                // 無限スクロールのトリガー
+                                if beer.id == beers.last?.id && hasMoreData && !isLoading {
+                                    loadMoreBeers()
+                                }
+                            }
+                        }
+                        
+                        // ローディングインジケーター
+                        if isLoading {
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
+                                    .scaleEffect(1.2)
+                                Text("読み込み中...")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                            }
+                            .padding()
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
                         }
                     }
                     .listStyle(.plain)
-                    .frame(height: min(CGFloat(recordedBeers.count) * 100 + 20, 400))
+                    .background(Color(.systemGroupedBackground))
+                    .refreshable {
+                        await refreshBeers()
+                    }
                 }
             }
-            .padding()
-            .background(Color.white.opacity(0.8))
-            .cornerRadius(20)
-            .shadow(radius: 5)
+            .background(Color(.systemGroupedBackground))
+            .navigationBarHidden(true)
         }
+        .onAppear {
+            if beers.isEmpty {
+                loadInitialBeers()
+            }
+        }
+    }
+    
+    // MARK: - 初回データ読み込み
+    private func loadInitialBeers() {
+        isLoading = true
+        firestoreService.resetPagination()
+        
+        firestoreService.observeBeers { result in
+            DispatchQueue.main.async {
+                self.isLoading = false
+                switch result {
+                case .success(let newBeers):
+                    self.beers = newBeers
+                    self.hasMoreData = newBeers.count == 20 // pageSize
+                case .failure(let error):
+                    print("Error loading initial beers: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    // MARK: - 追加データ読み込み
+    private func loadMoreBeers() {
+        guard !isLoading && hasMoreData else { return }
+        
+        isLoading = true
+        firestoreService.loadMoreBeers { result in
+            DispatchQueue.main.async {
+                self.isLoading = false
+                switch result {
+                case .success(let newBeers):
+                    if !newBeers.isEmpty {
+                        self.beers.append(contentsOf: newBeers)
+                        self.hasMoreData = newBeers.count == 20 // pageSize
+                    } else {
+                        self.hasMoreData = false
+                    }
+                case .failure(let error):
+                    print("Error loading more beers: \(error.localizedDescription)")
+                    self.hasMoreData = false
+                }
+            }
+        }
+    }
+    
+    // MARK: - リフレッシュ
+    private func refreshBeers() async {
+        await MainActor.run {
+            self.beers.removeAll()
+            self.hasMoreData = true
+        }
+        loadInitialBeers()
     }
 }
