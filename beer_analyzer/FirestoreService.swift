@@ -77,9 +77,11 @@ class FirestoreService: ObservableObject {
     private var lastDocument: DocumentSnapshot?
     private let pageSize = 20
     private var hasMoreData = true
+    private var currentSortDescending = true // true = 降順（新しい順）, false = 昇順（古い順）
     
     // 記録されたビールをリアルタイムで購読する（初回読み込み）
-    func observeBeers(completion: @escaping (Result<[BeerRecord], Error>) -> Void) {
+    func observeBeers(sortDescending: Bool = true, completion: @escaping (Result<[BeerRecord], Error>) -> Void) {
+        currentSortDescending = sortDescending
         guard let userId = AuthService.shared.getCurrentUserId() else {
             completion(.failure(BeerError.apiError("ユーザーが認証されていません。"))) // または適切なエラー
             self.recordedBeers.removeAll()
@@ -92,7 +94,7 @@ class FirestoreService: ObservableObject {
         let beersCollectionRef = db.collection("artifacts").document(appId)
             .collection("users").document(userId)
             .collection("beers")
-            .order(by: "timestamp", descending: true)
+            .order(by: "timestamp", descending: currentSortDescending)
             .limit(to: pageSize)
 
         listenerRegistration = beersCollectionRef.addSnapshotListener { querySnapshot, error in
@@ -147,7 +149,7 @@ class FirestoreService: ObservableObject {
         var query = db.collection("artifacts").document(appId)
             .collection("users").document(userId)
             .collection("beers")
-            .order(by: "timestamp", descending: true)
+            .order(by: "timestamp", descending: currentSortDescending)
             .limit(to: pageSize)
         
         if let lastDoc = lastDocument {
@@ -191,6 +193,13 @@ class FirestoreService: ObservableObject {
     func resetPagination() {
         lastDocument = nil
         hasMoreData = true
+    }
+    
+    // MARK: - ソート順の変更
+    func changeSortOrder(descending: Bool, completion: @escaping (Result<[BeerRecord], Error>) -> Void) {
+        currentSortDescending = descending
+        resetPagination()
+        observeBeers(sortDescending: descending, completion: completion)
     }
     
     // MARK: - ビールレコードを更新するメソッド (新規追加)
