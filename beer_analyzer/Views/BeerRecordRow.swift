@@ -6,10 +6,13 @@
 
 import SwiftUI
 import Kingfisher
+import SafariServices
 
 struct BeerRecordRow: View {
     let beer: BeerRecord
     var onDelete: (String) -> Void
+    
+    @State private var showingSafari = false
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
@@ -50,6 +53,27 @@ struct BeerRecordRow: View {
                     .font(.caption)
                     .foregroundColor(.gray)
             }
+            
+            // MARK: - 公式サイトリンクアイコン
+            VStack {
+                if let websiteUrlString = beer.websiteUrl, 
+                   !websiteUrlString.isEmpty,
+                   let _ = URL(string: websiteUrlString) {
+                    Button {
+                        showingSafari = true
+                    } label: {
+                        Image(systemName: "link.circle.fill")
+                            .font(.system(size: 24))
+                            .foregroundColor(.blue)
+                            .background(Color.white)
+                            .clipShape(Circle())
+                            .shadow(radius: 2)
+                    }
+                    .padding(.top, 4)
+                }
+                Spacer()
+            }
+            
             Spacer()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -86,5 +110,25 @@ struct BeerRecordRow: View {
                 Label("削除", systemImage: "trash")
             }
         }
+        .sheet(isPresented: $showingSafari) {
+            if let websiteUrlString = beer.websiteUrl,
+               let url = URL(string: websiteUrlString) {
+                SafariView(url: url)
+                    .ignoresSafeArea()
+            }
+        }
+    }
+}
+
+// MARK: - SafariView（アプリ内ブラウザ）
+struct SafariView: UIViewControllerRepresentable {
+    let url: URL
+    
+    func makeUIViewController(context: Context) -> SFSafariViewController {
+        return SFSafariViewController(url: url)
+    }
+    
+    func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {
+        // 更新処理は不要
     }
 }
