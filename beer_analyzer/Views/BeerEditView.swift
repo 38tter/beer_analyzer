@@ -218,7 +218,8 @@ struct BeerEditView: View {
                         abv: abv,
                         capacity: capacity,
                         hops: hops,
-                        isNotBeer: originalBeer.isNotBeer
+                        isNotBeer: originalBeer.isNotBeer,
+                        websiteUrl: websiteUrl.isEmpty ? nil : websiteUrl
                     ),
                     userId: originalBeer.userId, // UserIDは元のまま
                     timestamp: originalBeer.timestamp, // タイムスタンプは元のまま

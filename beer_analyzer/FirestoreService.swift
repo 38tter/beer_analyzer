@@ -58,7 +58,7 @@ class FirestoreService: ObservableObject {
             return
         }
 
-        let beerRecord = BeerRecord(analysisResult: result, userId: userId, timestamp: Date(), imageUrl: imageUrl ?? "")
+        let beerRecord = BeerRecord(analysisResult: result, userId: userId, timestamp: Date(), imageUrl: imageUrl ?? "", hasDrunk: false, websiteUrl: result.websiteUrl)
         
         print("Saving beer record to Firestore: \(beerRecord)")
 

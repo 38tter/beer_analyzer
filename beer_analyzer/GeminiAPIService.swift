@@ -204,7 +204,8 @@ class GeminiAPIService: ObservableObject {
             abv: detailedBreweryInfo.abv ?? "不明",
             capacity: detailedBreweryInfo.capacity ?? "不明",
             hops: detailedBreweryInfo.hops ?? "不明",
-            isNotBeer: detailedBreweryInfo.isNotBeer ?? false
+            isNotBeer: detailedBreweryInfo.isNotBeer ?? false,
+            websiteUrl: detailedBreweryInfo.url?.absoluteString
         )
     }
     
