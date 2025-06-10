@@ -73,7 +73,12 @@ class FirestoreService: ObservableObject {
         }
     }
 
-    // 記録されたビールをリアルタイムで購読する
+    // MARK: - ページネーション用のプロパティ
+    private var lastDocument: DocumentSnapshot?
+    private let pageSize = 20
+    private var hasMoreData = true
+    
+    // 記録されたビールをリアルタイムで購読する（初回読み込み）
     func observeBeers(completion: @escaping (Result<[BeerRecord], Error>) -> Void) {
         guard let userId = AuthService.shared.getCurrentUserId() else {
             completion(.failure(BeerError.apiError("ユーザーが認証されていません。"))) // または適切なエラー
@@ -87,7 +92,8 @@ class FirestoreService: ObservableObject {
         let beersCollectionRef = db.collection("artifacts").document(appId)
             .collection("users").document(userId)
             .collection("beers")
-            .order(by: "timestamp", descending: true) // 最新のものを先頭に
+            .order(by: "timestamp", descending: true)
+            .limit(to: pageSize)
 
         listenerRegistration = beersCollectionRef.addSnapshotListener { querySnapshot, error in
             if let error = error {
@@ -105,7 +111,6 @@ class FirestoreService: ObservableObject {
             let beers = documents.compactMap { doc -> BeerRecord? in
                 do {
                     let beer = try doc.data(as: BeerRecord.self)
-
                     return beer
                 } catch {
                     print("Full decoding error object: \(error)")
@@ -113,8 +118,79 @@ class FirestoreService: ObservableObject {
                     return nil
                 }
             }
+            
+            // 最後のドキュメントを保存（ページネーション用）
+            if !documents.isEmpty {
+                self.lastDocument = documents.last
+            }
+            
+            // データがページサイズより少ない場合は最後のページ
+            self.hasMoreData = documents.count == self.pageSize
+            
             completion(.success(beers))
         }
+    }
+    
+    // MARK: - 次のページを読み込むメソッド
+    func loadMoreBeers(completion: @escaping (Result<[BeerRecord], Error>) -> Void) {
+        guard let userId = AuthService.shared.getCurrentUserId() else {
+            print("Error: Cannot load more beers. User not authenticated.")
+            completion(.failure(BeerError.apiError("ユーザーが認証されていません。")))
+            return
+        }
+        
+        guard hasMoreData else {
+            completion(.success([]))
+            return
+        }
+        
+        var query = db.collection("artifacts").document(appId)
+            .collection("users").document(userId)
+            .collection("beers")
+            .order(by: "timestamp", descending: true)
+            .limit(to: pageSize)
+        
+        if let lastDoc = lastDocument {
+            query = query.start(afterDocument: lastDoc)
+        }
+        
+        query.getDocuments { querySnapshot, error in
+            if let error = error {
+                print("Error loading more beers: \(error.localizedDescription)")
+                completion(.failure(error))
+                return
+            }
+            
+            guard let documents = querySnapshot?.documents else {
+                completion(.success([]))
+                return
+            }
+            
+            let beers = documents.compactMap { doc -> BeerRecord? in
+                do {
+                    return try doc.data(as: BeerRecord.self)
+                } catch {
+                    print("Error decoding beer record: \(error.localizedDescription)")
+                    return nil
+                }
+            }
+            
+            // 最後のドキュメントを更新
+            if !documents.isEmpty {
+                self.lastDocument = documents.last
+            }
+            
+            // データがページサイズより少ない場合は最後のページ
+            self.hasMoreData = documents.count == self.pageSize
+            
+            completion(.success(beers))
+        }
+    }
+    
+    // MARK: - ページネーションリセット
+    func resetPagination() {
+        lastDocument = nil
+        hasMoreData = true
     }
     
     // MARK: - ビールレコードを更新するメソッド (新規追加)

@@ -127,7 +127,7 @@ struct ContentView: View {
             
             // MARK: - 2 つ目のタブ
             // MARK: - Recorded Beers List
-            BeerRecordsList(recordedBeers: recordedBeers) { idToDelete in
+            BeerRecordsList { idToDelete in
                 Task {
                     await deleteBeerRecord(idToDelete: idToDelete)
                 }

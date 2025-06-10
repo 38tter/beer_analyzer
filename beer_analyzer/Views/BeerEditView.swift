@@ -188,7 +188,8 @@ struct BeerEditView: View {
                     print("Error saving beer changes: \(error.localizedDescription)")
                 }
             }
-            DispatchQueue.main.async {
+            DispatchQueue.main.async
+            {
                 self.isLoadingSave = false
             }
         }
