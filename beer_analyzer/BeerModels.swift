@@ -17,9 +17,10 @@ struct BeerAnalysisResult: Codable {
     let capacity: String
     let hops: String
     let isNotBeer: Bool
+    let websiteUrl: String?
 
     // FirestoreのIDを自動生成するためにinitを追加
-    init(beerName: String, brand: String, manufacturer: String, abv: String, capacity: String, hops: String, isNotBeer: Bool) {
+    init(beerName: String, brand: String, manufacturer: String, abv: String, capacity: String, hops: String, isNotBeer: Bool, websiteUrl: String? = nil) {
         self.beerName = beerName
         self.brand = brand
         self.manufacturer = manufacturer
@@ -27,6 +28,7 @@ struct BeerAnalysisResult: Codable {
         self.capacity = capacity
         self.hops = hops
         self.isNotBeer = isNotBeer
+        self.websiteUrl = websiteUrl
     }
 }
 
