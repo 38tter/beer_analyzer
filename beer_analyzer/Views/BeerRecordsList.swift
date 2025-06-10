@@ -7,6 +7,8 @@
 import SwiftUI
 
 struct BeerRecordsList: View {
+    @EnvironmentObject var firestoreService: FirestoreService
+    
     let recordedBeers: [BeerRecord]
     let onDelete: (String) -> Void
     
@@ -25,8 +27,10 @@ struct BeerRecordsList: View {
                 } else {
                     List {
                         ForEach(recordedBeers.sorted(by: { $0.timestamp > $1.timestamp })) { beer in
-                            BeerRecordRow(beer: beer) { idToDelete in
-                                onDelete(idToDelete)
+                            NavigationLink(destination: BeerEditView(beer: beer).environmentObject(firestoreService)) {
+                                BeerRecordRow(beer: beer) { idToDelete in
+                                    onDelete(idToDelete)
+                                }
                             }
                             .listRowSeparator(.hidden)
                             .listRowBackground(Color.clear)

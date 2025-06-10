@@ -28,7 +28,7 @@ struct ContentView: View {
     @State private var showingNoBeerAlert: Bool = false
     
     @StateObject private var geminiService = GeminiAPIService()
-    @StateObject private var firestoreService = FirestoreService()
+    @EnvironmentObject var firestoreService: FirestoreService
 
     var body: some View {
         TabView {

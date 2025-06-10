@@ -117,6 +117,31 @@ class FirestoreService: ObservableObject {
         }
     }
     
+    // MARK: - ビールレコードを更新するメソッド (新規追加)
+    func updateBeer(documentId: String, beer: BeerRecord) async throws {
+        guard let userId = AuthService.shared.getCurrentUserId() else {
+            print("Error: Cannot update beer. User not authenticated.")
+            throw BeerError.apiError("ユーザーが認証されていないため、ビールを更新できません。")
+        }
+//        guard let documentId = id else {
+//            print("Error: Cannot update beer. Document ID is missing.")
+//            throw BeerError.apiError("ドキュメントIDがないため、ビールを更新できません。")
+//        }
+
+        let documentRef = db.collection("artifacts").document(appId)
+            .collection("users").document(userId)
+            .collection("beers").document(documentId)
+
+        do {
+            // setDoc(from:) を使用して、既存のドキュメントを更新（または存在しない場合は新規作成）
+            try await documentRef.setData(from: beer)
+            print("Firestore: Document successfully updated for ID: \(documentId)")
+        } catch {
+            print("Firestore: Error updating document \(documentId): \(error.localizedDescription)")
+            throw error
+        }
+    }
+    
     // MARK: - 新しいビール削除メソッド
     func deleteBeer(id documentId: String, userId: String) async throws {
         // ドキュメントのパスを構築
