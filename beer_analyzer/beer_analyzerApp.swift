@@ -25,6 +25,7 @@ struct beer_analyzerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var firestoreService = FirestoreService()
     @State private var isLoading = true
+    @State private var hasAcceptedTerms = UserDefaultsService.hasAcceptedTerms()
     
     var body: some Scene {
         WindowGroup {
@@ -39,6 +40,15 @@ struct beer_analyzerApp: App {
                                 }
                             }
                         }
+                } else if !hasAcceptedTerms {
+                    TermsOfUseView(
+                        onAccept: {
+                            UserDefaultsService.setTermsAccepted(true)
+                            hasAcceptedTerms = true
+                        },
+                        isPresentedForAcceptance: true
+                    )
+                    .transition(.opacity)
                 } else {
                     NavigationView {
                         ContentView()
