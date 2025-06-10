@@ -12,6 +12,7 @@ struct BeerRecordsList: View {
     @State private var beers: [BeerRecord] = []
     @State private var isLoading = false
     @State private var hasMoreData = true
+    @State private var sortDescending = true // true = 降順（新しい順）, false = 昇順（古い順）
     
     let onDelete: (String) -> Void
     
@@ -19,14 +20,34 @@ struct BeerRecordsList: View {
         NavigationView {
             VStack(spacing: 0) {
                 // ヘッダー
-                HStack {
-                    Text("記録されたビール")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    Spacer()
-                    Text("\(beers.count)件")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                VStack(spacing: 12) {
+                    HStack {
+                        Text("記録されたビール")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                        Spacer()
+                        Text("\(beers.count)件")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    // ソートコントロール
+                    HStack {
+                        Text("並び順:")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        
+                        Picker("並び順", selection: $sortDescending) {
+                            Text("新しい順").tag(true)
+                            Text("古い順").tag(false)
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .onChange(of: sortDescending) { newValue in
+                            changeSortOrder(descending: newValue)
+                        }
+                        
+                        Spacer()
+                    }
                 }
                 .padding()
                 .background(Color(.systemBackground))
@@ -108,7 +129,7 @@ struct BeerRecordsList: View {
         isLoading = true
         firestoreService.resetPagination()
         
-        firestoreService.observeBeers { result in
+        firestoreService.observeBeers(sortDescending: sortDescending) { result in
             DispatchQueue.main.async {
                 self.isLoading = false
                 switch result {
@@ -153,5 +174,24 @@ struct BeerRecordsList: View {
             self.hasMoreData = true
         }
         loadInitialBeers()
+    }
+    
+    // MARK: - ソート順変更
+    private func changeSortOrder(descending: Bool) {
+        guard !isLoading else { return }
+        
+        isLoading = true
+        firestoreService.changeSortOrder(descending: descending) { result in
+            DispatchQueue.main.async {
+                self.isLoading = false
+                switch result {
+                case .success(let newBeers):
+                    self.beers = newBeers
+                    self.hasMoreData = newBeers.count == 20 // pageSize
+                case .failure(let error):
+                    print("Error changing sort order: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 }
