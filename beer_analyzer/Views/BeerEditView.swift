@@ -20,6 +20,7 @@ struct BeerEditView: View {
     @State private var capacity: String
     @State private var hops: String
     @State private var hasDrunk: Bool
+    @State private var websiteUrl: String
     
     // サービスへのアクセス
     @EnvironmentObject var firestoreService: FirestoreService
@@ -41,6 +42,7 @@ struct BeerEditView: View {
         _capacity = State(initialValue: beer.capacity)
         _hops = State(initialValue: beer.hops)
         _hasDrunk = State(initialValue: beer.hasDrunk)
+        _websiteUrl = State(initialValue: beer.websiteUrl ?? "")
     }
 
     var body: some View {
@@ -90,6 +92,11 @@ struct BeerEditView: View {
                             .padding(.horizontal)
                         TextField("ホップ", text: $hops)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .padding(.horizontal)
+                        TextField("公式サイトURL (任意)", text: $websiteUrl)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .keyboardType(.URL)
+                            .autocapitalization(.none)
                             .padding(.horizontal)
                     }
                     .autocorrectionDisabled() // 自動修正を無効にする（ビール名などに不要な場合）
@@ -216,7 +223,8 @@ struct BeerEditView: View {
                     userId: originalBeer.userId, // UserIDは元のまま
                     timestamp: originalBeer.timestamp, // タイムスタンプは元のまま
                     imageUrl: originalBeer.imageUrl ?? "",
-                    hasDrunk: hasDrunk // 飲んだかどうかの状態を反映
+                    hasDrunk: hasDrunk, // 飲んだかどうかの状態を反映
+                    websiteUrl: websiteUrl.isEmpty ? nil : websiteUrl // 空文字の場合はnilに変換
                 )
                 
                 try await firestoreService.updateBeer(documentId: originalBeer.id ?? "", beer: updatedBeer)

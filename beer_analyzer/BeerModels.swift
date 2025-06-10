@@ -46,6 +46,8 @@ struct BeerRecord: Codable, Identifiable {
     let imageUrl: String?
     // MARK: - 飲んだかどうかのフラグを追加
     let hasDrunk: Bool
+    // MARK: - 公式サイトURLを追加
+    let websiteUrl: String?
 
     // Encodable のカスタムエンコーダ (Firestoreに保存する際に必要)
     func encode(to encoder: Encoder) throws {
@@ -61,10 +63,11 @@ struct BeerRecord: Codable, Identifiable {
         try container.encode(userId, forKey: .userId)
         try container.encode(imageUrl, forKey: .imageUrl)
         try container.encode(hasDrunk, forKey: .hasDrunk)
+        try container.encode(websiteUrl, forKey: .websiteUrl)
     }
 
     // FirebaseのaddDocなどで使用するためのinit (FireStoreServiceで使用)
-    init(analysisResult: BeerAnalysisResult, userId: String, timestamp: Date, imageUrl: String, hasDrunk: Bool = false) {
+    init(analysisResult: BeerAnalysisResult, userId: String, timestamp: Date, imageUrl: String, hasDrunk: Bool = false, websiteUrl: String? = nil) {
         self.beerName = analysisResult.beerName
         self.brand = analysisResult.brand
         self.manufacturer = analysisResult.manufacturer
@@ -76,6 +79,7 @@ struct BeerRecord: Codable, Identifiable {
         self.timestamp = timestamp
         self.imageUrl = imageUrl
         self.hasDrunk = hasDrunk
+        self.websiteUrl = websiteUrl
     }
 }
 
