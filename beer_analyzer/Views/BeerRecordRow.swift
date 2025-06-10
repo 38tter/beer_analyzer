@@ -61,14 +61,15 @@ struct BeerRecordRow: View {
                 // 飲んだビールの場合は背景にビール絵文字を表示
                 if beer.hasDrunk {
                     VStack {
+                        Spacer()
                         HStack {
                             Spacer()
                             Text("🍺")
-                                .font(.system(size: 40))
-                                .opacity(0.3)
-                                .offset(x: -10, y: -10)
+                                .font(.system(size: 60))
+                                .opacity(0.2)
+                                .padding(.trailing, 8)
+                                .padding(.bottom, 8)
                         }
-                        Spacer()
                     }
                 }
             }
