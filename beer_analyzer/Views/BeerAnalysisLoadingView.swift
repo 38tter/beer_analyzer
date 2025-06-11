@@ -26,18 +26,12 @@ struct BeerAnalysisLoadingView: View {
     
     var body: some View {
         ZStack {
-            // 背景グラデーション
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color.blue.opacity(0.1),
-                    Color.indigo.opacity(0.2),
-                    Color.purple.opacity(0.1)
-                ]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // ブラー背景
+            Color.black.opacity(0.3)
+                .ignoresSafeArea()
+                .background(.ultraThinMaterial)
             
+            // メインコンテンツ
             VStack(spacing: 40) {
                 // タイトル
                 VStack(spacing: 16) {
@@ -85,28 +79,92 @@ struct BeerAnalysisLoadingView: View {
                             )
                     }
                     
-                    // プログレスリング
+                    // 多層プログレススピナー
                     ZStack {
+                        // 外側のリング
                         Circle()
-                            .stroke(Color.blue.opacity(0.3), lineWidth: 8)
-                            .frame(width: 60, height: 60)
+                            .stroke(Color.blue.opacity(0.2), lineWidth: 12)
+                            .frame(width: 120, height: 120)
                         
                         Circle()
-                            .trim(from: 0, to: 0.7)
+                            .trim(from: 0, to: 0.8)
                             .stroke(
                                 LinearGradient(
-                                    colors: [.blue, .indigo, .purple],
+                                    colors: [.blue, .cyan, .blue],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 ),
+                                style: StrokeStyle(lineWidth: 12, lineCap: .round)
+                            )
+                            .frame(width: 120, height: 120)
+                            .rotationEffect(.degrees(rotationAngle))
+                            .animation(
+                                Animation.linear(duration: 1.5)
+                                    .repeatForever(autoreverses: false),
+                                value: rotationAngle
+                            )
+                        
+                        // 中間のリング
+                        Circle()
+                            .stroke(Color.indigo.opacity(0.3), lineWidth: 8)
+                            .frame(width: 80, height: 80)
+                        
+                        Circle()
+                            .trim(from: 0, to: 0.6)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [.indigo, .purple, .indigo],
+                                    startPoint: .bottomTrailing,
+                                    endPoint: .topLeading
+                                ),
                                 style: StrokeStyle(lineWidth: 8, lineCap: .round)
                             )
-                            .frame(width: 60, height: 60)
-                            .rotationEffect(.degrees(rotationAngle))
+                            .frame(width: 80, height: 80)
+                            .rotationEffect(.degrees(-rotationAngle * 1.2))
                             .animation(
                                 Animation.linear(duration: 2.0)
                                     .repeatForever(autoreverses: false),
                                 value: rotationAngle
+                            )
+                        
+                        // 内側のリング
+                        Circle()
+                            .stroke(Color.purple.opacity(0.4), lineWidth: 6)
+                            .frame(width: 40, height: 40)
+                        
+                        Circle()
+                            .trim(from: 0, to: 0.4)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [.purple, .pink, .purple],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ),
+                                style: StrokeStyle(lineWidth: 6, lineCap: .round)
+                            )
+                            .frame(width: 40, height: 40)
+                            .rotationEffect(.degrees(rotationAngle * 1.5))
+                            .animation(
+                                Animation.linear(duration: 1.0)
+                                    .repeatForever(autoreverses: false),
+                                value: rotationAngle
+                            )
+                        
+                        // 中央のパルスドット
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [.blue, .purple],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 12, height: 12)
+                            .scaleEffect(scale)
+                            .animation(
+                                Animation.easeInOut(duration: 0.8)
+                                    .repeatForever(autoreverses: true),
+                                value: scale
                             )
                     }
                 }
@@ -115,9 +173,16 @@ struct BeerAnalysisLoadingView: View {
                 VStack(spacing: 16) {
                     Text(analysisMessages[currentMessageIndex])
                         .font(.headline)
-                        .fontWeight(.medium)
+                        .fontWeight(.semibold)
                         .foregroundColor(.primary)
                         .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(.ultraThinMaterial)
+                                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+                        )
                         .animation(.easeInOut(duration: 0.5), value: currentMessageIndex)
                     
                     // ドット アニメーション
@@ -144,33 +209,57 @@ struct BeerAnalysisLoadingView: View {
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundColor(.blue)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(.regularMaterial)
+                        )
                     
                     Text("ビールの詳細情報とペアリング提案をお楽しみに！")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
+                        .fontWeight(.medium)
                         .multilineTextAlignment(.center)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(.thinMaterial)
+                        )
                     
                     // 期待感を醸成するメッセージ
-                    VStack(spacing: 6) {
+                    VStack(spacing: 8) {
                         Text("🍻 間もなく判明します...")
                             .font(.caption)
                             .foregroundColor(.blue)
-                            .fontWeight(.medium)
+                            .fontWeight(.semibold)
                         
-                        HStack(spacing: 4) {
-                            Text("• 銘柄名")
-                            Text("• 製造者")
-                            Text("• ABV")
-                            Text("• ホップ")
+                        HStack(spacing: 8) {
+                            ForEach(["銘柄名", "製造者", "ABV", "ホップ"], id: \.self) { item in
+                                Text("• \(item)")
+                                    .font(.caption2)
+                                    .foregroundColor(.primary)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 4)
+                                            .fill(.ultraThinMaterial)
+                                    )
+                            }
                         }
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
                     }
                     .padding(.top, 8)
                 }
                 .padding(.horizontal)
             }
-            .padding()
+            .padding(24)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(.regularMaterial)
+                    .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
+            )
+            .padding(.horizontal, 20)
         }
         .onAppear {
             startAnimations()
