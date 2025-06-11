@@ -75,29 +75,77 @@ struct BeerEditView: View {
 
                     // MARK: - 編集フォーム
                     Group {
-                        TextField("銘柄", text: $beerName)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.horizontal)
-                        TextField("ブランド", text: $brand)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.horizontal)
-                        TextField("製造者", text: $manufacturer)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.horizontal)
-                        TextField("アルコール度数 (ABV)", text: $abv)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.horizontal)
-                        TextField("容量", text: $capacity)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.horizontal)
-                        TextField("ホップ", text: $hops)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.horizontal)
-                        TextField("公式サイトURL (任意)", text: $websiteUrl)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .keyboardType(.URL)
-                            .autocapitalization(.none)
-                            .padding(.horizontal)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("銘柄: \(originalBeer.beerName)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal)
+                            TextField("銘柄", text: $beerName)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .padding(.horizontal)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("ブランド: \(originalBeer.brand)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal)
+                            TextField("ブランド", text: $brand)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .padding(.horizontal)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("製造者: \(originalBeer.manufacturer)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal)
+                            TextField("製造者", text: $manufacturer)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .padding(.horizontal)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("アルコール度数 (ABV): \(originalBeer.abv)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal)
+                            TextField("アルコール度数 (ABV)", text: $abv)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .padding(.horizontal)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("容量: \(originalBeer.capacity)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal)
+                            TextField("容量", text: $capacity)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .padding(.horizontal)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("ホップ: \(originalBeer.hops)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal)
+                            TextField("ホップ", text: $hops)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .padding(.horizontal)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("公式サイトURL: \(originalBeer.websiteUrl ?? "未設定")")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal)
+                            TextField("公式サイトURL (任意)", text: $websiteUrl)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .keyboardType(.URL)
+                                .autocapitalization(.none)
+                                .padding(.horizontal)
+                        }
                     }
                     .autocorrectionDisabled() // 自動修正を無効にする（ビール名などに不要な場合）
                     .textInputAutocapitalization(.never) // 自動大文字化を無効にする
