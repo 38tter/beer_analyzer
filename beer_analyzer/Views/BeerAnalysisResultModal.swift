@@ -33,7 +33,7 @@ struct BeerAnalysisResultModal: View {
                             .fontWeight(.bold)
                             .foregroundStyle(
                                 LinearGradient(
-                                    colors: [.green, .blue],
+                                    colors: [Color(red: 1.0, green: 0.75, blue: 0.3), Color(red: 0.85, green: 0.5, blue: 0.1)],
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 )

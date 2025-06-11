@@ -31,7 +31,7 @@ struct AppStoreReviewRequestView: View {
                         Circle()
                             .fill(
                                 LinearGradient(
-                                    colors: [.orange, .red],
+                                    colors: [Color(red: 1.0, green: 0.75, blue: 0.3), Color(red: 0.85, green: 0.5, blue: 0.1)],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 )
@@ -76,7 +76,7 @@ struct AppStoreReviewRequestView: View {
                     Text("⭐ App Storeで評価をお願いします ⭐")
                         .font(.headline)
                         .fontWeight(.semibold)
-                        .foregroundColor(.orange)
+                        .foregroundColor(Color(red: 0.85, green: 0.5, blue: 0.1))
                     
                     Text("あなたの評価が今後の開発の励みになります")
                         .font(.subheadline)
@@ -103,7 +103,7 @@ struct AppStoreReviewRequestView: View {
                         .padding()
                         .background(
                             LinearGradient(
-                                colors: [.orange, .red],
+                                colors: [Color(red: 1.0, green: 0.75, blue: 0.3), Color(red: 0.85, green: 0.5, blue: 0.1)],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
