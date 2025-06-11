@@ -10,8 +10,16 @@ import SwiftUI
 struct TermsOfUseView: View {
     let onAccept: () -> Void
     let isPresentedForAcceptance: Bool
+    let showCloseButton: Bool
     
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
+    
+    init(onAccept: @escaping () -> Void, isPresentedForAcceptance: Bool, showCloseButton: Bool = true) {
+        self.onAccept = onAccept
+        self.isPresentedForAcceptance = isPresentedForAcceptance
+        self.showCloseButton = showCloseButton && !isPresentedForAcceptance
+    }
     
     private let termsText = """
 Beer Analyzer 利用規約
@@ -80,80 +88,98 @@ Beer Analyzer 利用規約
 """
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                // ヘッダー
-                if isPresentedForAcceptance {
-                    VStack(spacing: 16) {
-                        Text("利用規約への同意")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                        
-                        Text("Beer Analyzerをご利用いただく前に、利用規約をお読みいただき、同意をお願いいたします。")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding()
-                    .background(Color(.systemGroupedBackground))
+        let contentView = VStack(spacing: 0) {
+            // ヘッダー
+            if isPresentedForAcceptance {
+                VStack(spacing: 16) {
+                    Text("利用規約への同意")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    Text("Beer Analyzerをご利用いただく前に、利用規約をお読みいただき、同意をお願いいたします。")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
                 }
-                
-                // 利用規約本文
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text(termsText)
-                            .font(.system(size: 14))
-                            .lineSpacing(4)
-                            .foregroundColor(.primary)
-                    }
-                    .padding()
-                }
-                .background(Color(.systemBackground))
-                
-                // 同意ボタン（初回表示時のみ）
-                if isPresentedForAcceptance {
-                    VStack(spacing: 12) {
-                        Button {
-                            onAccept()
-                        } label: {
-                            Text("利用規約に同意してアプリを開始")
-                                .font(.headline)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.blue)
-                                .cornerRadius(12)
-                        }
-                        
-                        Text("同意いただかない場合、アプリをご利用いただけません。")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding()
-                    .background(Color(.systemGroupedBackground))
-                }
+                .padding()
+                .background(Color(.systemGroupedBackground))
             }
-            .navigationTitle(isPresentedForAcceptance ? "" : "利用規約")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                if !isPresentedForAcceptance {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("閉じる") {
+            
+            // 利用規約本文
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text(termsText)
+                        .font(.system(size: 14))
+                        .lineSpacing(4)
+                        .foregroundColor(.primary)
+                }
+                .padding()
+            }
+            .background(Color(.systemBackground))
+            
+            // 同意ボタン（初回表示時のみ）
+            if isPresentedForAcceptance {
+                VStack(spacing: 12) {
+                    Button {
+                        onAccept()
+                    } label: {
+                        Text("利用規約に同意してアプリを開始")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .cornerRadius(12)
+                    }
+                    
+                    Text("同意いただかない場合、アプリをご利用いただけません。")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding()
+                .background(Color(.systemGroupedBackground))
+            }
+        }
+        .navigationTitle(isPresentedForAcceptance ? "" : "利用規約")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if showCloseButton {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("閉じる") {
+                        // Try both dismiss methods for compatibility
+                        if #available(iOS 15.0, *) {
                             dismiss()
+                        } else {
+                            presentationMode.wrappedValue.dismiss()
                         }
                     }
                 }
             }
         }
+        
+        // Only wrap in NavigationView when presented for acceptance (standalone)
+        if isPresentedForAcceptance {
+            NavigationView {
+                contentView
+            }
+        } else {
+            contentView
+        }
     }
 }
 
 #Preview {
-    TermsOfUseView(onAccept: {}, isPresentedForAcceptance: false)
+    NavigationView {
+        TermsOfUseView(onAccept: {}, isPresentedForAcceptance: false)
+    }
 }
 
 #Preview("For Acceptance") {
     TermsOfUseView(onAccept: {}, isPresentedForAcceptance: true)
+}
+
+#Preview("In Tab") {
+    TermsOfUseView(onAccept: {}, isPresentedForAcceptance: false, showCloseButton: false)
 }

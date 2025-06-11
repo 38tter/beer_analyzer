@@ -136,7 +136,7 @@ struct ContentView: View {
             }
 
             // New "About" Tab
-            TermsOfUseView(onAccept: {}, isPresentedForAcceptance: false)
+            TermsOfUseView(onAccept: {}, isPresentedForAcceptance: false, showCloseButton: false)
                 .tabItem {
                     Label("About", systemImage: "info.circle")
                 }
