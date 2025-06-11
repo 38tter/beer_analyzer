@@ -26,7 +26,7 @@ struct LaunchScreenView: View {
                 LogoBubbleEffectView(
                     logoPosition: logoPosition,
                     logoSize: CGSize(width: 240, height: 135),
-                    bubbleCount: 30,
+                    bubbleCount: 40,
                     isEnhanced: true
                 )
                 

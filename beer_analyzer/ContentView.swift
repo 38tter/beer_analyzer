@@ -156,19 +156,8 @@ struct ContentView: View {
                     }
                 }
                 .background(
-                    ZStack {
-                        BeerThemedBackgroundView()
-                        
-                        // ロゴ周辺の特別なバブルエフェクト
-                        GeometryReader { geometry in
-                            LogoBubbleEffectView(
-                                logoPosition: CGPoint(x: geometry.size.width / 2, y: 120),
-                                logoSize: CGSize(width: 320, height: 180),
-                                bubbleCount: 25,
-                                isEnhanced: false
-                            )
-                        }
-                    }
+                    // アプリ起動後は泡なしのシンプルな背景のみ
+                    BeerGradientBackgroundView()
                 )
                 .alert("ビールの解析に失敗しました", isPresented: $showingNoBeerAlert) {
                     // アクションボタンを定義 (ここではOKボタンのみ)
