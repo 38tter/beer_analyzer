@@ -17,20 +17,61 @@ struct BeerRecordRow: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
-            if let imageUrlString = beer.imageUrl, let imageUrl = URL(string: imageUrlString) {
-                KFImage(imageUrl)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 80, height: 80)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-            } else {
-                Image(systemName: "photo.fill")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 80, height: 80)
-                    .foregroundColor(.gray)
+            // MARK: - 画像とリンクのセクション
+            VStack(spacing: 8) {
+                // ビール画像
+                if let imageUrlString = beer.imageUrl, let imageUrl = URL(string: imageUrlString) {
+                    KFImage(imageUrl)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 80, height: 80)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                } else {
+                    Image(systemName: "photo.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 80, height: 80)
+                        .foregroundColor(.gray)
+                        .background(Color.gray.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+                
+                // 公式サイトリンク（画像の下）
+                if let websiteUrlString = beer.websiteUrl, 
+                   !websiteUrlString.isEmpty,
+                   let _ = URL(string: websiteUrlString) {
+                    Button {
+                        if let websiteUrlString = beer.websiteUrl,
+                           let url = URL(string: websiteUrlString),
+                           canOpenURL(url) {
+                            showingSafari = true
+                        } else {
+                            showingWebsiteError = true
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "link.circle.fill")
+                                .font(.system(size: 14))
+                                .foregroundColor(.blue)
+                            Text("公式サイト")
+                                .font(.caption2)
+                                .foregroundColor(.blue)
+                                .fontWeight(.medium)
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.blue.opacity(0.1))
+                                .stroke(Color.blue.opacity(0.3), lineWidth: 0.5)
+                        )
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
             }
+            .frame(width: 80) // 固定幅でレイアウトを安定させる
             
+            // MARK: - ビール情報
             VStack(alignment: .leading, spacing: 4) {
                 Text(beer.beerName)
                     .font(.headline)
@@ -53,43 +94,6 @@ struct BeerRecordRow: View {
                 Text("記録日時: \(beer.timestamp.formatted())")
                     .font(.caption)
                     .foregroundColor(.gray)
-            }
-            
-            // MARK: - 公式サイトリンクアイコン
-            VStack {
-                if let websiteUrlString = beer.websiteUrl, 
-                   !websiteUrlString.isEmpty,
-                   let _ = URL(string: websiteUrlString) {
-                    Button {
-                        if let websiteUrlString = beer.websiteUrl,
-                           let url = URL(string: websiteUrlString),
-                           canOpenURL(url) {
-                            showingSafari = true
-                        } else {
-                            showingWebsiteError = true
-                        }
-                    } label: {
-                        VStack(spacing: 4) {
-                            Image(systemName: "link.circle.fill")
-                                .font(.system(size: 30))
-                                .foregroundColor(.blue)
-                            Text("公式サイト")
-                                .font(.caption2)
-                                .foregroundColor(.blue)
-                                .fontWeight(.medium)
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.blue.opacity(0.1))
-                                .stroke(Color.blue.opacity(0.3), lineWidth: 1)
-                        )
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .padding(.top, 4)
-                }
-                Spacer()
             }
             
             Spacer()
