@@ -33,13 +33,6 @@ struct BeerAnalysisLoadingView: View {
             
             // メインコンテンツ
             VStack(spacing: 40) {
-                // タイトル
-                VStack(spacing: 16) {
-                    Text("AIがあなたのビールを詳しく分析しています")
-                        .font(.title3)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                }
                 
                 // メインアニメーション
                 VStack(spacing: 30) {
@@ -149,20 +142,7 @@ struct BeerAnalysisLoadingView: View {
                                 )
                         }
                     }
-                }
-                
-                // 励ましメッセージ
-                VStack(spacing: 12) {
-                    // 期待感を醸成するメッセージ
-                    VStack(spacing: 8) {
-                        Text("🍻 間もなく判明します...")
-                            .font(.caption)
-                            .foregroundColor(.blue)
-                            .fontWeight(.semibold)
-                    }
-                    .padding(.top, 8)
-                }
-                .padding(.horizontal)
+                }                
             }
             .padding(24)
             .background(
