@@ -140,7 +140,7 @@ struct BeerDetailView: View {
                         DetailInfoCard(
                             icon: "📅",
                             title: "記録日時",
-                            value: beer.timestamp.formatted(date: .abbreviated, time: .shortened)
+                            value: formatTimestamp(beer.timestamp)
                         )
                     }
                     
@@ -187,6 +187,14 @@ struct BeerDetailView: View {
             BeerEditView(beer: beer)
                 .environmentObject(firestoreService)
         }
+    }
+    
+    // MARK: - 日時フォーマット関数
+    private func formatTimestamp(_ timestamp: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy年MM月dd日 HH:mm"
+        formatter.locale = Locale(identifier: "ja_JP")
+        return formatter.string(from: timestamp)
     }
     
     // MARK: - 飲んだかどうかのステータスを切り替える
