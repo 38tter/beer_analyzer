@@ -44,6 +44,7 @@ struct BeerThemedBackgroundView: View {
             )
         }
     }
+}
 
 #Preview {
     BeerThemedBackgroundView()
