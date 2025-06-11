@@ -27,6 +27,7 @@ struct ContentView: View {
     
     @State private var showingNoBeerAlert: Bool = false
     @State private var showingResultModal: Bool = false
+    @State private var showingSettings: Bool = false
     
     @StateObject private var geminiService = GeminiAPIService()
     @EnvironmentObject var firestoreService: FirestoreService
@@ -108,7 +109,22 @@ struct ContentView: View {
                         }
                     }
                 }
-                .navigationBarHidden(true)
+                .navigationTitle("")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button {
+                            showingSettings = true
+                        } label: {
+                            Image(systemName: "line.3.horizontal")
+                                .font(.title2)
+                                .foregroundColor(.primary)
+                        }
+                    }
+                }
+                .sheet(isPresented: $showingSettings) {
+                    SettingsView()
+                }
                 .background(
                     LinearGradient(
                         gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.indigo.opacity(0.2)]),
@@ -153,12 +169,6 @@ struct ContentView: View {
             .tabItem {
                 Label("記録", systemImage: "list.bullet")
             }
-
-            // New "About" Tab
-            TermsOfUseView(onAccept: {}, isPresentedForAcceptance: false, showCloseButton: false)
-                .tabItem {
-                    Label("About", systemImage: "info.circle")
-                }
         }
         .onAppear {
             authenticateAnonymously()
