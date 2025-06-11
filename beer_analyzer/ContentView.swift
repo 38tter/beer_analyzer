@@ -357,7 +357,7 @@ struct ContentView: View {
             case .success(let beers):
                 self.recordedBeers = beers
             case .failure(let error):
-                self.errorMessage = "記録されたビールの読み込みエラー: \(error.localizedDescription)"
+                self.errorMessage = "ビールの記録の読み込みエラー: \(error.localizedDescription)"
             }
         }
     }

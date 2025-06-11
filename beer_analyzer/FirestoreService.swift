@@ -79,7 +79,7 @@ class FirestoreService: ObservableObject {
     private var hasMoreData = true
     private var currentSortDescending = true // true = 降順（新しい順）, false = 昇順（古い順）
     
-    // 記録されたビールをリアルタイムで購読する（初回読み込み）
+    // ビールの記録をリアルタイムで購読する（初回読み込み）
     func observeBeers(sortDescending: Bool = true, completion: @escaping (Result<[BeerRecord], Error>) -> Void) {
         currentSortDescending = sortDescending
         guard let userId = AuthService.shared.getCurrentUserId() else {

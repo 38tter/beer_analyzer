@@ -140,7 +140,7 @@ struct BeerAnalysisResultModal: View {
                                 .foregroundColor(.green)
                         }
                         
-                        Text("この解析結果は「記録されたビール」タブに保存されました")
+                        Text("この解析結果は「ビールの記録」タブに保存されました")
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
