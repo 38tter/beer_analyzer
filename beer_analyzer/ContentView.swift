@@ -28,6 +28,7 @@ struct ContentView: View {
     @State private var showingNoBeerAlert: Bool = false
     @State private var showingResultModal: Bool = false
     @State private var showingSettings: Bool = false
+    @State private var showingReviewRequest: Bool = false
     
     @StateObject private var geminiService = GeminiAPIService()
     @EnvironmentObject var firestoreService: FirestoreService
@@ -101,6 +102,15 @@ struct ContentView: View {
                                     showingResultModal = false
                                     // Reset state after viewing results
                                     resetAnalysisResults()
+                                    
+                                    // 評価リクエストを表示すべきかチェック
+                                    if ReviewRequestService.shared.shouldShowReviewRequest() {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                            withAnimation(.easeInOut(duration: 0.5)) {
+                                                showingReviewRequest = true
+                                            }
+                                        }
+                                    }
                                 },
                                 onGeneratePairing: { completion in
                                     generatePairingSuggestion(completion: completion)
@@ -124,6 +134,26 @@ struct ContentView: View {
                 }
                 .sheet(isPresented: $showingSettings) {
                     SettingsView()
+                }
+                .overlay {
+                    if showingReviewRequest {
+                        AppStoreReviewRequestView(
+                            onDismiss: {
+                                showingReviewRequest = false
+                                ReviewRequestService.shared.markReviewRequested()
+                            },
+                            onReviewLater: {
+                                showingReviewRequest = false
+                                ReviewRequestService.shared.postponeReview()
+                            },
+                            onNeverAsk: {
+                                showingReviewRequest = false
+                                ReviewRequestService.shared.neverShowReview()
+                            }
+                        )
+                        .transition(.opacity)
+                        .zIndex(999)
+                    }
                 }
                 .background(
                     LinearGradient(
@@ -239,6 +269,10 @@ struct ContentView: View {
                             self.analysisResult = result
                             Task {
                                 await firestoreService.saveBeerRecord(result, imageUrl: uploadedImageUrl)
+                                
+                                // ビール登録数を増やす
+                                ReviewRequestService.shared.incrementBeerCount()
+                                
                                 // Show modal after saving is complete
                                 DispatchQueue.main.async {
                                     self.showingResultModal = true
