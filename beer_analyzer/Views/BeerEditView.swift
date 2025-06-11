@@ -26,6 +26,7 @@ struct BeerEditView: View {
     @EnvironmentObject var firestoreService: FirestoreService
     // ビューを閉じるための環境変数
     @Environment(\.dismiss) var dismiss
+    @Environment(\.colorScheme) var colorScheme
     
     @State private var isLoadingSave: Bool = false
     @State private var errorMessage: String?
@@ -217,11 +218,29 @@ struct BeerEditView: View {
                     }
                 }
                 .padding()
-                .background(Color.white.opacity(0.8))
+                .background(.regularMaterial)
                 .cornerRadius(20)
                 .shadow(radius: 5)
                 .padding(.vertical)
             }
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: colorScheme == .dark ? [
+                        Color(red: 0.2, green: 0.1, blue: 0.05), // ダークブラウン
+                        Color(red: 0.15, green: 0.08, blue: 0.03), // より深いブラウン
+                        Color(red: 0.1, green: 0.05, blue: 0.02), // ほぼ黒
+                        Color.black.opacity(0.9)
+                    ] : [
+                        Color(red: 1.0, green: 0.75, blue: 0.3), // ゴールド
+                        Color(red: 0.95, green: 0.65, blue: 0.2), // アンバー
+                        Color(red: 0.9, green: 0.55, blue: 0.15), // より深いアンバー
+                        Color(red: 0.85, green: 0.5, blue: 0.1).opacity(0.8) // 銅色がかったアンバー
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+            )
             .navigationTitle("編集") // ナビゲーションバーのタイトル
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
