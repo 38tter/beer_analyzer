@@ -12,11 +12,25 @@ struct LaunchScreenView: View {
     @State private var opacity: Double = 0.0
     
     var body: some View {
-        ZStack {
-            // ビールテーマの背景
-            BeerThemedBackgroundView()
+        GeometryReader { geometry in
+            let logoPosition = CGPoint(
+                x: geometry.size.width / 2,
+                y: geometry.size.height / 2 - 50
+            )
             
-            VStack(spacing: 30) {
+            ZStack {
+                // ビールテーマの背景
+                BeerThemedBackgroundView()
+                
+                // スプラッシュ画面専用の強化されたロゴバブルエフェクト
+                LogoBubbleEffectView(
+                    logoPosition: logoPosition,
+                    logoSize: CGSize(width: 240, height: 135),
+                    bubbleCount: 30,
+                    isEnhanced: true
+                )
+                
+                VStack(spacing: 30) {
                 // アプリロゴ
                 VStack(spacing: 20) {
                     // アプリのタイトルロゴ
@@ -68,15 +82,15 @@ struct LaunchScreenView: View {
                         .foregroundColor(.secondary)
                         .opacity(opacity)
                 }
+                }
             }
-        }
-        .onAppear {
-            // アニメーション開始
-            withAnimation(.easeInOut(duration: 0.8)) {
-                opacity = 1.0
-                scale = 1.0
+            .onAppear {
+                // アニメーション開始
+                withAnimation(.easeInOut(duration: 0.8)) {
+                    opacity = 1.0
+                    scale = 1.0
+                }
             }
-            
         }
     }
 }
