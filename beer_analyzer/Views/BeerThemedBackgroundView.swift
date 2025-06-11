@@ -11,7 +11,7 @@ struct BeerThemedBackgroundView: View {
     @Environment(\.colorScheme) var colorScheme
     @State private var animatedBubbles: [BubbleData] = []
     
-    private let bubbleCount = 15
+    private let bubbleCount = 25
     
     var body: some View {
         ZStack {
@@ -80,9 +80,9 @@ struct BeerThemedBackgroundView: View {
                     x: CGFloat.random(in: 0...screenWidth),
                     y: screenHeight + 50 // 画面下から開始
                 ),
-                size: CGFloat.random(in: 3...12),
-                opacity: Double.random(in: 0.1...0.4),
-                duration: Double.random(in: 8...15),
+                size: CGFloat.random(in: 4...18),
+                opacity: Double.random(in: 0.2...0.7),
+                duration: Double.random(in: 6...12),
                 color: randomBubbleColor()
             )
         }
@@ -95,17 +95,17 @@ struct BeerThemedBackgroundView: View {
         Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
             for i in 0..<animatedBubbles.count {
                 // バブルを上に移動
-                animatedBubbles[i].position.y -= CGFloat.random(in: 0.5...2.0)
+                animatedBubbles[i].position.y -= CGFloat.random(in: 0.8...2.5)
                 
-                // 横方向の微細な動き
-                animatedBubbles[i].position.x += CGFloat.random(in: -0.5...0.5)
+                // 横方向のより目立つ動き
+                animatedBubbles[i].position.x += CGFloat.random(in: -1.0...1.0)
                 
                 // バブルが画面上部に到達したら下部にリセット
                 if animatedBubbles[i].position.y < -50 {
                     animatedBubbles[i].position.y = screenHeight + 50
                     animatedBubbles[i].position.x = CGFloat.random(in: 0...UIScreen.main.bounds.width)
-                    animatedBubbles[i].size = CGFloat.random(in: 3...12)
-                    animatedBubbles[i].opacity = Double.random(in: 0.1...0.4)
+                    animatedBubbles[i].size = CGFloat.random(in: 4...18)
+                    animatedBubbles[i].opacity = Double.random(in: 0.2...0.7)
                     animatedBubbles[i].color = randomBubbleColor()
                 }
             }
@@ -115,21 +115,23 @@ struct BeerThemedBackgroundView: View {
     // バブルの色をランダムに選択
     private func randomBubbleColor() -> Color {
         if colorScheme == .dark {
-            // ダークモードでは薄い色のバブル
-            let colors: [Color] = [
-                Color.white.opacity(0.3),
-                Color(red: 0.9, green: 0.8, blue: 0.6).opacity(0.3), // 薄いゴールド
-                Color(red: 0.8, green: 0.7, blue: 0.5).opacity(0.3)  // 薄いアンバー
-            ]
-            return colors.randomElement() ?? Color.white.opacity(0.3)
-        } else {
-            // ライトモードでは薄い白やゴールド系
+            // ダークモードでは明るめの色のバブル
             let colors: [Color] = [
                 Color.white.opacity(0.6),
-                Color(red: 1.0, green: 0.95, blue: 0.8).opacity(0.5), // 薄いクリーム
-                Color(red: 0.95, green: 0.85, blue: 0.7).opacity(0.4)  // 薄いベージュ
+                Color(red: 0.9, green: 0.8, blue: 0.6).opacity(0.6), // ゴールド
+                Color(red: 0.8, green: 0.7, blue: 0.5).opacity(0.5), // アンバー
+                Color(red: 1.0, green: 0.9, blue: 0.7).opacity(0.4)  // 明るいクリーム
             ]
             return colors.randomElement() ?? Color.white.opacity(0.6)
+        } else {
+            // ライトモードでは明るい白やゴールド系
+            let colors: [Color] = [
+                Color.white.opacity(0.8),
+                Color(red: 1.0, green: 0.95, blue: 0.8).opacity(0.7), // クリーム
+                Color(red: 0.95, green: 0.85, blue: 0.7).opacity(0.6), // ベージュ
+                Color(red: 1.0, green: 0.85, blue: 0.6).opacity(0.5)   // 薄いゴールド
+            ]
+            return colors.randomElement() ?? Color.white.opacity(0.8)
         }
     }
 }
@@ -139,13 +141,44 @@ struct BubbleView: View {
     let size: CGFloat
     let opacity: Double
     let color: Color
+    @State private var isAnimating = false
     
     var body: some View {
-        Circle()
-            .fill(color)
-            .frame(width: size, height: size)
-            .opacity(opacity)
-            .blur(radius: 1)
+        ZStack {
+            // メインのバブル
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            color,
+                            color.opacity(0.6),
+                            color.opacity(0.2)
+                        ],
+                        center: .topLeading,
+                        startRadius: size * 0.1,
+                        endRadius: size * 0.8
+                    )
+                )
+                .frame(width: size, height: size)
+                .opacity(opacity)
+                .scaleEffect(isAnimating ? 1.1 : 0.9)
+                .animation(
+                    Animation.easeInOut(duration: Double.random(in: 2...4))
+                        .repeatForever(autoreverses: true),
+                    value: isAnimating
+                )
+            
+            // 光の反射効果
+            Circle()
+                .fill(Color.white.opacity(0.4))
+                .frame(width: size * 0.3, height: size * 0.3)
+                .offset(x: -size * 0.2, y: -size * 0.2)
+                .blur(radius: 1)
+        }
+        .shadow(color: color.opacity(0.3), radius: 3, x: 0, y: 0)
+        .onAppear {
+            isAnimating = true
+        }
     }
 }
 
