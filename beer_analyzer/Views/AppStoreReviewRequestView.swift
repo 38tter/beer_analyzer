@@ -55,14 +55,6 @@ struct AppStoreReviewRequestView: View {
                 
                 // メッセージ
                 VStack(spacing: 12) {
-                    Text("おめでとうございます！")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
-                    
-                    Text("5個目のビールを登録されました")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
                     
                     Text("Beer Analyzerをお楽しみいただき\nありがとうございます！")
                         .font(.body)
