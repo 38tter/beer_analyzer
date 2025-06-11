@@ -53,7 +53,7 @@ struct BeerRecordRow: View {
                             Image(systemName: "link.circle.fill")
                                 .font(.system(size: 14))
                                 .foregroundColor(.blue)
-                            Text("公式サイト")
+                            Text("リンク")
                                 .font(.caption2)
                                 .foregroundColor(.blue)
                                 .fontWeight(.medium)
