@@ -13,6 +13,7 @@ struct BeerRecordRow: View {
     var onDelete: (String) -> Void
     
     @State private var showingSafari = false
+    @State private var showingWebsiteError = false
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
@@ -60,7 +61,13 @@ struct BeerRecordRow: View {
                    !websiteUrlString.isEmpty,
                    let _ = URL(string: websiteUrlString) {
                     Button {
-                        showingSafari = true
+                        if let websiteUrlString = beer.websiteUrl,
+                           let url = URL(string: websiteUrlString),
+                           canOpenURL(url) {
+                            showingSafari = true
+                        } else {
+                            showingWebsiteError = true
+                        }
                     } label: {
                         VStack(spacing: 4) {
                             Image(systemName: "link.circle.fill")
@@ -124,22 +131,66 @@ struct BeerRecordRow: View {
         .sheet(isPresented: $showingSafari) {
             if let websiteUrlString = beer.websiteUrl,
                let url = URL(string: websiteUrlString) {
-                SafariView(url: url)
+                SafariView(url: url, showingError: $showingWebsiteError)
                     .ignoresSafeArea()
             }
         }
+        .alert("公式サイトを開けません", isPresented: $showingWebsiteError) {
+            Button("OK") {
+                // アラートを閉じるだけ
+            }
+        } message: {
+            Text("申し訳ございませんが、この公式サイトのリンクを開くことができませんでした。")
+        }
+    }
+    
+    // MARK: - Helper function to check if URL can be opened
+    private func canOpenURL(_ url: URL) -> Bool {
+        // Check if URL scheme is supported (http, https)
+        guard let scheme = url.scheme?.lowercased() else { return false }
+        return scheme == "http" || scheme == "https"
     }
 }
 
 // MARK: - SafariView（アプリ内ブラウザ）
 struct SafariView: UIViewControllerRepresentable {
     let url: URL
+    @Binding var showingError: Bool
+    
+    init(url: URL, showingError: Binding<Bool> = .constant(false)) {
+        self.url = url
+        self._showingError = showingError
+    }
     
     func makeUIViewController(context: Context) -> SFSafariViewController {
-        return SFSafariViewController(url: url)
+        let safariViewController = SFSafariViewController(url: url)
+        safariViewController.delegate = context.coordinator
+        return safariViewController
     }
     
     func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {
         // 更新処理は不要
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, SFSafariViewControllerDelegate {
+        let parent: SafariView
+        
+        init(_ parent: SafariView) {
+            self.parent = parent
+        }
+        
+        func safariViewController(_ controller: SFSafariViewController, didCompleteInitialLoad didLoadSuccessfully: Bool) {
+            if !didLoadSuccessfully {
+                DispatchQueue.main.async {
+                    controller.dismiss(animated: true) {
+                        self.parent.showingError = true
+                    }
+                }
+            }
+        }
     }
 }
