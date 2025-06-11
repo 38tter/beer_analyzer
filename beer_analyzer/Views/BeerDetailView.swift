@@ -142,6 +142,15 @@ struct BeerDetailView: View {
                             title: "記録日時",
                             value: formatTimestamp(beer.timestamp)
                         )
+                        
+                        // メモ（メモが存在する場合のみ）
+                        if let memo = beer.memo, !memo.isEmpty {
+                            DetailInfoCard(
+                                icon: "📝",
+                                title: "メモ",
+                                value: memo
+                            )
+                        }
                     }
                     
                     Spacer(minLength: 20)
@@ -222,7 +231,8 @@ struct BeerDetailView: View {
                     timestamp: beer.timestamp,
                     imageUrl: beer.imageUrl ?? "",
                     hasDrunk: newStatus,
-                    websiteUrl: beer.websiteUrl
+                    websiteUrl: beer.websiteUrl,
+                    memo: beer.memo
                 )
                 
                 try await firestoreService.updateBeer(documentId: beerId, beer: updatedBeer)
@@ -332,7 +342,8 @@ struct DetailInfoCard: View {
         timestamp: Date(),
         imageUrl: "",
         hasDrunk: true,
-        websiteUrl: "https://www.sapporobeer.jp"
+        websiteUrl: "https://www.sapporobeer.jp",
+        memo: "とても美味しいビールでした！"
     ))
     .environmentObject(FirestoreService())
 }
