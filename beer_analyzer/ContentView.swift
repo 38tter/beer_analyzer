@@ -62,7 +62,11 @@ struct ContentView: View {
                         
                         // MARK: - Image Preview
                         if let uiImage = uiImage {
-                            ImagePreviewSection(image: uiImage)
+                            ImagePreviewSection(image: uiImage) {
+                                // プレビューをリセット
+                                self.uiImage = nil
+                                resetAnalysisResults()
+                            }
                         }
                         
                         // MARK: - Analysis Button
@@ -323,6 +327,7 @@ struct ContentView: View {
 // MARK: - Supporting Views
 struct ImagePreviewSection: View {
     let image: UIImage
+    let onRemove: () -> Void
 
     var body: some View {
         VStack {
@@ -330,12 +335,29 @@ struct ImagePreviewSection: View {
                 .font(.title2)
                 .fontWeight(.semibold)
                 .padding(.bottom, 5)
-            Image(uiImage: image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(maxHeight: 300)
-                .cornerRadius(10)
-                .shadow(radius: 3)
+            
+            ZStack(alignment: .topTrailing) {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxHeight: 300)
+                    .cornerRadius(10)
+                    .shadow(radius: 3)
+                
+                // 右上のクローズボタン
+                Button {
+                    onRemove()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title2)
+                        .foregroundColor(.red)
+                        .background(Color.white.opacity(0.9))
+                        .clipShape(Circle())
+                        .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+                }
+                .padding(.top, 8)
+                .padding(.trailing, 8)
+            }
         }
         .padding()
         .background(Color.white.opacity(0.8))
