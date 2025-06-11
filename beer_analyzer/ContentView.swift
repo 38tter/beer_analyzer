@@ -33,7 +33,8 @@ struct ContentView: View {
     var body: some View {
         TabView {
             NavigationView {
-                ScrollView {
+                ZStack {
+                    ScrollView {
                     VStack(spacing: 20) {
                         // MARK: - Title Logo
                         Image("AppTitleLogo")
@@ -108,7 +109,6 @@ struct ContentView: View {
                     )
                     .ignoresSafeArea()
                 )
-                
                 .alert("ビールの解析に失敗しました", isPresented: $showingNoBeerAlert) {
                     // アクションボタンを定義 (ここではOKボタンのみ)
                     Button("OK") {
@@ -118,6 +118,17 @@ struct ContentView: View {
                 } message: {
                     // アラートのメッセージ
                     Text("ビールが検出されない、もしくはビールの解析に失敗しました")
+                }
+                
+                    // MARK: - Loading Overlay
+                    if isLoadingAnalysis {
+                        BeerAnalysisLoadingView()
+                            .transition(.asymmetric(
+                                insertion: .opacity.combined(with: .scale(scale: 0.9)),
+                                removal: .opacity.combined(with: .scale(scale: 1.1))
+                            ))
+                            .zIndex(1)
+                    }
                 }
             }
             .tabItem {
@@ -179,7 +190,9 @@ struct ContentView: View {
             return
         }
 
-        isLoadingAnalysis = true
+        withAnimation(.easeInOut(duration: 0.5)) {
+            isLoadingAnalysis = true
+        }
         errorMessage = nil
         analysisResult = nil
         pairingSuggestion = nil
@@ -221,7 +234,9 @@ struct ContentView: View {
                 showingNoBeerAlert = true
             }
             DispatchQueue.main.async {
-                self.isLoadingAnalysis = false
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    self.isLoadingAnalysis = false
+                }
             }
         }
     }
