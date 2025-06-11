@@ -35,17 +35,6 @@ struct BeerAnalysisLoadingView: View {
             VStack(spacing: 40) {
                 // タイトル
                 VStack(spacing: 16) {
-                    Text("🍺 ビール解析中 🍺")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.blue, .indigo],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                    
                     Text("AIがあなたのビールを詳しく分析しています")
                         .font(.title3)
                         .foregroundColor(.secondary)
@@ -54,30 +43,6 @@ struct BeerAnalysisLoadingView: View {
                 
                 // メインアニメーション
                 VStack(spacing: 30) {
-                    // 回転するビール絵文字
-                    ZStack {
-                        // 背景円
-                        Circle()
-                            .fill(Color.blue.opacity(0.1))
-                            .frame(width: 150, height: 150)
-                            .scaleEffect(scale)
-                            .opacity(opacity)
-                            .animation(
-                                Animation.easeInOut(duration: 2.0)
-                                    .repeatForever(autoreverses: true),
-                                value: scale
-                            )
-                        
-                        // 回転するビール絵文字
-                        Text("🍺")
-                            .font(.system(size: 80))
-                            .rotationEffect(.degrees(rotationAngle))
-                            .animation(
-                                Animation.linear(duration: 3.0)
-                                    .repeatForever(autoreverses: false),
-                                value: rotationAngle
-                            )
-                    }
                     
                     // 多層プログレススピナー
                     ZStack {
@@ -149,23 +114,6 @@ struct BeerAnalysisLoadingView: View {
                                     .repeatForever(autoreverses: false),
                                 value: rotationAngle
                             )
-                        
-                        // 中央のパルスドット
-                        Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [.blue, .purple],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .frame(width: 12, height: 12)
-                            .scaleEffect(scale)
-                            .animation(
-                                Animation.easeInOut(duration: 0.8)
-                                    .repeatForever(autoreverses: true),
-                                value: scale
-                            )
                     }
                 }
                 
@@ -205,49 +153,12 @@ struct BeerAnalysisLoadingView: View {
                 
                 // 励ましメッセージ
                 VStack(spacing: 12) {
-                    Text("✨ 高精度なAI解析を実行中 ✨")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.blue)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(.regularMaterial)
-                        )
-                    
-                    Text("ビールの詳細情報とペアリング提案をお楽しみに！")
-                        .font(.caption)
-                        .foregroundColor(.primary)
-                        .fontWeight(.medium)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(
-                            RoundedRectangle(cornerRadius: 6)
-                                .fill(.thinMaterial)
-                        )
-                    
                     // 期待感を醸成するメッセージ
                     VStack(spacing: 8) {
                         Text("🍻 間もなく判明します...")
                             .font(.caption)
                             .foregroundColor(.blue)
                             .fontWeight(.semibold)
-                        
-                        HStack(spacing: 8) {
-                            ForEach(["銘柄名", "製造者", "ABV", "ホップ"], id: \.self) { item in
-                                Text("• \(item)")
-                                    .font(.caption2)
-                                    .foregroundColor(.primary)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 4)
-                                            .fill(.ultraThinMaterial)
-                                    )
-                            }
-                        }
                     }
                     .padding(.top, 8)
                 }

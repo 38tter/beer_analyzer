@@ -67,7 +67,7 @@ struct BeerAnalysisResultModal: View {
                             ResultRow(icon: "🏷️", title: "ブランド", value: analysisResult.brand)
                             ResultRow(icon: "🏭", title: "製造者", value: analysisResult.manufacturer)
                             ResultRow(icon: "🌡️", title: "アルコール度数", value: analysisResult.abv)
-                            ResultRow(icon: "🍶", title: "容量", value: analysisResult.capacity)
+                            ResultRow(icon: "🥂", title: "容量", value: analysisResult.capacity)
                             ResultRow(icon: "🌿", title: "ホップ", value: analysisResult.hops)
                             
                             if let websiteUrl = analysisResult.websiteUrl, !websiteUrl.isEmpty {
@@ -84,50 +84,50 @@ struct BeerAnalysisResultModal: View {
                     )
                     
                     // ペアリング提案ボタン
-                    if pairingSuggestion == nil {
-                        Button {
-                            generatePairingSuggestion()
-                        } label: {
-                            HStack {
-                                if isLoadingPairing {
-                                    ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                        .scaleEffect(0.8)
-                                }
-                                Text(isLoadingPairing ? "提案を生成中..." : "🍽️ ペアリング提案を見る")
-                                    .font(.headline)
-                                    .fontWeight(.semibold)
-                            }
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color.orange)
-                            .foregroundColor(.white)
-                            .cornerRadius(12)
-                        }
-                        .disabled(isLoadingPairing)
-                        .padding(.horizontal)
-                    }
-                    
-                    // ペアリング提案結果
-                    if let pairingSuggestion = pairingSuggestion {
-                        VStack(spacing: 12) {
-                            Text("🍽️ ペアリング提案")
-                                .font(.title3)
-                                .fontWeight(.bold)
-                                .foregroundColor(.orange)
-                            
-                            Text(pairingSuggestion)
-                                .font(.body)
-                                .foregroundColor(.primary)
-                                .multilineTextAlignment(.leading)
-                                .padding()
-                                .background(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .fill(.thinMaterial)
-                                )
-                        }
-                        .padding(.horizontal)
-                    }
+//                    if pairingSuggestion == nil {
+//                        Button {
+//                            generatePairingSuggestion()
+//                        } label: {
+//                            HStack {
+//                                if isLoadingPairing {
+//                                    ProgressView()
+//                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+//                                        .scaleEffect(0.8)
+//                                }
+//                                Text(isLoadingPairing ? "提案を生成中..." : "🍽️ ペアリング提案を見る")
+//                                    .font(.headline)
+//                                    .fontWeight(.semibold)
+//                            }
+//                            .padding()
+//                            .frame(maxWidth: .infinity)
+//                            .background(Color.orange)
+//                            .foregroundColor(.white)
+//                            .cornerRadius(12)
+//                        }
+//                        .disabled(isLoadingPairing)
+//                        .padding(.horizontal)
+//                    }
+//                    
+//                    // ペアリング提案結果
+//                    if let pairingSuggestion = pairingSuggestion {
+//                        VStack(spacing: 12) {
+//                            Text("🍽️ ペアリング提案")
+//                                .font(.title3)
+//                                .fontWeight(.bold)
+//                                .foregroundColor(.orange)
+//                            
+//                            Text(pairingSuggestion)
+//                                .font(.body)
+//                                .foregroundColor(.primary)
+//                                .multilineTextAlignment(.leading)
+//                                .padding()
+//                                .background(
+//                                    RoundedRectangle(cornerRadius: 12)
+//                                        .fill(.thinMaterial)
+//                                )
+//                        }
+//                        .padding(.horizontal)
+//                    }
                     
                     // 保存通知
                     VStack(spacing: 8) {
