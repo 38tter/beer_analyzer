@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showingTerms = false
+    @State private var showingPrivacyPolicy = false
     @State private var showingVersionHistory = false
     @State private var showingContact = false
     
@@ -45,6 +46,21 @@ struct SettingsView: View {
                             Image(systemName: "doc.text.fill")
                                 .foregroundColor(.blue)
                             Text("利用規約")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                    
+                    Button {
+                        showingPrivacyPolicy = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "hand.raised.fill")
+                                .foregroundColor(.blue)
+                            Text("プライバシーポリシー")
                                 .foregroundColor(.primary)
                             Spacer()
                             Image(systemName: "chevron.right")
@@ -115,6 +131,9 @@ struct SettingsView: View {
                 isPresentedForAcceptance: false,
                 showCloseButton: true
             )
+        }
+        .sheet(isPresented: $showingPrivacyPolicy) {
+            PrivacyPolicyView()
         }
         .sheet(isPresented: $showingVersionHistory) {
             SimpleVersionHistoryView()
@@ -286,6 +305,108 @@ struct SimpleContactView: View {
         } else {
             showingEmailAlert = true
         }
+    }
+}
+
+struct PrivacyPolicyView: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    VStack(spacing: 16) {
+                        Text("プライバシーポリシー")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        
+                        Text("Beer Analyzer プライバシーポリシー")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.top, 20)
+                    
+                    VStack(alignment: .leading, spacing: 16) {
+                        privacySection(
+                            title: "1. 収集する情報",
+                            content: """
+                            本アプリでは、以下の情報を収集する場合があります：
+                            • ビール画像の解析データ
+                            • アプリの使用状況（匿名）
+                            • エラーログ（匿名）
+                            """
+                        )
+                        
+                        privacySection(
+                            title: "2. 情報の利用目的",
+                            content: """
+                            収集した情報は以下の目的で利用します：
+                            • ビール解析機能の提供・改善
+                            • アプリの安定性向上
+                            • ユーザーサポート
+                            """
+                        )
+                        
+                        privacySection(
+                            title: "3. 情報の共有",
+                            content: """
+                            個人を特定できる情報を第三者と共有することはありません。
+                            匿名化された統計データのみを品質向上の目的で利用する場合があります。
+                            """
+                        )
+                        
+                        privacySection(
+                            title: "4. データの保存",
+                            content: """
+                            ビール記録データは安全に暗号化されてクラウドに保存されます。
+                            お客様はいつでもデータの削除を要求できます。
+                            """
+                        )
+                        
+                        privacySection(
+                            title: "5. お問い合わせ",
+                            content: """
+                            プライバシーに関するご質問は以下までお問い合わせください：
+                            odradek38@gmail.com
+                            """
+                        )
+                        
+                        Text("最終更新日: 2025年6月11日")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 20)
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle("プライバシーポリシー")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+        }
+    }
+    
+    private func privacySection(title: String, content: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.headline)
+                .fontWeight(.bold)
+            
+            Text(content)
+                .font(.body)
+                .foregroundColor(.primary)
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
     }
 }
 
