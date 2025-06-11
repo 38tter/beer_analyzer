@@ -32,7 +32,7 @@ struct BeerAnalysisResult: Codable {
     }
 }
 
-// 記録されたビールのモデル (Firestore用)
+// ビールの記録のモデル (Firestore用)
 struct BeerRecord: Codable, Identifiable {
     @DocumentID var id: String? // FirestoreのドキュメントID
     let beerName: String

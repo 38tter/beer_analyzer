@@ -22,7 +22,7 @@ struct BeerRecordsList: View {
                 // ヘッダー
                 VStack(spacing: 12) {
                     HStack {
-                        Text("記録されたビール")
+                        Text("ビールの記録")
                             .font(.largeTitle)
                             .fontWeight(.bold)
                         Spacer()
@@ -58,7 +58,7 @@ struct BeerRecordsList: View {
                         Image(systemName: "wineglass")
                             .font(.system(size: 60))
                             .foregroundColor(.gray)
-                        Text("まだ記録されたビールはありません")
+                        Text("まだビールの記録はありません")
                             .font(.title2)
                             .foregroundColor(.secondary)
                         Text("ビールを解析して記録を開始しましょう！")
