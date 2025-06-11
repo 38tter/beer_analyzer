@@ -49,10 +49,6 @@ struct BeerEditView: View {
         NavigationView { // このビュー自体をNavigationStackまたはNavigationViewでラップする
             ScrollView {
                 VStack(spacing: 20) {
-                    Text("ビール情報を編集")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .padding(.bottom, 10)
 
                     // MARK: - 画像プレビュー
                     if let imageUrlString = originalBeer.imageUrl, let imageUrl = URL(string: imageUrlString) {
