@@ -7,6 +7,7 @@
 
 import SwiftUI
 import StoreKit
+import AppStore
 
 struct AppStoreReviewRequestView: View {
     let onDismiss: () -> Void
@@ -149,7 +150,25 @@ struct AppStoreReviewRequestView: View {
     }
     
     private func requestAppStoreReview() {
-        // iOS 14以降でStoreKitを使用してApp Store評価をリクエスト
+        // iOS 18以降では新しいAppStore.requestReviewを使用
+        if #available(iOS 18.0, *) {
+            Task {
+                do {
+                    try await AppStore.requestReview()
+                } catch {
+                    print("App Store review request failed: \(error.localizedDescription)")
+                    // フォールバック: 古いメソッドを使用
+                    fallbackToLegacyReviewRequest()
+                }
+            }
+        } else {
+            // iOS 18未満では従来のメソッドを使用
+            fallbackToLegacyReviewRequest()
+        }
+    }
+    
+    private func fallbackToLegacyReviewRequest() {
+        // iOS 14-17でStoreKitを使用してApp Store評価をリクエスト
         if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
             SKStoreReviewController.requestReview(in: scene)
         }
