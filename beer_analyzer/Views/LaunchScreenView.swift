@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct LaunchScreenView: View {
-    @State private var isRotating = false
     @State private var scale: CGFloat = 0.8
     @State private var opacity: Double = 0.0
     
@@ -27,19 +26,15 @@ struct LaunchScreenView: View {
             .ignoresSafeArea()
             
             VStack(spacing: 30) {
-                // アプリタイトルロゴ（もしあれば）
+                // アプリロゴ
                 VStack(spacing: 20) {
-                    // 回転するビール絵文字
-                    Text("🍺")
-                        .font(.system(size: 80))
-                        .rotationEffect(.degrees(isRotating ? 360 : 0))
+                    // アプリのタイトルロゴ
+                    Image("AppTitleLogo")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 240, height: 135)
                         .scaleEffect(scale)
                         .opacity(opacity)
-                        .animation(
-                            Animation.linear(duration: 2.0)
-                                .repeatForever(autoreverses: false),
-                            value: isRotating
-                        )
                         .animation(
                             Animation.easeInOut(duration: 1.0),
                             value: scale
@@ -91,10 +86,6 @@ struct LaunchScreenView: View {
                 scale = 1.0
             }
             
-            // 回転アニメーション開始（少し遅らせて）
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                isRotating = true
-            }
         }
     }
 }
