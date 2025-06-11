@@ -72,7 +72,7 @@ struct BeerRecordsList: View {
                     // ビールリスト
                     List {
                         ForEach(beers) { beer in
-                            NavigationLink(destination: BeerEditView(beer: beer).environmentObject(firestoreService)) {
+                            NavigationLink(destination: BeerDetailView(beer: beer).environmentObject(firestoreService)) {
                                 BeerRecordRow(beer: beer) { idToDelete in
                                     onDelete(idToDelete)
                                     // ローカルのリストからも削除
