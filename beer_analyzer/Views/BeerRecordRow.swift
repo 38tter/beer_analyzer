@@ -120,7 +120,6 @@ struct BeerRecordRow: View {
                 }
             }
         )
-        .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
         .contentShape(Rectangle())
         .swipeActions(edge: .trailing) {
@@ -131,7 +130,9 @@ struct BeerRecordRow: View {
             } label: {
                 Label("削除", systemImage: "trash")
             }
+            .tint(.red)
         }
+        .clipShape(RoundedRectangle(cornerRadius: 10))
         .sheet(isPresented: $showingSafari) {
             if let websiteUrlString = beer.websiteUrl,
                let url = URL(string: websiteUrlString) {
@@ -196,5 +197,19 @@ struct SafariView: UIViewControllerRepresentable {
                 }
             }
         }
+    }
+}
+
+// MARK: - Custom Button Style for Delete Action
+struct RoundedDeleteButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundColor(.white)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.red)
+            )
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
     }
 }
