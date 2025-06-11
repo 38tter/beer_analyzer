@@ -156,12 +156,7 @@ struct ContentView: View {
                     }
                 }
                 .background(
-                    LinearGradient(
-                        gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.indigo.opacity(0.2)]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                    .ignoresSafeArea()
+                    BeerThemedBackgroundView()
                 )
                 .alert("ビールの解析に失敗しました", isPresented: $showingNoBeerAlert) {
                     // アクションボタンを定義 (ここではOKボタンのみ)

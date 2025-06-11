@@ -114,7 +114,7 @@ struct BeerRecordsList: View {
                     }
                 }
             }
-            .background(Color(.systemGroupedBackground))
+            .background(BeerThemedBackgroundView())
             .navigationBarHidden(true)
         }
         .onAppear {

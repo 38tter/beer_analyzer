@@ -13,17 +13,8 @@ struct LaunchScreenView: View {
     
     var body: some View {
         ZStack {
-            // 背景グラデーション
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color.blue.opacity(0.1),
-                    Color.indigo.opacity(0.2),
-                    Color.purple.opacity(0.1)
-                ]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // ビールテーマの背景
+            BeerThemedBackgroundView()
             
             VStack(spacing: 30) {
                 // アプリロゴ
@@ -51,7 +42,7 @@ struct LaunchScreenView: View {
                             .fontWeight(.bold)
                             .foregroundStyle(
                                 LinearGradient(
-                                    colors: [.blue, .indigo],
+                                    colors: [Color(red: 1.0, green: 0.75, blue: 0.3), Color(red: 0.85, green: 0.5, blue: 0.1)],
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 )
@@ -68,7 +59,7 @@ struct LaunchScreenView: View {
                 // ローディングインジケーター
                 VStack(spacing: 12) {
                     ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                        .progressViewStyle(CircularProgressViewStyle(tint: Color(red: 0.85, green: 0.5, blue: 0.1)))
                         .scaleEffect(1.2)
                         .opacity(opacity)
                     

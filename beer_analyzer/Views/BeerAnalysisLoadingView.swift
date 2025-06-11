@@ -55,7 +55,7 @@ struct BeerAnalysisLoadingView: View {
                             .trim(from: 0, to: 0.8)
                             .stroke(
                                 LinearGradient(
-                                    colors: [.blue, .cyan, .blue],
+                                    colors: [Color(red: 1.0, green: 0.75, blue: 0.3), Color(red: 0.95, green: 0.65, blue: 0.2), Color(red: 1.0, green: 0.75, blue: 0.3)],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 ),
@@ -78,7 +78,7 @@ struct BeerAnalysisLoadingView: View {
                             .trim(from: 0, to: 0.6)
                             .stroke(
                                 LinearGradient(
-                                    colors: [.indigo, .purple, .indigo],
+                                    colors: [Color(red: 0.9, green: 0.55, blue: 0.15), Color(red: 0.85, green: 0.5, blue: 0.1), Color(red: 0.9, green: 0.55, blue: 0.15)],
                                     startPoint: .bottomTrailing,
                                     endPoint: .topLeading
                                 ),
@@ -101,7 +101,7 @@ struct BeerAnalysisLoadingView: View {
                             .trim(from: 0, to: 0.4)
                             .stroke(
                                 LinearGradient(
-                                    colors: [.purple, .pink, .purple],
+                                    colors: [Color(red: 0.85, green: 0.5, blue: 0.1), Color(red: 0.8, green: 0.45, blue: 0.05), Color(red: 0.85, green: 0.5, blue: 0.1)],
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 ),
