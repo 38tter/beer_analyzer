@@ -10,8 +10,19 @@ import SwiftUI
 struct BeerThemedBackgroundView: View {
     @Environment(\.colorScheme) var colorScheme
     @State private var animatedBubbles: [BubbleData] = []
+    @State private var logoAreaBubbles: [BubbleData] = []
     
     private let bubbleCount = 25
+    private let logoAreaBubbleCount = 15
+    let logoPosition: CGPoint?
+    let logoSize: CGSize?
+    let isEnhancedForSplash: Bool
+    
+    init(logoPosition: CGPoint? = nil, logoSize: CGSize? = nil, isEnhancedForSplash: Bool = false) {
+        self.logoPosition = logoPosition
+        self.logoSize = logoSize
+        self.isEnhancedForSplash = isEnhancedForSplash
+    }
     
     var body: some View {
         ZStack {
@@ -19,12 +30,13 @@ struct BeerThemedBackgroundView: View {
             beerGradientBackground
                 .ignoresSafeArea()
             
-            // 浮遊するバブルエフェクト
+            // 背景の通常バブルエフェクト
             ForEach(animatedBubbles) { bubble in
                 BubbleView(
                     size: bubble.size,
-                    opacity: bubble.opacity,
-                    color: bubble.color
+                    opacity: bubble.opacity * (isEnhancedForSplash ? 1.3 : 1.0),
+                    color: bubble.color,
+                    isEnhanced: isEnhancedForSplash
                 )
                 .position(bubble.position)
                 .animation(
@@ -33,9 +45,30 @@ struct BeerThemedBackgroundView: View {
                     value: bubble.position
                 )
             }
+            
+            // ロゴ周辺の特別なバブル
+            if logoPosition != nil {
+                ForEach(logoAreaBubbles) { bubble in
+                    BubbleView(
+                        size: bubble.size,
+                        opacity: bubble.opacity * (isEnhancedForSplash ? 1.5 : 1.2),
+                        color: bubble.color,
+                        isEnhanced: true
+                    )
+                    .position(bubble.position)
+                    .animation(
+                        Animation.linear(duration: bubble.duration)
+                            .repeatForever(autoreverses: false),
+                        value: bubble.position
+                    )
+                }
+            }
         }
         .onAppear {
             generateBubbles()
+            if logoPosition != nil {
+                generateLogoAreaBubbles()
+            }
             animateBubbles()
         }
     }
@@ -88,25 +121,84 @@ struct BeerThemedBackgroundView: View {
         }
     }
     
+    // ロゴ周辺のバブル生成
+    private func generateLogoAreaBubbles() {
+        guard let logoPos = logoPosition, let logoSize = logoSize else { return }
+        
+        let logoArea = CGRect(
+            x: logoPos.x - logoSize.width / 2 - 50,
+            y: logoPos.y - logoSize.height / 2 - 50,
+            width: logoSize.width + 100,
+            height: logoSize.height + 100
+        )
+        
+        logoAreaBubbles = (0..<logoAreaBubbleCount).map { _ in
+            BubbleData(
+                position: CGPoint(
+                    x: CGFloat.random(in: logoArea.minX...logoArea.maxX),
+                    y: CGFloat.random(in: logoArea.minY...logoArea.maxY)
+                ),
+                size: CGFloat.random(in: 6...24),
+                opacity: Double.random(in: 0.3...0.8),
+                duration: Double.random(in: 4...8),
+                color: randomBubbleColor()
+            )
+        }
+    }
+    
     // バブルアニメーションの開始
     private func animateBubbles() {
         let screenHeight = UIScreen.main.bounds.height
+        let screenWidth = UIScreen.main.bounds.width
         
         Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            // 背景バブルのアニメーション
             for i in 0..<animatedBubbles.count {
-                // バブルを上に移動
-                animatedBubbles[i].position.y -= CGFloat.random(in: 0.8...2.5)
-                
-                // 横方向のより目立つ動き
+                let speedMultiplier = isEnhancedForSplash ? 1.5 : 1.0
+                animatedBubbles[i].position.y -= CGFloat.random(in: 0.8...2.5) * speedMultiplier
                 animatedBubbles[i].position.x += CGFloat.random(in: -1.0...1.0)
                 
-                // バブルが画面上部に到達したら下部にリセット
                 if animatedBubbles[i].position.y < -50 {
                     animatedBubbles[i].position.y = screenHeight + 50
-                    animatedBubbles[i].position.x = CGFloat.random(in: 0...UIScreen.main.bounds.width)
+                    animatedBubbles[i].position.x = CGFloat.random(in: 0...screenWidth)
                     animatedBubbles[i].size = CGFloat.random(in: 4...18)
                     animatedBubbles[i].opacity = Double.random(in: 0.2...0.7)
                     animatedBubbles[i].color = randomBubbleColor()
+                }
+            }
+            
+            // ロゴ周辺バブルのアニメーション
+            if let logoPos = logoPosition, let logoSize = logoSize {
+                for i in 0..<logoAreaBubbles.count {
+                    let speedMultiplier = isEnhancedForSplash ? 2.0 : 1.5
+                    logoAreaBubbles[i].position.y -= CGFloat.random(in: 0.5...1.5) * speedMultiplier
+                    
+                    // ロゴ周辺での円形動作
+                    let centerX = logoPos.x
+                    let centerY = logoPos.y
+                    let angle = atan2(logoAreaBubbles[i].position.y - centerY, logoAreaBubbles[i].position.x - centerX)
+                    let radius = sqrt(pow(logoAreaBubbles[i].position.x - centerX, 2) + pow(logoAreaBubbles[i].position.y - centerY, 2))
+                    
+                    let newAngle = angle + CGFloat.random(in: -0.1...0.1)
+                    logoAreaBubbles[i].position.x = centerX + radius * cos(newAngle)
+                    
+                    // ロゴ周辺のバブルが範囲外に出たらリセット
+                    let logoArea = CGRect(
+                        x: logoPos.x - logoSize.width / 2 - 100,
+                        y: logoPos.y - logoSize.height / 2 - 100,
+                        width: logoSize.width + 200,
+                        height: logoSize.height + 200
+                    )
+                    
+                    if !logoArea.contains(logoAreaBubbles[i].position) {
+                        logoAreaBubbles[i].position = CGPoint(
+                            x: CGFloat.random(in: logoArea.minX...logoArea.maxX),
+                            y: logoArea.maxY
+                        )
+                        logoAreaBubbles[i].size = CGFloat.random(in: 6...24)
+                        logoAreaBubbles[i].opacity = Double.random(in: 0.3...0.8)
+                        logoAreaBubbles[i].color = randomBubbleColor()
+                    }
                 }
             }
         }
@@ -141,7 +233,15 @@ struct BubbleView: View {
     let size: CGFloat
     let opacity: Double
     let color: Color
+    let isEnhanced: Bool
     @State private var isAnimating = false
+    
+    init(size: CGFloat, opacity: Double, color: Color, isEnhanced: Bool = false) {
+        self.size = size
+        self.opacity = opacity
+        self.color = color
+        self.isEnhanced = isEnhanced
+    }
     
     var body: some View {
         ZStack {
@@ -151,8 +251,8 @@ struct BubbleView: View {
                     RadialGradient(
                         colors: [
                             color,
-                            color.opacity(0.6),
-                            color.opacity(0.2)
+                            color.opacity(isEnhanced ? 0.8 : 0.6),
+                            color.opacity(isEnhanced ? 0.4 : 0.2)
                         ],
                         center: .topLeading,
                         startRadius: size * 0.1,
@@ -161,21 +261,40 @@ struct BubbleView: View {
                 )
                 .frame(width: size, height: size)
                 .opacity(opacity)
-                .scaleEffect(isAnimating ? 1.1 : 0.9)
+                .scaleEffect(isAnimating ? (isEnhanced ? 1.2 : 1.1) : (isEnhanced ? 0.8 : 0.9))
                 .animation(
-                    Animation.easeInOut(duration: Double.random(in: 2...4))
+                    Animation.easeInOut(duration: isEnhanced ? Double.random(in: 1...2) : Double.random(in: 2...4))
                         .repeatForever(autoreverses: true),
                     value: isAnimating
                 )
             
-            // 光の反射効果
+            // 光の反射効果（拡張版）
             Circle()
-                .fill(Color.white.opacity(0.4))
-                .frame(width: size * 0.3, height: size * 0.3)
+                .fill(Color.white.opacity(isEnhanced ? 0.6 : 0.4))
+                .frame(width: size * (isEnhanced ? 0.4 : 0.3), height: size * (isEnhanced ? 0.4 : 0.3))
                 .offset(x: -size * 0.2, y: -size * 0.2)
-                .blur(radius: 1)
+                .blur(radius: isEnhanced ? 0.5 : 1)
+            
+            // 拡張効果：追加の光の輪
+            if isEnhanced {
+                Circle()
+                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                    .frame(width: size * 1.2, height: size * 1.2)
+                    .scaleEffect(isAnimating ? 1.1 : 0.9)
+                    .opacity(isAnimating ? 0.2 : 0.5)
+                    .animation(
+                        Animation.easeInOut(duration: Double.random(in: 1.5...3))
+                            .repeatForever(autoreverses: true),
+                        value: isAnimating
+                    )
+            }
         }
-        .shadow(color: color.opacity(0.3), radius: 3, x: 0, y: 0)
+        .shadow(
+            color: color.opacity(isEnhanced ? 0.5 : 0.3), 
+            radius: isEnhanced ? 5 : 3, 
+            x: 0, 
+            y: 0
+        )
         .onAppear {
             isAnimating = true
         }
@@ -193,5 +312,9 @@ struct BubbleData: Identifiable {
 }
 
 #Preview {
-    BeerThemedBackgroundView()
+    BeerThemedBackgroundView(
+        logoPosition: CGPoint(x: 200, y: 400),
+        logoSize: CGSize(width: 240, height: 135),
+        isEnhancedForSplash: true
+    )
 }

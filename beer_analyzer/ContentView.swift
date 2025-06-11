@@ -156,7 +156,13 @@ struct ContentView: View {
                     }
                 }
                 .background(
-                    BeerThemedBackgroundView()
+                    GeometryReader { geometry in
+                        BeerThemedBackgroundView(
+                            logoPosition: CGPoint(x: geometry.size.width / 2, y: 120),
+                            logoSize: CGSize(width: 320, height: 180),
+                            isEnhancedForSplash: false
+                        )
+                    }
                 )
                 .alert("ビールの解析に失敗しました", isPresented: $showingNoBeerAlert) {
                     // アクションボタンを定義 (ここではOKボタンのみ)

@@ -11,19 +11,31 @@ struct LaunchScreenView: View {
     @State private var scale: CGFloat = 0.8
     @State private var opacity: Double = 0.0
     
+    private let logoSize = CGSize(width: 240, height: 135)
+    
     var body: some View {
-        ZStack {
-            // ビールテーマの背景
-            BeerThemedBackgroundView()
+        GeometryReader { geometry in
+            let logoPosition = CGPoint(
+                x: geometry.size.width / 2,
+                y: geometry.size.height / 2 - 50
+            )
             
-            VStack(spacing: 30) {
+            ZStack {
+                // ビールテーマの背景（スプラッシュ画面用強化版）
+                BeerThemedBackgroundView(
+                    logoPosition: logoPosition,
+                    logoSize: logoSize,
+                    isEnhancedForSplash: true
+                )
+                
+                VStack(spacing: 30) {
                 // アプリロゴ
                 VStack(spacing: 20) {
                     // アプリのタイトルロゴ
                     Image("AppTitleLogo")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 240, height: 135)
+                        .frame(width: logoSize.width, height: logoSize.height)
                         .scaleEffect(scale)
                         .opacity(opacity)
                         .animation(
@@ -69,14 +81,13 @@ struct LaunchScreenView: View {
                         .opacity(opacity)
                 }
             }
-        }
-        .onAppear {
-            // アニメーション開始
-            withAnimation(.easeInOut(duration: 0.8)) {
-                opacity = 1.0
-                scale = 1.0
+            .onAppear {
+                // アニメーション開始
+                withAnimation(.easeInOut(duration: 0.8)) {
+                    opacity = 1.0
+                    scale = 1.0
+                }
             }
-            
         }
     }
 }
