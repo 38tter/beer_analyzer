@@ -26,6 +26,7 @@ struct ContentView: View {
     @State private var sourceType: UIImagePickerController.SourceType = .camera
     
     @State private var showingNoBeerAlert: Bool = false
+    @State private var showingResultModal: Bool = false
     
     @StateObject private var geminiService = GeminiAPIService()
     @EnvironmentObject var firestoreService: FirestoreService
@@ -77,20 +78,6 @@ struct ContentView: View {
                             ErrorMessageView(message: errorMessage)
                         }
                         
-                        // MARK: - Analysis Result
-                        if let analysisResult = analysisResult {
-                            AnalysisResultView(
-                                analysisResult: analysisResult,
-                                isLoadingPairing: isLoadingPairing
-                            ) {
-                                generatePairingSuggestion()
-                            }
-                        }
-                        
-                        // MARK: - Pairing Suggestion
-                        if let pairingSuggestion = pairingSuggestion {
-                            PairingSuggestionView(pairingSuggestion: pairingSuggestion)
-                        }
                     }
                     .padding()
                     // MARK: - CameraPicker のシート表示
@@ -98,6 +85,23 @@ struct ContentView: View {
                         CameraPicker(
                             selectedImage: $uiImage
                         )
+                    }
+                    // MARK: - Analysis Result Modal
+                    .sheet(isPresented: $showingResultModal) {
+                        if let analysisResult = analysisResult {
+                            BeerAnalysisResultModal(
+                                analysisResult: analysisResult,
+                                beerImage: uiImage,
+                                onDismiss: {
+                                    showingResultModal = false
+                                    // Reset state after viewing results
+                                    resetAnalysisResults()
+                                },
+                                onGeneratePairing: { completion in
+                                    generatePairingSuggestion(completion: completion)
+                                }
+                            )
+                        }
                     }
                 }
                 .navigationBarHidden(true)
@@ -221,6 +225,10 @@ struct ContentView: View {
                             self.analysisResult = result
                             Task {
                                 await firestoreService.saveBeerRecord(result, imageUrl: uploadedImageUrl)
+                                // Show modal after saving is complete
+                                DispatchQueue.main.async {
+                                    self.showingResultModal = true
+                                }
                             }
                         }
                     }
@@ -263,6 +271,22 @@ struct ContentView: View {
             }
             DispatchQueue.main.async {
                 self.isLoadingPairing = false
+            }
+        }
+    }
+    
+    private func generatePairingSuggestion(completion: @escaping (String?) -> Void) {
+        guard let analysisResult = analysisResult else {
+            completion(nil)
+            return
+        }
+
+        Task {
+            do {
+                let suggestion = try await geminiService.generatePairingSuggestion(for: analysisResult)
+                completion(suggestion)
+            } catch {
+                completion(nil)
             }
         }
     }
