@@ -146,15 +146,18 @@ class FirestoreService: ObservableObject {
             return
         }
         
-        var query = db.collection("artifacts").document(appId)
+        guard let lastDoc = lastDocument else {
+            print("Warning: No lastDocument found, cannot load more data")
+            completion(.success([]))
+            return
+        }
+        
+        let query = db.collection("artifacts").document(appId)
             .collection("users").document(userId)
             .collection("beers")
             .order(by: "timestamp", descending: currentSortDescending)
+            .start(afterDocument: lastDoc)
             .limit(to: pageSize)
-        
-        if let lastDoc = lastDocument {
-            query = query.start(afterDocument: lastDoc)
-        }
         
         query.getDocuments { querySnapshot, error in
             if let error = error {
@@ -197,6 +200,8 @@ class FirestoreService: ObservableObject {
     
     // MARK: - ソート順の変更
     func changeSortOrder(descending: Bool, completion: @escaping (Result<[BeerRecord], Error>) -> Void) {
+        // 既存のリスナーを停止してから新しいソート順で開始
+        stopObservingBeers()
         currentSortDescending = descending
         resetPagination()
         observeBeers(sortDescending: descending, completion: completion)

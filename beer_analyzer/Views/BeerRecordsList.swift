@@ -181,6 +181,10 @@ struct BeerRecordsList: View {
         guard !isLoading else { return }
         
         isLoading = true
+        // 既存のデータをクリアしてからソート順を変更
+        beers.removeAll()
+        hasMoreData = true
+        
         firestoreService.changeSortOrder(descending: descending) { result in
             DispatchQueue.main.async {
                 self.isLoading = false
@@ -190,6 +194,8 @@ struct BeerRecordsList: View {
                     self.hasMoreData = newBeers.count == 20 // pageSize
                 case .failure(let error):
                     print("Error changing sort order: \(error.localizedDescription)")
+                    // エラー時も状態をリセット
+                    self.hasMoreData = true
                 }
             }
         }
