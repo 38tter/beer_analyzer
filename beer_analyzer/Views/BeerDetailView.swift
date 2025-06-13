@@ -192,6 +192,7 @@ struct BeerDetailView: View {
                 }
             }
         }
+        .navigationViewStyle(StackNavigationViewStyle())
         .sheet(isPresented: $isEditMode) {
             BeerEditView(beer: beer)
                 .environmentObject(firestoreService)

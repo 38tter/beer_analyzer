@@ -271,6 +271,7 @@ struct BeerEditView: View {
                 Text("ビール情報が正常に更新されました。")
             }
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 
     // MARK: - 変更を保存するロジック
