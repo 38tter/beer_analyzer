@@ -13,6 +13,7 @@ struct BeerRecordsList: View {
     @State private var isLoading = false
     @State private var hasMoreData = true
     @State private var sortDescending = true // true = 降順（新しい順）, false = 昇順（古い順）
+    @State private var selectedBeer: BeerRecord?
     
     let onDelete: (String) -> Void
     
@@ -72,13 +73,16 @@ struct BeerRecordsList: View {
                     // ビールリスト
                     List {
                         ForEach(beers) { beer in
-                            NavigationLink(destination: BeerDetailView(beer: beer).environmentObject(firestoreService)) {
+                            Button(action: {
+                                selectedBeer = beer
+                            }) {
                                 BeerRecordRow(beer: beer) { idToDelete in
                                     onDelete(idToDelete)
                                     // ローカルのリストからも削除
                                     beers.removeAll { $0.id == idToDelete }
                                 }
                             }
+                            .buttonStyle(PlainButtonStyle())
                             .listRowSeparator(.hidden)
                             .listRowBackground(Color.clear)
                             .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
@@ -118,6 +122,10 @@ struct BeerRecordsList: View {
             .navigationBarHidden(true)
         }
         .navigationViewStyle(StackNavigationViewStyle())
+        .sheet(item: $selectedBeer) { beer in
+            BeerDetailView(beer: beer)
+                .environmentObject(firestoreService)
+        }
         .onAppear {
             if beers.isEmpty {
                 loadInitialBeers()
