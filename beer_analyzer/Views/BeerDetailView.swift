@@ -21,9 +21,35 @@ struct BeerDetailView: View {
     }
     
     var body: some View {
-        NavigationView {
-            ScrollView {
+        ScrollView {
                 VStack(spacing: 24) {
+                    // MARK: - カスタムヘッダー
+                    HStack {
+                        Button("閉じる") {
+                            dismiss()
+                        }
+                        .font(.body)
+                        .foregroundColor(.blue)
+                        
+                        Spacer()
+                        
+                        Text(beer.beerName)
+                            .font(.headline)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
+                        
+                        Spacer()
+                        
+                        Button("編集") {
+                            isEditMode = true
+                        }
+                        .font(.body)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.blue)
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 10)
                     // MARK: - ビール画像
                     VStack(spacing: 16) {
                         if let imageUrlString = beer.imageUrl, let imageUrl = URL(string: imageUrlString) {
@@ -175,24 +201,6 @@ struct BeerDetailView: View {
                 )
                 .ignoresSafeArea()
             )
-            .navigationTitle(beer.beerName)
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("閉じる") {
-                        dismiss()
-                    }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("編集") {
-                        isEditMode = true
-                    }
-                    .fontWeight(.semibold)
-                }
-            }
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
         .sheet(isPresented: $isEditMode) {
             BeerEditView(beer: beer)
                 .environmentObject(firestoreService)
