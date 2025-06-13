@@ -180,6 +180,7 @@ struct ContentView: View {
                     }
                 }
             }
+            .navigationViewStyle(StackNavigationViewStyle())
             .tabItem {
                 Label("追加", systemImage: "magnifyingglass")
             }
@@ -195,6 +196,7 @@ struct ContentView: View {
                 Label("記録", systemImage: "list.bullet")
             }
         }
+        .tabViewStyle(DefaultTabViewStyle())
         .onAppear {
             authenticateAnonymously()
             observeRecordedBeers()

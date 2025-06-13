@@ -117,6 +117,7 @@ struct BeerRecordsList: View {
             .background(BeerThemedBackgroundView())
             .navigationBarHidden(true)
         }
+        .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
             if beers.isEmpty {
                 loadInitialBeers()
