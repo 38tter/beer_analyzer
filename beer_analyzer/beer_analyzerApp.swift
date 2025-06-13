@@ -50,11 +50,9 @@ struct beer_analyzerApp: App {
                     )
                     .transition(.opacity)
                 } else {
-                    NavigationView {
-                        ContentView()
-                            .environmentObject(firestoreService)
-                    }
-                    .transition(.opacity)
+                    ContentView()
+                        .environmentObject(firestoreService)
+                        .transition(.opacity)
                 }
             }
         }
