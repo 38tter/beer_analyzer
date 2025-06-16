@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 struct TermsOfUseView: View {
     let onAccept: () -> Void
@@ -179,12 +180,15 @@ Beer Analyzer 利用規約
     NavigationView {
         TermsOfUseView(onAccept: {}, isPresentedForAcceptance: false)
     }
+    .environmentObject(LocalizationService.shared)
 }
 
 #Preview("For Acceptance") {
     TermsOfUseView(onAccept: {}, isPresentedForAcceptance: true)
+        .environmentObject(LocalizationService.shared)
 }
 
 #Preview("In Tab") {
     TermsOfUseView(onAccept: {}, isPresentedForAcceptance: false, showCloseButton: false)
+        .environmentObject(LocalizationService.shared)
 }

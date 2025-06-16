@@ -5,6 +5,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 struct BeerRecordsList: View {
     @EnvironmentObject var firestoreService: FirestoreService

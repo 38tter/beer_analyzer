@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
@@ -429,4 +430,5 @@ struct PrivacyPolicyView: View {
 
 #Preview {
     SettingsView()
+        .environmentObject(LocalizationService.shared)
 }

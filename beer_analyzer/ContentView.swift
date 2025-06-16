@@ -9,6 +9,8 @@ import SwiftUI
 import PhotosUI
 import FirebaseRemoteConfig
 import Kingfisher
+import Foundation
+import CoreLocation
 
 struct ContentView: View {
     @State private var selectedImage: PhotosPickerItem?
@@ -454,4 +456,6 @@ struct ErrorMessageView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(FirestoreService())
+        .environmentObject(LocalizationService.shared)
 }
