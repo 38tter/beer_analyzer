@@ -14,6 +14,7 @@ struct TermsOfUseView: View {
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.presentationMode) private var presentationMode
+    @EnvironmentObject var localizationService: LocalizationService
     
     init(onAccept: @escaping () -> Void, isPresentedForAcceptance: Bool, showCloseButton: Bool = true) {
         self.onAccept = onAccept
@@ -21,7 +22,11 @@ struct TermsOfUseView: View {
         self.showCloseButton = showCloseButton && !isPresentedForAcceptance
     }
     
-    private let termsText = """
+    private var termsText: String {
+        localizationService.termsOfUseContent
+    }
+    
+    private let oldTermsText = """
 Beer Analyzer 利用規約
 
 本利用規約（以下「本規約」といいます）は、38tter（以下「当社」といいます）が提供するモバイルアプリケーション「Beer Analyzer」（以下「本アプリ」といいます）の利用に関する条件を定めるものです。本アプリをご利用になる前に、本規約をよくお読みください。本アプリを利用することにより、お客様は本規約の全ての条件に同意したものとみなされます。
@@ -92,11 +97,11 @@ Beer Analyzer 利用規約
             // ヘッダー
             if isPresentedForAcceptance {
                 VStack(spacing: 16) {
-                    Text("利用規約への同意")
+                    Text(localizationService.agreeToTerms)
                         .font(.title2)
                         .fontWeight(.bold)
                     
-                    Text("Beer Analyzerをご利用いただく前に、利用規約をお読みいただき、同意をお願いいたします。")
+                    Text(localizationService.readTermsMessage)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -123,7 +128,7 @@ Beer Analyzer 利用規約
                     Button {
                         onAccept()
                     } label: {
-                        Text("利用規約に同意してアプリを開始")
+                        Text(localizationService.agreeAndStart)
                             .font(.headline)
                             .fontWeight(.semibold)
                             .foregroundColor(.white)
@@ -133,7 +138,7 @@ Beer Analyzer 利用規約
                             .cornerRadius(12)
                     }
                     
-                    Text("同意いただかない場合、アプリをご利用いただけません。")
+                    Text(localizationService.mustAgreeMessage)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -142,12 +147,12 @@ Beer Analyzer 利用規約
                 .background(Color(.systemGroupedBackground))
             }
         }
-        .navigationTitle(isPresentedForAcceptance ? "" : "利用規約")
+        .navigationTitle(isPresentedForAcceptance ? "" : localizationService.termsOfUse)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if showCloseButton {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("閉じる") {
+                    Button(localizationService.close) {
                         // Try both dismiss methods for compatibility
                         if #available(iOS 15.0, *) {
                             dismiss()

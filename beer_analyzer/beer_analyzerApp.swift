@@ -24,6 +24,7 @@ struct beer_analyzerApp: App {
     // register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var firestoreService = FirestoreService()
+    @StateObject private var localizationService = LocalizationService.shared
     @State private var isLoading = true
     @State private var hasAcceptedTerms = UserDefaultsService.hasAcceptedTerms()
     
@@ -38,6 +39,8 @@ struct beer_analyzerApp: App {
                                 withAnimation(.easeInOut(duration: 0.5)) {
                                     isLoading = false
                                 }
+                                // Initialize localization service
+                                localizationService.detectUserCountryAndSetLanguage()
                             }
                         }
                 } else if !hasAcceptedTerms {
@@ -48,10 +51,12 @@ struct beer_analyzerApp: App {
                         },
                         isPresentedForAcceptance: true
                     )
+                    .environmentObject(localizationService)
                     .transition(.opacity)
                 } else {
                     ContentView()
                         .environmentObject(firestoreService)
+                        .environmentObject(localizationService)
                         .transition(.opacity)
                 }
             }

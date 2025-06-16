@@ -32,6 +32,7 @@ struct ContentView: View {
     
     @StateObject private var geminiService = GeminiAPIService()
     @EnvironmentObject var firestoreService: FirestoreService
+    @EnvironmentObject var localizationService: LocalizationService
 
     var body: some View {
         TabView {
@@ -46,7 +47,7 @@ struct ContentView: View {
                             .frame(width: 320, height: 180)
                             .padding(.bottom, 10)
                         
-                        Text("ユーザーID: \(userId ?? "認証中...")")
+                        Text("\(localizationService.userId): \(userId ?? localizationService.authenticating)")
                             .font(.caption)
                             .foregroundColor(.gray)
                         
@@ -158,15 +159,15 @@ struct ContentView: View {
                 .background(
                     BeerThemedBackgroundView()
                 )
-                .alert("ビールの解析に失敗しました", isPresented: $showingNoBeerAlert) {
+                .alert(localizationService.analysisFailed, isPresented: $showingNoBeerAlert) {
                     // アクションボタンを定義 (ここではOKボタンのみ)
-                    Button("OK") {
+                    Button(localizationService.ok) {
                         // OKが押されたときの処理
                         // 何もしなければアラートが閉じるだけ
                     }
                 } message: {
                     // アラートのメッセージ
-                    Text("ビールが検出されない、もしくはビールの解析に失敗しました")
+                    Text(localizationService.beerNotDetected)
                 }
                 
                     // MARK: - Loading Overlay
@@ -182,7 +183,7 @@ struct ContentView: View {
             }
             .navigationViewStyle(StackNavigationViewStyle())
             .tabItem {
-                Label("追加", systemImage: "magnifyingglass")
+                Label(localizationService.addTabLabel, systemImage: "magnifyingglass")
             }
             
             // MARK: - 2 つ目のタブ
@@ -193,7 +194,7 @@ struct ContentView: View {
                 }
             }
             .tabItem {
-                Label("記録", systemImage: "list.bullet")
+                Label(localizationService.recordsTabLabel, systemImage: "list.bullet")
             }
         }
         .tabViewStyle(DefaultTabViewStyle())
@@ -212,7 +213,7 @@ struct ContentView: View {
 
     private func deleteBeerRecord(idToDelete: String) async {
         guard let currentUserId = userId else {
-            errorMessage = "ユーザーが認証されていないため、ビールを削除できません。"
+            errorMessage = localizationService.cannotDeleteBeer
             return
         }
 
@@ -220,18 +221,18 @@ struct ContentView: View {
             try await firestoreService.deleteBeer(id: idToDelete, userId: currentUserId)
             print("Successfully deleted beer record with ID: \(idToDelete)")
         } catch {
-            errorMessage = "ビールの削除に失敗しました: \(error.localizedDescription)"
+            errorMessage = "\(localizationService.beerDeletionFailed): \(error.localizedDescription)"
             print("Error deleting beer record: \(error.localizedDescription)")
         }
     }
 
     private func analyzeBeer() {
         guard let uiImage = uiImage else {
-            errorMessage = "解析する画像がありません。"
+            errorMessage = localizationService.noImageToAnalyze
             return
         }
         guard let currentUserId = userId else {
-            errorMessage = "ユーザーが認証されていません。しばらくお待ちください。"
+            errorMessage = localizationService.userNotAuthenticated
             return
         }
 
@@ -282,7 +283,7 @@ struct ContentView: View {
                 }
             } catch {
                 DispatchQueue.main.async {
-                    self.errorMessage = "ビールの解析に失敗しました: \(error.localizedDescription)"
+                    self.errorMessage = "\(localizationService.analysisFailedPrefix)\(error.localizedDescription)"
                 }
                 showingNoBeerAlert = true
             }
@@ -296,7 +297,7 @@ struct ContentView: View {
 
     private func generatePairingSuggestion() {
         guard let analysisResult = analysisResult else {
-            errorMessage = "まずビールを解析してください。"
+            errorMessage = localizationService.analyzeFirst
             return
         }
 
@@ -311,7 +312,7 @@ struct ContentView: View {
                 }
             } catch {
                 DispatchQueue.main.async {
-                    self.errorMessage = "ペアリングの提案に失敗しました: \(error.localizedDescription)"
+                    self.errorMessage = "\(localizationService.pairingFailedPrefix)\(error.localizedDescription)"
                 }
             }
             DispatchQueue.main.async {
@@ -348,7 +349,7 @@ struct ContentView: View {
             case .success(let uid):
                 self.userId = uid
             case .failure(let error):
-                self.errorMessage = "認証エラー: \(error.localizedDescription)"
+                self.errorMessage = "\(localizationService.authError)\(error.localizedDescription)"
             }
         }
     }
@@ -359,7 +360,7 @@ struct ContentView: View {
             case .success(let beers):
                 self.recordedBeers = beers
             case .failure(let error):
-                self.errorMessage = "ビールの記録の読み込みエラー: \(error.localizedDescription)"
+                self.errorMessage = "\(localizationService.recordLoadingError)\(error.localizedDescription)"
             }
         }
     }
@@ -372,7 +373,7 @@ struct ImagePreviewSection: View {
 
     var body: some View {
         VStack {
-            Text("プレビュー")
+            Text(localizationService.preview)
                 .font(.title2)
                 .fontWeight(.semibold)
                 .padding(.bottom, 5)
@@ -424,7 +425,7 @@ struct AnalysisButton: View {
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .scaleEffect(1.2)
                 }
-                Text(isLoading ? "解析中..." : "ビールを解析")
+                Text(isLoading ? localizationService.analyzing : localizationService.analyzeBeer)
                     .font(.title3)
                     .fontWeight(.semibold)
             }

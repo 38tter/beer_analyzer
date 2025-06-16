@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var localizationService: LocalizationService
     @State private var showingTerms = false
     @State private var showingPrivacyPolicy = false
     @State private var showingVersionHistory = false
@@ -37,15 +38,31 @@ struct SettingsView: View {
                     .padding(.vertical, 8)
                 }
                 
+                // Language Selection
+                Section(localizationService.language) {
+                    HStack {
+                        Image(systemName: "globe")
+                            .foregroundColor(.blue)
+                        Picker(localizationService.language, selection: Binding(
+                            get: { localizationService.currentLanguage },
+                            set: { newValue in localizationService.setLanguage(newValue) }
+                        )) {
+                            Text("日本語").tag(LocalizationService.AppLanguage.japanese)
+                            Text("English").tag(LocalizationService.AppLanguage.english)
+                        }
+                        .pickerStyle(MenuPickerStyle())
+                    }
+                }
+                
                 // Settings Options
-                Section("設定") {
+                Section(localizationService.settings) {
                     Button {
                         showingTerms = true
                     } label: {
                         HStack {
                             Image(systemName: "doc.text.fill")
                                 .foregroundColor(.blue)
-                            Text("利用規約")
+                            Text(localizationService.termsOfUse)
                                 .foregroundColor(.primary)
                             Spacer()
                             Image(systemName: "chevron.right")
@@ -60,7 +77,7 @@ struct SettingsView: View {
                         HStack {
                             Image(systemName: "hand.raised.fill")
                                 .foregroundColor(.blue)
-                            Text("プライバシーポリシー")
+                            Text(localizationService.privacyPolicy)
                                 .foregroundColor(.primary)
                             Spacer()
                             Image(systemName: "chevron.right")
@@ -112,7 +129,7 @@ struct SettingsView: View {
                     .padding(.vertical, 4)
                 }
             }
-            .navigationTitle("設定")
+            .navigationTitle(localizationService.settings)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

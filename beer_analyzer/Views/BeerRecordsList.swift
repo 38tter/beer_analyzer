@@ -8,6 +8,7 @@ import SwiftUI
 
 struct BeerRecordsList: View {
     @EnvironmentObject var firestoreService: FirestoreService
+    @EnvironmentObject var localizationService: LocalizationService
     
     @State private var beers: [BeerRecord] = []
     @State private var isLoading = false
@@ -23,24 +24,24 @@ struct BeerRecordsList: View {
                 // ヘッダー
                 VStack(spacing: 12) {
                     HStack {
-                        Text("ビールの記録")
+                        Text(localizationService.beerRecords)
                             .font(.largeTitle)
                             .fontWeight(.bold)
                         Spacer()
-                        Text("\(beers.count)件")
+                        Text(localizationService.currentLanguage == .japanese ? "\(beers.count)件" : "\(beers.count)\(localizationService.itemsCount)")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
                     
                     // ソートコントロール
                     HStack {
-                        Text("並び順:")
+                        Text(localizationService.sortOrder)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         
-                        Picker("並び順", selection: $sortDescending) {
-                            Text("新しい順").tag(true)
-                            Text("古い順").tag(false)
+                        Picker(localizationService.sortOrder, selection: $sortDescending) {
+                            Text(localizationService.newest).tag(true)
+                            Text(localizationService.oldest).tag(false)
                         }
                         .pickerStyle(SegmentedPickerStyle())
                         .onChange(of: sortDescending) { newValue in
@@ -59,10 +60,10 @@ struct BeerRecordsList: View {
                         Image(systemName: "wineglass")
                             .font(.system(size: 60))
                             .foregroundColor(.gray)
-                        Text("まだビールの記録はありません")
+                        Text(localizationService.noRecordsYet)
                             .font(.title2)
                             .foregroundColor(.secondary)
-                        Text("ビールを解析して記録を開始しましょう！")
+                        Text(localizationService.startRecording)
                             .font(.body)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
@@ -101,7 +102,7 @@ struct BeerRecordsList: View {
                                 ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle())
                                     .scaleEffect(1.2)
-                                Text("読み込み中...")
+                                Text(localizationService.loading)
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                                 Spacer()
