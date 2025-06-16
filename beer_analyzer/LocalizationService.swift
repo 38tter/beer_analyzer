@@ -8,21 +8,21 @@
 import Foundation
 import CoreLocation
 
-class LocalizationService: ObservableObject {
-    static let shared = LocalizationService()
+public class LocalizationService: ObservableObject {
+    public static let shared = LocalizationService()
     
-    @Published private(set) var currentLanguage: AppLanguage = .japanese
-    @Published private(set) var isLocationBasedLanguageDetected = false
+    @Published public private(set) var currentLanguage: AppLanguage = .japanese
+    @Published public private(set) var isLocationBasedLanguageDetected = false
     
     private let locationManager = CLLocationManager()
     private let userDefaults = UserDefaults.standard
     private let languageOverrideKey = "app_language_override"
     
-    enum AppLanguage: String, CaseIterable {
+    public enum AppLanguage: String, CaseIterable {
         case japanese = "ja"
         case english = "en"
         
-        var displayName: String {
+        public var displayName: String {
             switch self {
             case .japanese:
                 return "日本語"
@@ -44,7 +44,7 @@ class LocalizationService: ObservableObject {
     
     // MARK: - Public Methods
     
-    func detectUserCountryAndSetLanguage() {
+    public func detectUserCountryAndSetLanguage() {
         // Check if user has manually set a language preference
         if let savedLanguageRaw = userDefaults.string(forKey: languageOverrideKey),
            let savedLanguage = AppLanguage(rawValue: savedLanguageRaw) {
@@ -66,7 +66,7 @@ class LocalizationService: ObservableObject {
         }
     }
     
-    func setLanguage(_ language: AppLanguage, savePreference: Bool = true) {
+    public func setLanguage(_ language: AppLanguage, savePreference: Bool = true) {
         currentLanguage = language
         
         if savePreference {
@@ -74,7 +74,7 @@ class LocalizationService: ObservableObject {
         }
     }
     
-    func resetToAutoDetect() {
+    public func resetToAutoDetect() {
         userDefaults.removeObject(forKey: languageOverrideKey)
         detectUserCountryAndSetLanguage()
     }
@@ -151,7 +151,7 @@ extension LocalizationService: CLLocationManagerDelegate {
 }
 
 // MARK: - Localized Strings
-extension LocalizationService {
+public extension LocalizationService {
     
     // MARK: - Main Tab Labels
     var addTabLabel: String {
