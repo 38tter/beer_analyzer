@@ -25,11 +25,11 @@ struct SettingsView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 200, height: 112)
                         
-                        Text("Beer Analyzer")
+                        Text(NSLocalizedString("app_name", comment: ""))
                             .font(.title2)
                             .fontWeight(.bold)
                         
-                        Text("Version 1.0.0")
+                        Text(NSLocalizedString("app_version", comment: ""))
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -38,14 +38,14 @@ struct SettingsView: View {
                 }
                 
                 // Settings Options
-                Section("設定") {
+                Section(NSLocalizedString("settings", comment: "")) {
                     Button {
                         showingTerms = true
                     } label: {
                         HStack {
                             Image(systemName: "doc.text.fill")
                                 .foregroundColor(.blue)
-                            Text("利用規約")
+                            Text(NSLocalizedString("terms_of_use", comment: ""))
                                 .foregroundColor(.primary)
                             Spacer()
                             Image(systemName: "chevron.right")
@@ -60,7 +60,7 @@ struct SettingsView: View {
                         HStack {
                             Image(systemName: "hand.raised.fill")
                                 .foregroundColor(.blue)
-                            Text("プライバシーポリシー")
+                            Text(NSLocalizedString("privacy_policy", comment: ""))
                                 .foregroundColor(.primary)
                             Spacer()
                             Image(systemName: "chevron.right")
@@ -75,7 +75,7 @@ struct SettingsView: View {
                         HStack {
                             Image(systemName: "clock.arrow.circlepath")
                                 .foregroundColor(.blue)
-                            Text("バージョン更新履歴")
+                            Text(NSLocalizedString("version_history", comment: ""))
                                 .foregroundColor(.primary)
                             Spacer()
                             Image(systemName: "chevron.right")
@@ -90,7 +90,7 @@ struct SettingsView: View {
                         HStack {
                             Image(systemName: "envelope.fill")
                                 .foregroundColor(.blue)
-                            Text("お問い合わせ")
+                            Text(NSLocalizedString("contact_us", comment: ""))
                                 .foregroundColor(.primary)
                             Spacer()
                             Image(systemName: "chevron.right")
@@ -101,9 +101,9 @@ struct SettingsView: View {
                 }
                 
                 // Developer Info
-                Section("開発者情報") {
+                Section(NSLocalizedString("developer_info", comment: "")) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Developed by 38tter")
+                        Text(NSLocalizedString("developed_by", comment: ""))
                             .font(.subheadline)
                         Text("odradek38@gmail.com")
                             .font(.caption)
@@ -112,7 +112,7 @@ struct SettingsView: View {
                     .padding(.vertical, 4)
                 }
             }
-            .navigationTitle("設定")
+            .navigationTitle(NSLocalizedString("settings", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -152,31 +152,31 @@ struct SimpleVersionHistoryView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     VStack(spacing: 16) {
-                        Text("バージョン更新履歴")
+                        Text(NSLocalizedString("version_history_title", comment: ""))
                             .font(.title2)
                             .fontWeight(.bold)
                         
-                        Text("Beer Analyzerの更新内容")
+                        Text(NSLocalizedString("version_history_subtitle", comment: ""))
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
                     .padding(.top, 20)
                     
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Version 1.0.0 - 2025年6月11日")
+                        Text(NSLocalizedString("version_date", comment: ""))
                             .font(.headline)
                             .fontWeight(.bold)
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("• ビール画像解析機能")
-                            Text("• ビール情報の保存・管理")
-                            Text("• 無限スクロール対応")
-                            Text("• ソート機能")
-                            Text("• 飲酒ステータス記録")
-                            Text("• 公式サイトリンク表示")
-                            Text("• アニメーション付きローディング")
-                            Text("• 利用規約の実装")
-                            Text("• 設定画面の追加")
+                            Text(NSLocalizedString("feature_beer_analysis", comment: ""))
+                            Text(NSLocalizedString("feature_beer_management", comment: ""))
+                            Text(NSLocalizedString("feature_infinite_scroll", comment: ""))
+                            Text(NSLocalizedString("feature_sort", comment: ""))
+                            Text(NSLocalizedString("feature_drink_status", comment: ""))
+                            Text(NSLocalizedString("feature_website_links", comment: ""))
+                            Text(NSLocalizedString("feature_loading_animation", comment: ""))
+                            Text(NSLocalizedString("feature_terms", comment: ""))
+                            Text(NSLocalizedString("feature_settings", comment: ""))
                         }
                         .font(.body)
                     }
@@ -186,7 +186,7 @@ struct SimpleVersionHistoryView: View {
                 }
                 .padding()
             }
-            .navigationTitle("更新履歴")
+            .navigationTitle(NSLocalizedString("version_history", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -216,11 +216,11 @@ struct SimpleContactView: View {
                         .font(.system(size: 60))
                         .foregroundColor(.blue)
                     
-                    Text("お問い合わせ")
+                    Text(NSLocalizedString("contact_title", comment: ""))
                         .font(.title2)
                         .fontWeight(.bold)
                     
-                    Text("ご質問、ご要望、バグ報告など\nお気軽にお問い合わせください")
+                    Text(NSLocalizedString("contact_description", comment: ""))
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -234,7 +234,7 @@ struct SimpleContactView: View {
                         HStack {
                             Image(systemName: "envelope.fill")
                                 .font(.title2)
-                            Text("メールを送信")
+                            Text(NSLocalizedString("send_email", comment: ""))
                                 .font(.headline)
                                 .fontWeight(.semibold)
                         }
@@ -246,7 +246,7 @@ struct SimpleContactView: View {
                     }
                     
                     VStack(spacing: 8) {
-                        Text("メールアドレス")
+                        Text(NSLocalizedString("email_address_label", comment: ""))
                             .font(.caption)
                             .foregroundColor(.secondary)
                         
@@ -259,7 +259,7 @@ struct SimpleContactView: View {
                 Spacer()
             }
             .padding()
-            .navigationTitle("お問い合わせ")
+            .navigationTitle(NSLocalizedString("contact_us", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -272,26 +272,16 @@ struct SimpleContactView: View {
                 }
             }
         }
-        .alert("メールアプリを開けませんでした", isPresented: $showingEmailAlert) {
-            Button("OK") {}
+        .alert(NSLocalizedString("email_app_error_title", comment: ""), isPresented: $showingEmailAlert) {
+            Button(NSLocalizedString("ok", comment: "")) {}
         } message: {
-            Text("メールアプリが利用できません。以下のアドレスに直接メールをお送りください：\n\(emailAddress)")
+            Text(String(format: NSLocalizedString("email_app_error_message", comment: ""), emailAddress))
         }
     }
     
     private func openMailApp() {
-        let subject = "Beer Analyzer お問い合わせ"
-        let body = """
-        
-        
-        ━━━━━━━━━━━━━━━━━━━━━━
-        アプリ情報
-        ━━━━━━━━━━━━━━━━━━━━━━
-        アプリ名: Beer Analyzer
-        バージョン: 1.0.0
-        端末: \(UIDevice.current.model)
-        iOS: \(UIDevice.current.systemVersion)
-        """
+        let subject = NSLocalizedString("email_subject", comment: "")
+        let body = String(format: NSLocalizedString("email_body_app_info", comment: ""), UIDevice.current.model, UIDevice.current.systemVersion)
         
         let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let encodedBody = body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
@@ -316,11 +306,11 @@ struct PrivacyPolicyView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     VStack(spacing: 16) {
-                        Text("プライバシーポリシー")
+                        Text(NSLocalizedString("privacy_policy_title", comment: ""))
                             .font(.title2)
                             .fontWeight(.bold)
                         
-                        Text("Beer Analyzer プライバシーポリシー")
+                        Text(NSLocalizedString("privacy_policy_subtitle", comment: ""))
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
@@ -328,50 +318,31 @@ struct PrivacyPolicyView: View {
                     
                     VStack(alignment: .leading, spacing: 16) {
                         privacySection(
-                            title: "1. 収集する情報",
-                            content: """
-                            本アプリでは、以下の情報を収集する場合があります：
-                            • ビール画像の解析データ
-                            • アプリの使用状況（匿名）
-                            • エラーログ（匿名）
-                            """
+                            title: NSLocalizedString("privacy_section_1_title", comment: ""),
+                            content: NSLocalizedString("privacy_section_1_content", comment: "")
                         )
                         
                         privacySection(
-                            title: "2. 情報の利用目的",
-                            content: """
-                            収集した情報は以下の目的で利用します：
-                            • ビール解析機能の提供・改善
-                            • アプリの安定性向上
-                            • ユーザーサポート
-                            """
+                            title: NSLocalizedString("privacy_section_2_title", comment: ""),
+                            content: NSLocalizedString("privacy_section_2_content", comment: "")
                         )
                         
                         privacySection(
-                            title: "3. 情報の共有",
-                            content: """
-                            個人を特定できる情報を第三者と共有することはありません。
-                            匿名化された統計データのみを品質向上の目的で利用する場合があります。
-                            """
+                            title: NSLocalizedString("privacy_section_3_title", comment: ""),
+                            content: NSLocalizedString("privacy_section_3_content", comment: "")
                         )
                         
                         privacySection(
-                            title: "4. データの保存",
-                            content: """
-                            ビール記録データは安全に暗号化されてクラウドに保存されます。
-                            お客様はいつでもデータの削除を要求できます。
-                            """
+                            title: NSLocalizedString("privacy_section_4_title", comment: ""),
+                            content: NSLocalizedString("privacy_section_4_content", comment: "")
                         )
                         
                         privacySection(
-                            title: "5. お問い合わせ",
-                            content: """
-                            プライバシーに関するご質問は以下までお問い合わせください：
-                            odradek38@gmail.com
-                            """
+                            title: NSLocalizedString("privacy_section_5_title", comment: ""),
+                            content: NSLocalizedString("privacy_section_5_content", comment: "")
                         )
                         
-                        Text("最終更新日: 2025年6月11日")
+                        Text(NSLocalizedString("last_updated", comment: ""))
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .padding(.top, 20)
@@ -379,7 +350,7 @@ struct PrivacyPolicyView: View {
                 }
                 .padding()
             }
-            .navigationTitle("プライバシーポリシー")
+            .navigationTitle(NSLocalizedString("privacy_policy", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

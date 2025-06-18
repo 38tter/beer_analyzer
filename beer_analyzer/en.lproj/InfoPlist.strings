@@ -1,0 +1,10 @@
+/* 
+  InfoPlist.strings
+  beer_analyzer
+
+  Created on 2025-06-18.
+  English Localization for Info.plist
+*/
+
+"NSLocationWhenInUseUsageDescription" = "This app uses location to automatically set the appropriate language based on your country.";
+"NSLocationUsageDescription" = "This app uses location to automatically set the appropriate language based on your country.";

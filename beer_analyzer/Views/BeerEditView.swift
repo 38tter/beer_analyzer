@@ -75,71 +75,71 @@ struct BeerEditView: View {
                     // MARK: - 編集フォーム
                     Group {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("銘柄: \(originalBeer.beerName)")
+                            Text(String(format: NSLocalizedString("beer_name_label", comment: ""), originalBeer.beerName))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .padding(.horizontal)
-                            TextField("銘柄", text: $beerName)
+                            TextField(NSLocalizedString("beer_name_placeholder", comment: ""), text: $beerName)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .padding(.horizontal)
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("ブランド: \(originalBeer.brand)")
+                            Text(String(format: NSLocalizedString("brand_label", comment: ""), originalBeer.brand))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .padding(.horizontal)
-                            TextField("ブランド", text: $brand)
+                            TextField(NSLocalizedString("brand_placeholder", comment: ""), text: $brand)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .padding(.horizontal)
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("製造者: \(originalBeer.manufacturer)")
+                            Text(String(format: NSLocalizedString("manufacturer_label", comment: ""), originalBeer.manufacturer))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .padding(.horizontal)
-                            TextField("製造者", text: $manufacturer)
+                            TextField(NSLocalizedString("manufacturer_placeholder", comment: ""), text: $manufacturer)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .padding(.horizontal)
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("アルコール度数 (ABV): \(originalBeer.abv)")
+                            Text(String(format: NSLocalizedString("abv_label", comment: ""), originalBeer.abv))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .padding(.horizontal)
-                            TextField("アルコール度数 (ABV)", text: $abv)
+                            TextField(NSLocalizedString("abv_placeholder", comment: ""), text: $abv)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .padding(.horizontal)
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("容量: \(originalBeer.capacity)")
+                            Text(String(format: NSLocalizedString("capacity_label", comment: ""), originalBeer.capacity))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .padding(.horizontal)
-                            TextField("容量", text: $capacity)
+                            TextField(NSLocalizedString("capacity_placeholder", comment: ""), text: $capacity)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .padding(.horizontal)
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("ホップ: \(originalBeer.hops)")
+                            Text(String(format: NSLocalizedString("hops_label", comment: ""), originalBeer.hops))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .padding(.horizontal)
-                            TextField("ホップ", text: $hops)
+                            TextField(NSLocalizedString("hops_placeholder", comment: ""), text: $hops)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .padding(.horizontal)
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("公式サイトURL: \(originalBeer.websiteUrl ?? "未設定")")
+                            Text(String(format: NSLocalizedString("website_url_label", comment: ""), originalBeer.websiteUrl ?? NSLocalizedString("not_set", comment: "")))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .padding(.horizontal)
-                            TextField("公式サイトURL (任意)", text: $websiteUrl)
+                            TextField(NSLocalizedString("website_url_placeholder", comment: ""), text: $websiteUrl)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .keyboardType(.URL)
                                 .autocapitalization(.none)
@@ -147,11 +147,11 @@ struct BeerEditView: View {
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("メモ: \(originalBeer.memo ?? "未設定")")
+                            Text(String(format: NSLocalizedString("memo_label", comment: ""), originalBeer.memo ?? NSLocalizedString("not_set", comment: "")))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .padding(.horizontal)
-                            TextField("メモ (任意)", text: $memo, axis: .vertical)
+                            TextField(NSLocalizedString("memo_placeholder", comment: ""), text: $memo, axis: .vertical)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .lineLimit(3...6)
                                 .padding(.horizontal)
@@ -163,7 +163,7 @@ struct BeerEditView: View {
                     // MARK: - 飲んだかどうかのトグル
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
-                            Text("飲んだかどうか")
+                            Text(NSLocalizedString("drunk_status_label", comment: ""))
                                 .font(.headline)
                                 .fontWeight(.semibold)
                             Spacer()
@@ -176,7 +176,7 @@ struct BeerEditView: View {
                             HStack {
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundColor(.green)
-                                Text("飲みました！🍺")
+                                Text(NSLocalizedString("has_drunk", comment: ""))
                                     .font(.subheadline)
                                     .foregroundColor(.green)
                                 Spacer()
@@ -186,7 +186,7 @@ struct BeerEditView: View {
                             HStack {
                                 Image(systemName: "circle")
                                     .foregroundColor(.gray)
-                                Text("まだ飲んでいません")
+                                Text(NSLocalizedString("not_drunk_yet", comment: ""))
                                     .font(.subheadline)
                                     .foregroundColor(.gray)
                                 Spacer()
@@ -209,7 +209,7 @@ struct BeerEditView: View {
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                     .scaleEffect(1.0)
                             }
-                            Text(isLoadingSave ? "保存中..." : "変更を保存")
+                            Text(isLoadingSave ? NSLocalizedString("saving", comment: "") : NSLocalizedString("save_changes", comment: ""))
                                 .font(.headline)
                                 .fontWeight(.bold)
                         }
@@ -254,21 +254,21 @@ struct BeerEditView: View {
                 )
                 .ignoresSafeArea()
             )
-            .navigationTitle("編集") // ナビゲーションバーのタイトル
+            .navigationTitle(NSLocalizedString("edit_beer", comment: "")) // ナビゲーションバーのタイトル
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("キャンセル") {
+                    Button(NSLocalizedString("cancel", comment: "")) {
                         dismiss()
                     }
                 }
             }
-            .alert("保存完了", isPresented: $showingSaveSuccessAlert) {
-                Button("OK") {
+            .alert(NSLocalizedString("save_success", comment: ""), isPresented: $showingSaveSuccessAlert) {
+                Button(NSLocalizedString("ok", comment: "")) {
                     dismiss() // 保存成功後、ビューを閉じる
                 }
             } message: {
-                Text("ビール情報が正常に更新されました。")
+                Text(NSLocalizedString("save_success_message", comment: ""))
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())
@@ -277,7 +277,7 @@ struct BeerEditView: View {
     // MARK: - 変更を保存するロジック
     private func saveChanges() {
         guard let beerId = originalBeer.id else {
-            errorMessage = "ビールIDが見つかりません。"
+            errorMessage = NSLocalizedString("beer_id_not_found", comment: "")
             return
         }
 
@@ -313,7 +313,7 @@ struct BeerEditView: View {
                 }
             } catch {
                 DispatchQueue.main.async {
-                    self.errorMessage = "情報の保存に失敗しました: \(error.localizedDescription)"
+                    self.errorMessage = String(format: NSLocalizedString("save_failed", comment: ""), error.localizedDescription)
                     print("Error saving beer changes: \(error.localizedDescription)")
                 }
             }

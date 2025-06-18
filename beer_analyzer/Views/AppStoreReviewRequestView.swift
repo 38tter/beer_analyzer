@@ -56,7 +56,7 @@ struct AppStoreReviewRequestView: View {
                 // メッセージ
                 VStack(spacing: 12) {
                     
-                    Text("Beer Analyzerをお楽しみいただき\nありがとうございます！")
+                    Text(NSLocalizedString("app_review_title", comment: ""))
                         .font(.body)
                         .foregroundColor(.primary)
                         .multilineTextAlignment(.center)
@@ -65,12 +65,12 @@ struct AppStoreReviewRequestView: View {
                 
                 // 評価依頼メッセージ
                 VStack(spacing: 8) {
-                    Text("⭐ App Storeで評価をお願いします ⭐")
+                    Text(NSLocalizedString("app_review_request", comment: ""))
                         .font(.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(Color(red: 0.85, green: 0.5, blue: 0.1))
                     
-                    Text("あなたの評価が今後の開発の励みになります")
+                    Text(NSLocalizedString("app_review_description", comment: ""))
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -86,7 +86,7 @@ struct AppStoreReviewRequestView: View {
                         HStack {
                             Image(systemName: "star.fill")
                                 .font(.headline)
-                            Text("App Storeで評価する")
+                            Text(NSLocalizedString("rate_on_app_store", comment: ""))
                                 .font(.headline)
                                 .fontWeight(.semibold)
                         }
@@ -107,7 +107,7 @@ struct AppStoreReviewRequestView: View {
                     Button {
                         onReviewLater()
                     } label: {
-                        Text("後で評価する")
+                        Text(NSLocalizedString("rate_later", comment: ""))
                             .font(.headline)
                             .fontWeight(.medium)
                             .foregroundColor(.blue)
@@ -121,7 +121,7 @@ struct AppStoreReviewRequestView: View {
                     Button {
                         onNeverAsk()
                     } label: {
-                        Text("今後表示しない")
+                        Text(NSLocalizedString("dont_show_again", comment: ""))
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }

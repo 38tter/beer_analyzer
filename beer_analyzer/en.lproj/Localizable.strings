@@ -131,3 +131,78 @@
 "loading_get_manufacturer_alt" = "🏭 Getting manufacturer information...";
 "loading_prepare_result_alt" = "✨ Preparing detailed analysis results...";
 "loading_please_wait_alt" = "🎯 Please wait a moment...";
+
+// MARK: - Edit View - Additional Labels
+"beer_name_label" = "Beer Name: %@";
+"brand_label" = "Brand: %@";
+"manufacturer_label" = "Manufacturer: %@";
+"abv_label" = "ABV: %@";
+"capacity_label" = "Capacity: %@";
+"hops_label" = "Hops: %@";
+"website_url_label" = "Official Website URL: %@";
+"memo_label" = "Memo: %@";
+"beer_name_placeholder" = "Beer Name";
+"brand_placeholder" = "Brand";
+"manufacturer_placeholder" = "Manufacturer";
+"abv_placeholder" = "ABV";
+"capacity_placeholder" = "Capacity";
+"hops_placeholder" = "Hops";
+"website_url_placeholder" = "Official Website URL (Optional)";
+"memo_placeholder" = "Memo (Optional)";
+"drunk_status_label" = "Consumption Status";
+"ok" = "OK";
+
+// MARK: - Deletion Errors
+"user_not_authenticated_delete" = "User not authenticated. Cannot delete beer.";
+
+// MARK: - Settings View
+"app_name" = "Beer Analyzer";
+"app_version" = "Version 1.0.0";
+"developed_by" = "Developed by 38tter";
+"close" = "Close";
+
+// MARK: - Version History
+"version_history_title" = "Version History";
+"version_history_subtitle" = "Beer Analyzer Updates";
+"version_date" = "Version 1.0.0 - June 11, 2025";
+"feature_beer_analysis" = "• Beer image analysis";
+"feature_beer_management" = "• Beer information storage and management";
+"feature_infinite_scroll" = "• Infinite scroll support";
+"feature_sort" = "• Sort functionality";
+"feature_drink_status" = "• Drinking status recording";
+"feature_website_links" = "• Official website link display";
+"feature_loading_animation" = "• Animated loading";
+"feature_terms" = "• Terms of use implementation";
+"feature_settings" = "• Settings screen added";
+
+// MARK: - Contact View
+"contact_title" = "Contact Us";
+"contact_description" = "Questions, suggestions, bug reports\nFeel free to contact us";
+"send_email" = "Send Email";
+"email_address_label" = "Email Address";
+"email_app_error_title" = "Could not open email app";
+"email_app_error_message" = "Email app is not available. Please send email directly to:\n%@";
+"email_subject" = "Beer Analyzer Inquiry";
+"email_body_app_info" = "\n\n━━━━━━━━━━━━━━━━━━━━━━\nApp Information\n━━━━━━━━━━━━━━━━━━━━━━\nApp Name: Beer Analyzer\nVersion: 1.0.0\nDevice: %@\niOS: %@";
+
+// MARK: - Image Preview
+"preview" = "Preview";
+
+// MARK: - API and System Messages
+"unknown" = "Unknown";
+"unknown_error_data" = "Unknown error data";
+
+// MARK: - Privacy Policy
+"privacy_policy_title" = "Privacy Policy";
+"privacy_policy_subtitle" = "Beer Analyzer Privacy Policy";
+"privacy_section_1_title" = "1. Information We Collect";
+"privacy_section_1_content" = "This app may collect the following information:\n• Beer image analysis data\n• App usage statistics (anonymous)\n• Error logs (anonymous)";
+"privacy_section_2_title" = "2. Purpose of Information Use";
+"privacy_section_2_content" = "Collected information is used for:\n• Providing and improving beer analysis features\n• Improving app stability\n• User support";
+"privacy_section_3_title" = "3. Information Sharing";
+"privacy_section_3_content" = "We do not share personally identifiable information with third parties.\nAnonymized statistical data may be used for quality improvement purposes.";
+"privacy_section_4_title" = "4. Data Storage";
+"privacy_section_4_content" = "Beer record data is securely encrypted and stored in the cloud.\nYou can request data deletion at any time.";
+"privacy_section_5_title" = "5. Contact";
+"privacy_section_5_content" = "For privacy-related questions, please contact:\nodradek38@gmail.com";
+"last_updated" = "Last updated: June 11, 2025";

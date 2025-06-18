@@ -21,12 +21,12 @@ struct ImagePickerSection: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("ビールの写真をアップロードまたは撮影")
+            Text(NSLocalizedString("upload_or_take_photo", comment: ""))
                 .font(.headline)
 
             // iOS 16+ の PhotosPicker
             PhotosPicker(selection: $selectedImage, matching: .images) {
-                Label("写真を選択", systemImage: "photo")
+                Label(NSLocalizedString("select_photo", comment: ""), systemImage: "photo")
                     .font(.title3)
                     .padding()
                     .frame(maxWidth: .infinity)
@@ -53,7 +53,7 @@ struct ImagePickerSection: View {
                 self.pairingSuggestion = nil
                 self.errorMessage = nil
             } label: {
-                Label("カメラで撮影", systemImage: "camera")
+                Label(NSLocalizedString("take_photo", comment: ""), systemImage: "camera")
                     .font(.title3)
                     .padding()
                     .frame(maxWidth: .infinity)

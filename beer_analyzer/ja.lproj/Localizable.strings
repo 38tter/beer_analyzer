@@ -131,3 +131,78 @@
 "loading_get_manufacturer_alt" = "🏭 製造者情報を取得中...";
 "loading_prepare_result_alt" = "✨ 詳細な解析結果を準備中...";
 "loading_please_wait_alt" = "🎯 もう少しお待ちください...";
+
+// MARK: - Edit View - Additional Labels
+"beer_name_label" = "銘柄: %@";
+"brand_label" = "ブランド: %@";
+"manufacturer_label" = "製造者: %@";
+"abv_label" = "アルコール度数 (ABV): %@";
+"capacity_label" = "容量: %@";
+"hops_label" = "ホップ: %@";
+"website_url_label" = "公式サイトURL: %@";
+"memo_label" = "メモ: %@";
+"beer_name_placeholder" = "銘柄";
+"brand_placeholder" = "ブランド";
+"manufacturer_placeholder" = "製造者";
+"abv_placeholder" = "アルコール度数 (ABV)";
+"capacity_placeholder" = "容量";
+"hops_placeholder" = "ホップ";
+"website_url_placeholder" = "公式サイトURL (任意)";
+"memo_placeholder" = "メモ (任意)";
+"drunk_status_label" = "飲んだかどうか";
+"ok" = "OK";
+
+// MARK: - Deletion Errors
+"user_not_authenticated_delete" = "ユーザーが認証されていません。ビールを削除できません。";
+
+// MARK: - Settings View
+"app_name" = "Beer Analyzer";
+"app_version" = "Version 1.0.0";
+"developed_by" = "Developed by 38tter";
+"close" = "閉じる";
+
+// MARK: - Version History
+"version_history_title" = "バージョン更新履歴";
+"version_history_subtitle" = "Beer Analyzerの更新内容";
+"version_date" = "Version 1.0.0 - 2025年6月11日";
+"feature_beer_analysis" = "• ビール画像解析機能";
+"feature_beer_management" = "• ビール情報の保存・管理";
+"feature_infinite_scroll" = "• 無限スクロール対応";
+"feature_sort" = "• ソート機能";
+"feature_drink_status" = "• 飲酒ステータス記録";
+"feature_website_links" = "• 公式サイトリンク表示";
+"feature_loading_animation" = "• アニメーション付きローディング";
+"feature_terms" = "• 利用規約の実装";
+"feature_settings" = "• 設定画面の追加";
+
+// MARK: - Contact View
+"contact_title" = "お問い合わせ";
+"contact_description" = "ご質問、ご要望、バグ報告など\nお気軽にお問い合わせください";
+"send_email" = "メールを送信";
+"email_address_label" = "メールアドレス";
+"email_app_error_title" = "メールアプリを開けませんでした";
+"email_app_error_message" = "メールアプリが利用できません。以下のアドレスに直接メールをお送りください：\n%@";
+"email_subject" = "Beer Analyzer お問い合わせ";
+"email_body_app_info" = "\n\n━━━━━━━━━━━━━━━━━━━━━━\nアプリ情報\n━━━━━━━━━━━━━━━━━━━━━━\nアプリ名: Beer Analyzer\nバージョン: 1.0.0\n端末: %@\niOS: %@";
+
+// MARK: - Image Preview
+"preview" = "プレビュー";
+
+// MARK: - API and System Messages
+"unknown" = "不明";
+"unknown_error_data" = "不明なエラーデータ";
+
+// MARK: - Privacy Policy
+"privacy_policy_title" = "プライバシーポリシー";
+"privacy_policy_subtitle" = "Beer Analyzer プライバシーポリシー";
+"privacy_section_1_title" = "1. 収集する情報";
+"privacy_section_1_content" = "本アプリでは、以下の情報を収集する場合があります：\n• ビール画像の解析データ\n• アプリの使用状況（匿名）\n• エラーログ（匿名）";
+"privacy_section_2_title" = "2. 情報の利用目的";
+"privacy_section_2_content" = "収集した情報は以下の目的で利用します：\n• ビール解析機能の提供・改善\n• アプリの安定性向上\n• ユーザーサポート";
+"privacy_section_3_title" = "3. 情報の共有";
+"privacy_section_3_content" = "個人を特定できる情報を第三者と共有することはありません。\n匿名化された統計データのみを品質向上の目的で利用する場合があります。";
+"privacy_section_4_title" = "4. データの保存";
+"privacy_section_4_content" = "ビール記録データは安全に暗号化されてクラウドに保存されます。\nお客様はいつでもデータの削除を要求できます。";
+"privacy_section_5_title" = "5. お問い合わせ";
+"privacy_section_5_content" = "プライバシーに関するご質問は以下までお問い合わせください：\nodradek38@gmail.com";
+"last_updated" = "最終更新日: 2025年6月11日";

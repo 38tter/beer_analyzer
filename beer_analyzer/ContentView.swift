@@ -160,7 +160,7 @@ struct ContentView: View {
                 )
                 .alert(NSLocalizedString("analysis_failed", comment: ""), isPresented: $showingNoBeerAlert) {
                     // アクションボタンを定義 (ここではOKボタンのみ)
-                    Button("OK") {
+                    Button(NSLocalizedString("ok", comment: "")) {
                         // OKが押されたときの処理
                         // 何もしなければアラートが閉じるだけ
                     }
@@ -212,7 +212,7 @@ struct ContentView: View {
 
     private func deleteBeerRecord(idToDelete: String) async {
         guard let currentUserId = userId else {
-            errorMessage = "User not authenticated. Cannot delete beer."
+            errorMessage = NSLocalizedString("user_not_authenticated_delete", comment: "")
             return
         }
 
@@ -372,7 +372,7 @@ struct ImagePreviewSection: View {
 
     var body: some View {
         VStack {
-            Text("Preview")
+            Text(NSLocalizedString("preview", comment: ""))
                 .font(.title2)
                 .fontWeight(.semibold)
                 .padding(.bottom, 5)

@@ -37,7 +37,7 @@ struct CustomAlertView: View {
 
                 Divider()
 
-                Button("OK") {
+                Button(NSLocalizedString("ok", comment: "")) {
                     confirmAction()
                 }
                 .font(.body)

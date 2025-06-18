@@ -91,7 +91,7 @@ class GeminiAPIService: ObservableObject {
         let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            let errorData = String(data: data, encoding: .utf8) ?? "不明なエラーデータ"
+            let errorData = String(data: data, encoding: .utf8) ?? NSLocalizedString("unknown_error_data", comment: "")
             throw BeerError.networkError("APIリクエストが失敗しました: HTTP Status \( (response as? HTTPURLResponse)?.statusCode ?? -1), Data: \(errorData)")
         }
         return data
@@ -125,7 +125,11 @@ class GeminiAPIService: ObservableObject {
 
     // MARK: - ビール解析API
     func analyzeBeer(imageData: String, imageType: String) async throws -> BeerAnalysisResult {
-        let prompt = """
+        // 現在の言語設定を取得
+        let currentLanguage = Locale.current.language.languageCode?.identifier ?? "ja"
+        
+        // 言語に応じてプロンプトを構築
+        let basePrompt = """
         この画像には、ビールが映っています。ビールの名称、製造者、アルコール度数（ABV）、容量、使用されているホップを特定してください。
         もし画像から特定できない場合は、与えられたキーワード（ビールの名称、製造者、アルコール度数、容量）を元に以下を参照し、情報を検索して整理して出力してください。
 
@@ -159,6 +163,11 @@ class GeminiAPIService: ObservableObject {
         - ホップ : hops
         - 画像にビールが映ってない : is_not_beer
         """
+        
+        // 英語設定の場合は英語での回答を要求
+        let languageInstruction = currentLanguage == "en" ? "\n\n## 言語設定\n- 結果は英語で返してください。" : ""
+        
+        let prompt = basePrompt + languageInstruction
 
         let requestBody: [String: Any] = [
             "contents": [
@@ -188,22 +197,22 @@ class GeminiAPIService: ObservableObject {
 
         let (data, response) = try await URLSession.shared.data(for: request)
         
-        print(String(data: data, encoding: .utf8) ?? "不明なエラーデータ")
+        print(String(data: data, encoding: .utf8) ?? NSLocalizedString("unknown_error_data", comment: ""))
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            let errorData = String(data: data, encoding: .utf8) ?? "不明なエラーデータ"
+            let errorData = String(data: data, encoding: .utf8) ?? NSLocalizedString("unknown_error_data", comment: "")
             throw BeerError.networkError("APIリクエストが失敗しました: HTTP Status \( (response as? HTTPURLResponse)?.statusCode ?? -1), Data: \(errorData)")
         }
         
         let detailedBreweryInfo = try parseGeminiBreweryResponse(jsonData: data)
         
         return BeerAnalysisResult(
-            beerName: detailedBreweryInfo.beerName ?? "不明",
-            brand: detailedBreweryInfo.brand ?? "不明",
-            manufacturer: detailedBreweryInfo.manufacturer ?? "不明",
-            abv: detailedBreweryInfo.abv ?? "不明",
-            capacity: detailedBreweryInfo.capacity ?? "不明",
-            hops: detailedBreweryInfo.hops ?? "不明",
+            beerName: detailedBreweryInfo.beerName ?? NSLocalizedString("unknown", comment: ""),
+            brand: detailedBreweryInfo.brand ?? NSLocalizedString("unknown", comment: ""),
+            manufacturer: detailedBreweryInfo.manufacturer ?? NSLocalizedString("unknown", comment: ""),
+            abv: detailedBreweryInfo.abv ?? NSLocalizedString("unknown", comment: ""),
+            capacity: detailedBreweryInfo.capacity ?? NSLocalizedString("unknown", comment: ""),
+            hops: detailedBreweryInfo.hops ?? NSLocalizedString("unknown", comment: ""),
             isNotBeer: detailedBreweryInfo.isNotBeer ?? false,
             websiteUrl: detailedBreweryInfo.url?.absoluteString
         )
@@ -312,7 +321,10 @@ class GeminiAPIService: ObservableObject {
 
     // MARK: - ペアリング提案API
     func generatePairingSuggestion(for beer: BeerAnalysisResult) async throws -> String {
-        let pairingPrompt = """
+        // 現在の言語設定を取得
+        let currentLanguage = Locale.current.language.languageCode?.identifier ?? "ja"
+        
+        let basePairingPrompt = """
         以下のビールの情報に基づいて、そのビールに合う料理を検索し、最大で3つ提案してください。各提案は箇条書きで簡潔に記述し、提案が見つからない場合は「不明」と記述してください。
         ビールの名称: \(beer.beerName)
         ビールの銘柄: \(beer.brand)
@@ -324,6 +336,11 @@ class GeminiAPIService: ObservableObject {
         ## 要件
         - それぞれの料理について「料理名」をタイトルとし、「理由」「おすすめのシーン」を箇条書きで書いてください。
         """
+        
+        // 英語設定の場合は英語での回答を要求
+        let languageInstruction = currentLanguage == "en" ? "\n\n## 言語設定\n- 結果は英語で返してください。" : ""
+        
+        let pairingPrompt = basePairingPrompt + languageInstruction
 
         let requestBody: [String: Any] = [
             "contents": [
@@ -356,7 +373,7 @@ class GeminiAPIService: ObservableObject {
         let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            let errorData = String(data: data, encoding: .utf8) ?? "不明なエラーデータ"
+            let errorData = String(data: data, encoding: .utf8) ?? NSLocalizedString("unknown_error_data", comment: "")
             throw BeerError.networkError("APIリクエストが失敗しました: HTTP Status \( (response as? HTTPURLResponse)?.statusCode ?? -1), Data: \(errorData)")
         }
 

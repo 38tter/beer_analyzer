@@ -1,0 +1,10 @@
+/* 
+  InfoPlist.strings
+  beer_analyzer
+
+  Created on 2025-06-18.
+  Japanese Localization for Info.plist
+*/
+
+"NSLocationWhenInUseUsageDescription" = "このアプリは、お住まいの国に基づいて適切な言語を自動的に設定するために位置情報を使用します。";
+"NSLocationUsageDescription" = "このアプリは、お住まいの国に基づいて適切な言語を自動的に設定するために位置情報を使用します。";
