@@ -177,6 +177,11 @@ struct BeerDetailView: View {
                                 value: memo
                             )
                         }
+                        
+                        // レーティング（レーティングが存在する場合のみ）
+                        if let rating = beer.rating, rating > 0 {
+                            RatingDisplayCard(rating: rating)
+                        }
                     }
                     
                     Spacer(minLength: 20)
@@ -245,7 +250,8 @@ struct BeerDetailView: View {
                     imageUrl: beer.imageUrl ?? "",
                     hasDrunk: newStatus,
                     websiteUrl: beer.websiteUrl,
-                    memo: beer.memo
+                    memo: beer.memo,
+                    rating: beer.rating
                 )
                 
                 try await firestoreService.updateBeer(documentId: beerId, beer: updatedBeer)
@@ -339,6 +345,52 @@ struct DetailInfoCard: View {
     }
 }
 
+// MARK: - レーティング表示カードコンポーネント
+struct RatingDisplayCard: View {
+    let rating: Double
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("⭐")
+                    .font(.title2)
+                Text(NSLocalizedString("rating", comment: ""))
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text(String(format: "%.1f", rating))
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.orange)
+            }
+            
+            HStack(spacing: 4) {
+                ForEach(1...5, id: \.self) { star in
+                    Image(systemName: rating >= Double(star) ? "star.fill" : 
+                          rating >= Double(star) - 0.5 ? "star.leadinghalf.filled" : "star")
+                        .foregroundColor(.orange)
+                        .font(.title3)
+                }
+                Spacer()
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.regularMaterial)
+                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(
+                    LinearGradient(colors: [Color.orange.opacity(0.3), Color.yellow.opacity(0.2)], startPoint: .leading, endPoint: .trailing),
+                    lineWidth: 1
+                )
+        )
+    }
+}
+
 #Preview {
     BeerDetailView(beer: BeerRecord(
         analysisResult: BeerAnalysisResult(
@@ -356,7 +408,8 @@ struct DetailInfoCard: View {
         imageUrl: "",
         hasDrunk: true,
         websiteUrl: "https://www.sapporobeer.jp",
-        memo: "とても美味しいビールでした！"
+        memo: "とても美味しいビールでした！",
+        rating: 4.5
     ))
     .environmentObject(FirestoreService())
 }

@@ -13,9 +13,11 @@ struct BeerAnalysisResultModal: View {
     let beerImage: UIImage?
     let onDismiss: () -> Void
     let onGeneratePairing: (@escaping (String?) -> Void) -> Void
+    let onRatingSave: (Double) -> Void
     
     @State private var pairingSuggestion: String?
     @State private var isLoadingPairing = false
+    @State private var rating: Double = 0.0
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -82,6 +84,10 @@ struct BeerAnalysisResultModal: View {
                             .fill(.regularMaterial)
                             .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
                     )
+                    
+                    // レーティングスライダー
+                    RatingSlider(rating: $rating)
+                        .padding(.horizontal)
                     
                     // ペアリング提案ボタン
 //                    if pairingSuggestion == nil {
@@ -156,6 +162,7 @@ struct BeerAnalysisResultModal: View {
                     
                     // 閉じるボタン
                     Button {
+                        onRatingSave(rating)
                         onDismiss()
                     } label: {
                         Text(NSLocalizedString("result_confirmed", comment: ""))
@@ -176,6 +183,7 @@ struct BeerAnalysisResultModal: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
+                        onRatingSave(rating)
                         onDismiss()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
@@ -245,6 +253,7 @@ struct ResultRow: View {
         ),
         beerImage: nil,
         onDismiss: {},
-        onGeneratePairing: { _ in }
+        onGeneratePairing: { _ in },
+        onRatingSave: { _ in }
     )
 }

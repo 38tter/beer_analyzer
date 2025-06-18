@@ -91,6 +91,28 @@ struct BeerRecordRow: View {
                 Text("ホップ: \(beer.hops)")
                     .font(.subheadline)
                     .foregroundColor(.gray)
+                
+                // レーティング表示（存在する場合のみ）
+                if let rating = beer.rating, rating > 0 {
+                    HStack(spacing: 4) {
+                        Text("評価:")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                        
+                        ForEach(1...5, id: \.self) { star in
+                            Image(systemName: rating >= Double(star) ? "star.fill" : 
+                                  rating >= Double(star) - 0.5 ? "star.leadinghalf.filled" : "star")
+                                .foregroundColor(.orange)
+                                .font(.caption)
+                        }
+                        
+                        Text(String(format: "%.1f", rating))
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                            .fontWeight(.medium)
+                    }
+                }
+                
                 Text("記録日時: \(beer.timestamp.formatted())")
                     .font(.caption)
                     .foregroundColor(.gray)

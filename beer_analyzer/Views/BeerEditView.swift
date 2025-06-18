@@ -22,6 +22,7 @@ struct BeerEditView: View {
     @State private var hasDrunk: Bool
     @State private var websiteUrl: String
     @State private var memo: String
+    @State private var rating: Double
     
     // サービスへのアクセス
     @EnvironmentObject var firestoreService: FirestoreService
@@ -46,6 +47,7 @@ struct BeerEditView: View {
         _hasDrunk = State(initialValue: beer.hasDrunk)
         _websiteUrl = State(initialValue: beer.websiteUrl ?? "")
         _memo = State(initialValue: beer.memo ?? "")
+        _rating = State(initialValue: beer.rating ?? 0.0)
     }
 
     var body: some View {
@@ -159,6 +161,17 @@ struct BeerEditView: View {
                     }
                     .autocorrectionDisabled() // 自動修正を無効にする（ビール名などに不要な場合）
                     .textInputAutocapitalization(.never) // 自動大文字化を無効にする
+                    
+                    // MARK: - レーティングスライダー
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(String(format: NSLocalizedString("rating_label", comment: ""), originalBeer.rating != nil ? String(format: "%.1f", originalBeer.rating!) : NSLocalizedString("not_set", comment: "")))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal)
+                        
+                        RatingSlider(rating: $rating)
+                            .padding(.horizontal)
+                    }
 
                     // MARK: - 飲んだかどうかのトグル
                     VStack(alignment: .leading, spacing: 8) {
@@ -303,7 +316,8 @@ struct BeerEditView: View {
                     imageUrl: originalBeer.imageUrl ?? "",
                     hasDrunk: hasDrunk, // 飲んだかどうかの状態を反映
                     websiteUrl: websiteUrl.isEmpty ? nil : websiteUrl, // 空文字の場合はnilに変換
-                    memo: memo.isEmpty ? nil : memo // 空文字の場合はnilに変換
+                    memo: memo.isEmpty ? nil : memo, // 空文字の場合はnilに変換
+                    rating: rating > 0 ? rating : nil // 0より大きい場合のみ保存
                 )
                 
                 try await firestoreService.updateBeer(documentId: originalBeer.id ?? "", beer: updatedBeer)
