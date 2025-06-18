@@ -21,7 +21,20 @@ struct TermsOfUseView: View {
         self.showCloseButton = showCloseButton && !isPresentedForAcceptance
     }
     
-    private let termsText = """
+    private var isJapaneseLocale: Bool {
+        let locale = Locale.current
+        return locale.language.languageCode?.identifier == "ja"
+    }
+    
+    private var termsText: String {
+        if isJapaneseLocale {
+            return japaneseTermsText
+        } else {
+            return englishTermsText
+        }
+    }
+    
+    private let japaneseTermsText = """
 Beer Analyzer 利用規約
 
 本利用規約（以下「本規約」といいます）は、38tter（以下「当社」といいます）が提供するモバイルアプリケーション「Beer Analyzer」（以下「本アプリ」といいます）の利用に関する条件を定めるものです。本アプリをご利用になる前に、本規約をよくお読みください。本アプリを利用することにより、お客様は本規約の全ての条件に同意したものとみなされます。
@@ -87,16 +100,82 @@ Beer Analyzer 利用規約
 制定日: 2025年6月11日
 """
     
+    private let englishTermsText = """
+Beer Analyzer Terms of Use
+
+These Terms of Use (the "Terms") set forth the conditions for the use of the mobile application "Beer Analyzer" (the "App") provided by 38tter (the "Company"). Please read these Terms carefully before using the App. By using the App, you are deemed to have agreed to all the conditions of these Terms.
+
+Article 1 (Agreement to the Terms)
+You may use the App only if you agree to these Terms.
+
+If you are a minor, you must obtain the consent of your parent or other legal guardian before using the App.
+
+Article 2 (App Service Content)
+The App provides functionality for AI to analyze and extract information such as brand name, manufacturer, alcohol content, and hops from beer images that you photograph or upload, and to record and manage this information.
+
+The App provides functionality for AI to suggest pairings (such as food or occasions) based on the recorded beer information.
+
+The App provides functionality to save and view the beer records you have recorded.
+
+Article 3 (Notes on Use of Generative AI Functions)
+The App utilizes the latest generative AI technology (such as Google Gemini) to perform image analysis and information suggestions.
+
+While generative AI uses advanced technology, due to its nature, the information and suggestions generated may contain errors, inaccurate content, inappropriate expressions, or outdated information.
+
+You shall use the information and suggestions provided by the App at your own judgment and responsibility, and the Company makes no warranty regarding their accuracy, completeness, or usefulness.
+
+The Company shall not be liable for any damages arising from the use of the App.
+
+Article 4 (Copyright and Intellectual Property Rights)
+All intellectual property rights, including copyrights, trademark rights, patent rights, and others related to the App belong to the Company or legitimate rights holders.
+
+You may not use information or content provided through the App beyond the scope of private use (including reproduction, modification, distribution, publication, etc.).
+
+While copyright of images you upload to the App remains with you or legitimate rights holders, you grant the Company a free license to use such images (including reproduction, transmission, processing, and publication) for the operation, functionality provision, and improvement of the App.
+
+Article 5 (Prohibited Acts)
+You shall not engage in the following acts when using the App:
+
+• Acts that violate laws or these Terms.
+• Acts against public order and morals.
+• Acts that infringe upon the rights of the Company or third parties (including copyrights, trademark rights, privacy rights, etc.).
+• Acts that cause disadvantage, damage, or discomfort to other users or third parties.
+• Acts that interfere with the operation of the App or damage the reputation of the App.
+• Acts of transmitting computer viruses or other harmful programs.
+• Reverse engineering acts such as analyzing or disassembling the App.
+• Other acts deemed inappropriate by the Company.
+
+Article 6 (Disclaimer)
+The Company makes no warranty regarding the completeness, accuracy, reliability, fitness for a particular purpose, security, etc., concerning the provision of the App.
+
+The Company shall not be liable for any damages (including but not limited to direct, indirect, incidental, or consequential damages) incurred by you from the use of the App.
+
+The Company shall not be liable for any disputes arising between you and third parties in connection with the use of the App.
+
+The Company shall not be liable even if the provision of the App is interrupted or stopped due to natural disasters, system failures, communication line failures, or other causes not attributable to the Company.
+
+Article 7 (Changes, Suspension, and Termination of the App)
+The Company may change, add, suspend, or terminate the service content of the App without prior notice to you. The Company shall not be liable for any damages incurred by you as a result.
+
+Article 8 (Changes to the Terms)
+The Company may change these Terms without prior notice to you when deemed necessary. The amended Terms shall take effect from the time they are displayed in the App, and you shall comply with the amended Terms.
+
+Article 9 (Governing Law and Jurisdiction)
+These Terms shall be governed by Japanese law. All disputes related to these Terms shall be subject to the exclusive agreed jurisdiction of the court having jurisdiction over the location of 38tter as the court of first instance.
+
+Established: June 11, 2025
+"""
+    
     var body: some View {
         let contentView = VStack(spacing: 0) {
             // ヘッダー
             if isPresentedForAcceptance {
                 VStack(spacing: 16) {
-                    Text("利用規約への同意")
+                    Text(isJapaneseLocale ? "利用規約への同意" : "Agreement to Terms of Use")
                         .font(.title2)
                         .fontWeight(.bold)
                     
-                    Text("Beer Analyzerをご利用いただく前に、利用規約をお読みいただき、同意をお願いいたします。")
+                    Text(isJapaneseLocale ? "Beer Analyzerをご利用いただく前に、利用規約をお読みいただき、同意をお願いいたします。" : "Before using Beer Analyzer, please read the Terms of Use and agree to them.")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -123,7 +202,7 @@ Beer Analyzer 利用規約
                     Button {
                         onAccept()
                     } label: {
-                        Text("利用規約に同意してアプリを開始")
+                        Text(isJapaneseLocale ? "利用規約に同意してアプリを開始" : "Agree to Terms and Start App")
                             .font(.headline)
                             .fontWeight(.semibold)
                             .foregroundColor(.white)
@@ -133,7 +212,7 @@ Beer Analyzer 利用規約
                             .cornerRadius(12)
                     }
                     
-                    Text("同意いただかない場合、アプリをご利用いただけません。")
+                    Text(isJapaneseLocale ? "同意いただかない場合、アプリをご利用いただけません。" : "If you do not agree, you cannot use the app.")
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -142,12 +221,12 @@ Beer Analyzer 利用規約
                 .background(Color(.systemGroupedBackground))
             }
         }
-        .navigationTitle(isPresentedForAcceptance ? "" : "利用規約")
+        .navigationTitle(isPresentedForAcceptance ? "" : (isJapaneseLocale ? "利用規約" : "Terms of Use"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if showCloseButton {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("閉じる") {
+                    Button(isJapaneseLocale ? "閉じる" : "Close") {
                         // Try both dismiss methods for compatibility
                         if #available(iOS 15.0, *) {
                             dismiss()
