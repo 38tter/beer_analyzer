@@ -119,9 +119,9 @@ struct ContentView: View {
                                 },
                                 onRatingSave: { rating in
                                     currentBeerRating = rating
-                                    if let result = analysisResult, let imageUrl = currentImageUrl {
+                                    if let imageUrl = currentImageUrl {
                                         Task {
-                                            await firestoreService.saveBeerRecord(result, imageUrl: imageUrl, rating: rating > 0 ? rating : nil)
+                                            await firestoreService.saveBeerRecord(analysisResult, imageUrl: imageUrl, rating: rating > 0 ? rating : nil)
                                             
                                             // ビール登録数を増やす
                                             ReviewRequestService.shared.incrementBeerCount()
