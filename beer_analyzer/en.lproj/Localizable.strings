@@ -1,0 +1,133 @@
+/* 
+  Localizable.strings
+  beer_analyzer
+
+  Created on 2025-06-18.
+  English Localization
+*/
+
+// MARK: - Common UI Elements
+"close" = "Close";
+"edit" = "Edit";
+"save" = "Save";
+"cancel" = "Cancel";
+"delete" = "Delete";
+"loading" = "Loading...";
+"analyzing" = "Analyzing...";
+"saving" = "Saving...";
+
+// MARK: - Tab Bar
+"tab_add" = "Add";
+"tab_records" = "Records";
+
+// MARK: - Beer Analysis
+"analyze_beer" = "Analyze Beer";
+"analysis_complete" = "🎉 Analysis Complete!";
+"analysis_description" = "Beer information analysis has been completed";
+"analysis_result" = "Analysis Result";
+"auto_save_complete" = "Auto-save Complete";
+"auto_save_description" = "This analysis result has been saved to the \"Beer Records\" tab";
+"result_confirmed" = "Result Confirmed";
+
+// MARK: - Beer Information
+"beer_name" = "Beer Name";
+"brand" = "Brand";
+"manufacturer" = "Manufacturer";
+"abv" = "ABV";
+"capacity" = "Capacity";
+"hops" = "Hops";
+"official_website" = "Official Website";
+"recorded_date" = "Recorded Date";
+"memo" = "Memo";
+"website_link" = "Link";
+"link_available" = "Link Available";
+
+// MARK: - Beer Records
+"beer_records" = "Beer Records";
+"records_count" = "%d records";
+"sort_order" = "Sort by:";
+"sort_newest" = "Newest";
+"sort_oldest" = "Oldest";
+"no_records" = "No beer records yet";
+"start_analyzing" = "Start by analyzing a beer!";
+
+// MARK: - Beer Status
+"has_drunk" = "Consumed! 🍺";
+"not_drunk_yet" = "Not consumed yet";
+"tap_to_toggle" = "Tap to toggle";
+"drunk_status" = "Consumption Status";
+
+// MARK: - Image Picker
+"upload_or_take_photo" = "Upload or take a photo of beer";
+"select_photo" = "Select Photo";
+"take_photo" = "Take Photo";
+
+// MARK: - Pairing Suggestions
+"suggest_pairing" = "Suggest Pairing ✨";
+"generating_suggestion" = "Generating suggestion...";
+
+// MARK: - Settings
+"settings" = "Settings";
+"terms_of_use" = "Terms of Use";
+"privacy_policy" = "Privacy Policy";
+"version_history" = "Version History";
+"contact_us" = "Contact Us";
+"developer_info" = "Developer Info";
+
+// MARK: - Loading Messages
+"loading_analyze_image" = "🔍 Analyzing beer image...";
+"loading_ai_detection" = "🤖 AI is identifying beer type...";
+"loading_search_brand" = "📋 Searching for brand information...";
+"loading_analyze_abv" = "🌡️ Analyzing alcohol content...";
+"loading_check_hops" = "🌿 Checking hop characteristics...";
+"loading_get_manufacturer" = "🏭 Getting manufacturer information...";
+"loading_prepare_result" = "✨ Preparing detailed analysis results...";
+"loading_please_wait" = "🎯 Please wait a moment...";
+
+// MARK: - Error Messages
+"analysis_failed" = "Beer analysis failed";
+"beer_not_detected" = "Beer not detected or analysis failed";
+"no_image_to_analyze" = "No image to analyze.";
+"user_not_authenticated" = "User not authenticated. Please wait.";
+"delete_failed" = "Failed to delete beer: %@";
+"analysis_failed_detail" = "Beer analysis failed: %@";
+"pairing_failed" = "Pairing suggestion failed: %@";
+"analyze_first" = "Please analyze a beer first.";
+"auth_error" = "Authentication error: %@";
+"load_error" = "Error loading beer records: %@";
+"website_cannot_open" = "Cannot open website";
+"website_open_failed" = "Sorry, we couldn't open this website link.";
+
+// MARK: - Edit View
+"edit_beer" = "Edit";
+"save_changes" = "Save Changes";
+"save_success" = "Save Successful";
+"save_success_message" = "Beer information has been successfully updated.";
+"beer_id_not_found" = "Beer ID not found.";
+"save_failed" = "Failed to save information: %@";
+"not_set" = "Not set";
+
+// MARK: - App Review Request
+"app_review_title" = "Thank you for enjoying\nBeer Analyzer!";
+"app_review_request" = "⭐ Please rate us on the App Store ⭐";
+"app_review_description" = "Your rating encourages us in future development";
+"rate_on_app_store" = "Rate on App Store";
+"rate_later" = "Rate Later";
+"dont_show_again" = "Don't Show Again";
+
+// MARK: - Launch Screen
+"app_description" = "Beer Analysis App";
+
+// MARK: - User ID Display
+"user_id_display" = "User ID: %@";
+"authenticating" = "Authenticating...";
+
+// MARK: - Additional Loading Messages (for dynamic rotation)
+"loading_analyze_image_alt" = "🔍 Analyzing beer image...";
+"loading_ai_detection_alt" = "🤖 AI is identifying beer type...";
+"loading_search_brand_alt" = "📋 Searching for brand information...";
+"loading_analyze_abv_alt" = "🌡️ Analyzing alcohol content...";
+"loading_check_hops_alt" = "🌿 Checking hop characteristics...";
+"loading_get_manufacturer_alt" = "🏭 Getting manufacturer information...";
+"loading_prepare_result_alt" = "✨ Preparing detailed analysis results...";
+"loading_please_wait_alt" = "🎯 Please wait a moment...";

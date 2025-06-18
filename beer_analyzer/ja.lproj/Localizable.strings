@@ -1,0 +1,133 @@
+/* 
+  Localizable.strings
+  beer_analyzer
+
+  Created on 2025-06-18.
+  Japanese Localization
+*/
+
+// MARK: - Common UI Elements
+"close" = "閉じる";
+"edit" = "編集";
+"save" = "保存";
+"cancel" = "キャンセル";
+"delete" = "削除";
+"loading" = "読み込み中...";
+"analyzing" = "解析中...";
+"saving" = "保存中...";
+
+// MARK: - Tab Bar
+"tab_add" = "追加";
+"tab_records" = "記録";
+
+// MARK: - Beer Analysis
+"analyze_beer" = "ビールを解析";
+"analysis_complete" = "🎉 解析完了！";
+"analysis_description" = "ビール情報の解析が完了しました";
+"analysis_result" = "解析結果";
+"auto_save_complete" = "自動保存完了";
+"auto_save_description" = "この解析結果は「ビールの記録」タブに保存されました";
+"result_confirmed" = "結果を確認しました";
+
+// MARK: - Beer Information
+"beer_name" = "銘柄";
+"brand" = "ブランド";
+"manufacturer" = "製造者";
+"abv" = "アルコール度数";
+"capacity" = "容量";
+"hops" = "ホップ";
+"official_website" = "公式サイト";
+"recorded_date" = "記録日時";
+"memo" = "メモ";
+"website_link" = "リンク";
+"link_available" = "リンクあり";
+
+// MARK: - Beer Records
+"beer_records" = "ビールの記録";
+"records_count" = "%d件";
+"sort_order" = "並び順:";
+"sort_newest" = "新しい順";
+"sort_oldest" = "古い順";
+"no_records" = "まだビールの記録はありません";
+"start_analyzing" = "ビールを解析して記録を開始しましょう！";
+
+// MARK: - Beer Status
+"has_drunk" = "飲みました！🍺";
+"not_drunk_yet" = "まだ飲んでいません";
+"tap_to_toggle" = "タップして切り替え";
+"drunk_status" = "飲んだかどうか";
+
+// MARK: - Image Picker
+"upload_or_take_photo" = "ビールの写真をアップロードまたは撮影";
+"select_photo" = "写真を選択";
+"take_photo" = "カメラで撮影";
+
+// MARK: - Pairing Suggestions
+"suggest_pairing" = "ペアリングを提案 ✨";
+"generating_suggestion" = "提案生成中...";
+
+// MARK: - Settings
+"settings" = "設定";
+"terms_of_use" = "利用規約";
+"privacy_policy" = "プライバシーポリシー";
+"version_history" = "バージョン更新履歴";
+"contact_us" = "お問い合わせ";
+"developer_info" = "開発者情報";
+
+// MARK: - Loading Messages
+"loading_analyze_image" = "🔍 ビールの画像を解析しています...";
+"loading_ai_detection" = "🤖 AIがビールの種類を判別中...";
+"loading_search_brand" = "📋 銘柄情報を検索しています...";
+"loading_analyze_abv" = "🌡️ アルコール度数を分析中...";
+"loading_check_hops" = "🌿 ホップの特徴を調べています...";
+"loading_get_manufacturer" = "🏭 製造者情報を取得中...";
+"loading_prepare_result" = "✨ 詳細な解析結果を準備中...";
+"loading_please_wait" = "🎯 もう少しお待ちください...";
+
+// MARK: - Error Messages
+"analysis_failed" = "ビールの解析に失敗しました";
+"beer_not_detected" = "ビールが検出されない、もしくはビールの解析に失敗しました";
+"no_image_to_analyze" = "解析する画像がありません。";
+"user_not_authenticated" = "ユーザーが認証されていません。しばらくお待ちください。";
+"delete_failed" = "ビールの削除に失敗しました: %@";
+"analysis_failed_detail" = "ビールの解析に失敗しました: %@";
+"pairing_failed" = "ペアリングの提案に失敗しました: %@";
+"analyze_first" = "まずビールを解析してください。";
+"auth_error" = "認証エラー: %@";
+"load_error" = "ビールの記録の読み込みエラー: %@";
+"website_cannot_open" = "公式サイトを開けません";
+"website_open_failed" = "申し訳ございませんが、この公式サイトのリンクを開くことができませんでした。";
+
+// MARK: - Edit View
+"edit_beer" = "編集";
+"save_changes" = "変更を保存";
+"save_success" = "保存完了";
+"save_success_message" = "ビール情報が正常に更新されました。";
+"beer_id_not_found" = "ビールIDが見つかりません。";
+"save_failed" = "情報の保存に失敗しました: %@";
+"not_set" = "未設定";
+
+// MARK: - App Review Request
+"app_review_title" = "Beer Analyzerをお楽しみいただき\nありがとうございます！";
+"app_review_request" = "⭐ App Storeで評価をお願いします ⭐";
+"app_review_description" = "あなたの評価が今後の開発の励みになります";
+"rate_on_app_store" = "App Storeで評価する";
+"rate_later" = "後で評価する";
+"dont_show_again" = "今後表示しない";
+
+// MARK: - Launch Screen
+"app_description" = "ビール解析アプリ";
+
+// MARK: - User ID Display
+"user_id_display" = "ユーザーID: %@";
+"authenticating" = "認証中...";
+
+// MARK: - Additional Loading Messages (for dynamic rotation)
+"loading_analyze_image_alt" = "🔍 ビールの画像を解析しています...";
+"loading_ai_detection_alt" = "🤖 AIがビールの種類を判別中...";
+"loading_search_brand_alt" = "📋 銘柄情報を検索しています...";
+"loading_analyze_abv_alt" = "🌡️ アルコール度数を分析中...";
+"loading_check_hops_alt" = "🌿 ホップの特徴を調べています...";
+"loading_get_manufacturer_alt" = "🏭 製造者情報を取得中...";
+"loading_prepare_result_alt" = "✨ 詳細な解析結果を準備中...";
+"loading_please_wait_alt" = "🎯 もう少しお待ちください...";

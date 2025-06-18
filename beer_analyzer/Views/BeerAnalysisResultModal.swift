@@ -28,7 +28,7 @@ struct BeerAnalysisResultModal: View {
                             .font(.system(size: 60))
                             .foregroundColor(.green)
                         
-                        Text("🎉 解析完了！")
+                        Text(NSLocalizedString("analysis_complete", comment: ""))
                             .font(.largeTitle)
                             .fontWeight(.bold)
                             .foregroundStyle(
@@ -39,7 +39,7 @@ struct BeerAnalysisResultModal: View {
                                 )
                             )
                         
-                        Text("ビール情報の解析が完了しました")
+                        Text(NSLocalizedString("analysis_description", comment: ""))
                             .font(.headline)
                             .foregroundColor(.secondary)
                     }
@@ -57,21 +57,21 @@ struct BeerAnalysisResultModal: View {
                     
                     // 解析結果
                     VStack(spacing: 16) {
-                        Text("解析結果")
+                        Text(NSLocalizedString("analysis_result", comment: ""))
                             .font(.title2)
                             .fontWeight(.bold)
                             .foregroundColor(.primary)
                         
                         VStack(spacing: 12) {
-                            ResultRow(icon: "🍺", title: "銘柄", value: analysisResult.beerName)
-                            ResultRow(icon: "🏷️", title: "ブランド", value: analysisResult.brand)
-                            ResultRow(icon: "🏭", title: "製造者", value: analysisResult.manufacturer)
-                            ResultRow(icon: "🌡️", title: "アルコール度数", value: analysisResult.abv)
-                            ResultRow(icon: "🥂", title: "容量", value: analysisResult.capacity)
-                            ResultRow(icon: "🌿", title: "ホップ", value: analysisResult.hops)
+                            ResultRow(icon: "🍺", title: NSLocalizedString("beer_name", comment: ""), value: analysisResult.beerName)
+                            ResultRow(icon: "🏷️", title: NSLocalizedString("brand", comment: ""), value: analysisResult.brand)
+                            ResultRow(icon: "🏭", title: NSLocalizedString("manufacturer", comment: ""), value: analysisResult.manufacturer)
+                            ResultRow(icon: "🌡️", title: NSLocalizedString("abv", comment: ""), value: analysisResult.abv)
+                            ResultRow(icon: "🥂", title: NSLocalizedString("capacity", comment: ""), value: analysisResult.capacity)
+                            ResultRow(icon: "🌿", title: NSLocalizedString("hops", comment: ""), value: analysisResult.hops)
                             
                             if let websiteUrl = analysisResult.websiteUrl, !websiteUrl.isEmpty {
-                                ResultRow(icon: "🌐", title: "公式サイト", value: "リンクあり")
+                                ResultRow(icon: "🌐", title: NSLocalizedString("official_website", comment: ""), value: NSLocalizedString("link_available", comment: ""))
                             }
                         }
                     }
@@ -134,13 +134,13 @@ struct BeerAnalysisResultModal: View {
                         HStack {
                             Image(systemName: "checkmark.circle")
                                 .foregroundColor(.green)
-                            Text("自動保存完了")
+                            Text(NSLocalizedString("auto_save_complete", comment: ""))
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                                 .foregroundColor(.green)
                         }
                         
-                        Text("この解析結果は「ビールの記録」タブに保存されました")
+                        Text(NSLocalizedString("auto_save_description", comment: ""))
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
@@ -158,7 +158,7 @@ struct BeerAnalysisResultModal: View {
                     Button {
                         onDismiss()
                     } label: {
-                        Text("結果を確認しました")
+                        Text(NSLocalizedString("result_confirmed", comment: ""))
                             .font(.headline)
                             .fontWeight(.semibold)
                             .padding()
@@ -171,7 +171,7 @@ struct BeerAnalysisResultModal: View {
                     .padding(.bottom, 20)
                 }
             }
-            .navigationTitle("解析結果")
+            .navigationTitle(NSLocalizedString("analysis_result", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

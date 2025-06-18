@@ -46,7 +46,7 @@ struct ContentView: View {
                             .frame(width: 320, height: 180)
                             .padding(.bottom, 10)
                         
-                        Text("ユーザーID: \(userId ?? "認証中...")")
+                        Text(NSLocalizedString("user_id_display", comment: "").replacingOccurrences(of: "%@", with: userId ?? NSLocalizedString("authenticating", comment: "")))
                             .font(.caption)
                             .foregroundColor(.gray)
                         
@@ -158,7 +158,7 @@ struct ContentView: View {
                 .background(
                     BeerThemedBackgroundView()
                 )
-                .alert("ビールの解析に失敗しました", isPresented: $showingNoBeerAlert) {
+                .alert(NSLocalizedString("analysis_failed", comment: ""), isPresented: $showingNoBeerAlert) {
                     // アクションボタンを定義 (ここではOKボタンのみ)
                     Button("OK") {
                         // OKが押されたときの処理
@@ -166,7 +166,7 @@ struct ContentView: View {
                     }
                 } message: {
                     // アラートのメッセージ
-                    Text("ビールが検出されない、もしくはビールの解析に失敗しました")
+                    Text(NSLocalizedString("beer_not_detected", comment: ""))
                 }
                 
                     // MARK: - Loading Overlay
@@ -182,7 +182,7 @@ struct ContentView: View {
             }
             .navigationViewStyle(StackNavigationViewStyle())
             .tabItem {
-                Label("追加", systemImage: "magnifyingglass")
+                Label(NSLocalizedString("tab_add", comment: ""), systemImage: "magnifyingglass")
             }
             
             // MARK: - 2 つ目のタブ
@@ -193,7 +193,7 @@ struct ContentView: View {
                 }
             }
             .tabItem {
-                Label("記録", systemImage: "list.bullet")
+                Label(NSLocalizedString("tab_records", comment: ""), systemImage: "list.bullet")
             }
         }
         .tabViewStyle(DefaultTabViewStyle())
@@ -212,7 +212,7 @@ struct ContentView: View {
 
     private func deleteBeerRecord(idToDelete: String) async {
         guard let currentUserId = userId else {
-            errorMessage = "ユーザーが認証されていないため、ビールを削除できません。"
+            errorMessage = "User not authenticated. Cannot delete beer."
             return
         }
 
@@ -220,18 +220,18 @@ struct ContentView: View {
             try await firestoreService.deleteBeer(id: idToDelete, userId: currentUserId)
             print("Successfully deleted beer record with ID: \(idToDelete)")
         } catch {
-            errorMessage = "ビールの削除に失敗しました: \(error.localizedDescription)"
+            errorMessage = String(format: NSLocalizedString("delete_failed", comment: ""), error.localizedDescription)
             print("Error deleting beer record: \(error.localizedDescription)")
         }
     }
 
     private func analyzeBeer() {
         guard let uiImage = uiImage else {
-            errorMessage = "解析する画像がありません。"
+            errorMessage = NSLocalizedString("no_image_to_analyze", comment: "")
             return
         }
         guard let currentUserId = userId else {
-            errorMessage = "ユーザーが認証されていません。しばらくお待ちください。"
+            errorMessage = NSLocalizedString("user_not_authenticated", comment: "")
             return
         }
 
@@ -282,7 +282,7 @@ struct ContentView: View {
                 }
             } catch {
                 DispatchQueue.main.async {
-                    self.errorMessage = "ビールの解析に失敗しました: \(error.localizedDescription)"
+                    self.errorMessage = String(format: NSLocalizedString("analysis_failed_detail", comment: ""), error.localizedDescription)
                 }
                 showingNoBeerAlert = true
             }
@@ -296,7 +296,7 @@ struct ContentView: View {
 
     private func generatePairingSuggestion() {
         guard let analysisResult = analysisResult else {
-            errorMessage = "まずビールを解析してください。"
+            errorMessage = NSLocalizedString("analyze_first", comment: "")
             return
         }
 
@@ -311,7 +311,7 @@ struct ContentView: View {
                 }
             } catch {
                 DispatchQueue.main.async {
-                    self.errorMessage = "ペアリングの提案に失敗しました: \(error.localizedDescription)"
+                    self.errorMessage = String(format: NSLocalizedString("pairing_failed", comment: ""), error.localizedDescription)
                 }
             }
             DispatchQueue.main.async {
@@ -348,7 +348,7 @@ struct ContentView: View {
             case .success(let uid):
                 self.userId = uid
             case .failure(let error):
-                self.errorMessage = "認証エラー: \(error.localizedDescription)"
+                self.errorMessage = String(format: NSLocalizedString("auth_error", comment: ""), error.localizedDescription)
             }
         }
     }
@@ -359,7 +359,7 @@ struct ContentView: View {
             case .success(let beers):
                 self.recordedBeers = beers
             case .failure(let error):
-                self.errorMessage = "ビールの記録の読み込みエラー: \(error.localizedDescription)"
+                self.errorMessage = String(format: NSLocalizedString("load_error", comment: ""), error.localizedDescription)
             }
         }
     }
@@ -372,7 +372,7 @@ struct ImagePreviewSection: View {
 
     var body: some View {
         VStack {
-            Text("プレビュー")
+            Text("Preview")
                 .font(.title2)
                 .fontWeight(.semibold)
                 .padding(.bottom, 5)
@@ -424,7 +424,7 @@ struct AnalysisButton: View {
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .scaleEffect(1.2)
                 }
-                Text(isLoading ? "解析中..." : "ビールを解析")
+                Text(isLoading ? NSLocalizedString("analyzing", comment: "") : NSLocalizedString("analyze_beer", comment: ""))
                     .font(.title3)
                     .fontWeight(.semibold)
             }

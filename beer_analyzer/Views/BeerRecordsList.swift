@@ -23,24 +23,24 @@ struct BeerRecordsList: View {
                 // ヘッダー
                 VStack(spacing: 12) {
                     HStack {
-                        Text("ビールの記録")
+                        Text(NSLocalizedString("beer_records", comment: ""))
                             .font(.largeTitle)
                             .fontWeight(.bold)
                         Spacer()
-                        Text("\(beers.count)件")
+                        Text(String(format: NSLocalizedString("records_count", comment: ""), beers.count))
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
                     
                     // ソートコントロール
                     HStack {
-                        Text("並び順:")
+                        Text(NSLocalizedString("sort_order", comment: ""))
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         
-                        Picker("並び順", selection: $sortDescending) {
-                            Text("新しい順").tag(true)
-                            Text("古い順").tag(false)
+                        Picker(NSLocalizedString("sort_order", comment: ""), selection: $sortDescending) {
+                            Text(NSLocalizedString("sort_newest", comment: "")).tag(true)
+                            Text(NSLocalizedString("sort_oldest", comment: "")).tag(false)
                         }
                         .pickerStyle(SegmentedPickerStyle())
                         .onChange(of: sortDescending) { newValue in
@@ -59,10 +59,10 @@ struct BeerRecordsList: View {
                         Image(systemName: "wineglass")
                             .font(.system(size: 60))
                             .foregroundColor(.gray)
-                        Text("まだビールの記録はありません")
+                        Text(NSLocalizedString("no_records", comment: ""))
                             .font(.title2)
                             .foregroundColor(.secondary)
-                        Text("ビールを解析して記録を開始しましょう！")
+                        Text(NSLocalizedString("start_analyzing", comment: ""))
                             .font(.body)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
@@ -101,7 +101,7 @@ struct BeerRecordsList: View {
                                 ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle())
                                     .scaleEffect(1.2)
-                                Text("読み込み中...")
+                                Text(NSLocalizedString("loading", comment: ""))
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                                 Spacer()

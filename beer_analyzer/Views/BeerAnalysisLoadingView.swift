@@ -14,14 +14,14 @@ struct BeerAnalysisLoadingView: View {
     @State private var currentMessageIndex = 0
     
     private let analysisMessages = [
-        "🔍 ビールの画像を解析しています...",
-        "🤖 AIがビールの種類を判別中...",
-        "📋 銘柄情報を検索しています...",
-        "🌡️ アルコール度数を分析中...",
-        "🌿 ホップの特徴を調べています...",
-        "🏭 製造者情報を取得中...",
-        "✨ 詳細な解析結果を準備中...",
-        "🎯 もう少しお待ちください..."
+        NSLocalizedString("loading_analyze_image_alt", comment: ""),
+        NSLocalizedString("loading_ai_detection_alt", comment: ""),
+        NSLocalizedString("loading_search_brand_alt", comment: ""),
+        NSLocalizedString("loading_analyze_abv_alt", comment: ""),
+        NSLocalizedString("loading_check_hops_alt", comment: ""),
+        NSLocalizedString("loading_get_manufacturer_alt", comment: ""),
+        NSLocalizedString("loading_prepare_result_alt", comment: ""),
+        NSLocalizedString("loading_please_wait_alt", comment: "")
     ]
     
     var body: some View {

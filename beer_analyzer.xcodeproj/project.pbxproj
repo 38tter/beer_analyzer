@@ -41,9 +41,22 @@
 		F3BF12232DED627900A5C877 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F3D3726D2E02429A00318047 /* Exceptions for "beer_analyzer" folder in "beer_analyzer" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = F313411B2DECB77900F0821B /* beer_analyzer */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F313411E2DECB77900F0821B /* beer_analyzer */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F3D3726D2E02429A00318047 /* Exceptions for "beer_analyzer" folder in "beer_analyzer" target */,
+			);
 			path = beer_analyzer;
 			sourceTree = "<group>";
 		};
@@ -229,6 +242,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ja,
 			);
 			mainGroup = F31341132DECB77900F0821B;
 			minimizedProjectReferenceProxies = 1;
@@ -460,6 +474,7 @@
 				DEVELOPMENT_TEAM = DLT58AP7MK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "ビールを撮影して解析するためにカメラを使用します。";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "既存のビール写真を選択するために写真ライブラリにアクセスします。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -505,6 +520,7 @@
 				DEVELOPMENT_TEAM = DLT58AP7MK;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "ビールを撮影して解析するためにカメラを使用します。";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "既存のビール写真を選択するために写真ライブラリにアクセスします。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

@@ -25,7 +25,7 @@ struct BeerDetailView: View {
                 VStack(spacing: 24) {
                     // MARK: - カスタムヘッダー
                     HStack {
-                        Button("閉じる") {
+                        Button(NSLocalizedString("close", comment: "")) {
                             dismiss()
                         }
                         .font(.body)
@@ -41,7 +41,7 @@ struct BeerDetailView: View {
                         
                         Spacer()
                         
-                        Button("編集") {
+                        Button(NSLocalizedString("edit", comment: "")) {
                             isEditMode = true
                         }
                         .font(.body)
@@ -84,13 +84,13 @@ struct BeerDetailView: View {
                                         .foregroundColor(beer.hasDrunk ? .green : .gray)
                                         .font(.title2)
                                 }
-                                Text(beer.hasDrunk ? "飲みました！🍺" : "まだ飲んでいません")
+                                Text(beer.hasDrunk ? NSLocalizedString("has_drunk", comment: "") : NSLocalizedString("not_drunk_yet", comment: ""))
                                     .font(.headline)
                                     .fontWeight(.semibold)
                                     .foregroundColor(beer.hasDrunk ? .green : .gray)
                                 Spacer()
                                 if !isUpdatingDrunkStatus {
-                                    Text("タップして切り替え")
+                                    Text(NSLocalizedString("tap_to_toggle", comment: ""))
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
@@ -112,7 +112,7 @@ struct BeerDetailView: View {
                         // ビール名
                         DetailInfoCard(
                             icon: "🍺",
-                            title: "銘柄",
+                            title: NSLocalizedString("beer_name", comment: ""),
                             value: beer.beerName,
                             isHighlighted: true
                         )
@@ -120,35 +120,35 @@ struct BeerDetailView: View {
                         // ブランド
                         DetailInfoCard(
                             icon: "🏷️",
-                            title: "ブランド",
+                            title: NSLocalizedString("brand", comment: ""),
                             value: beer.brand
                         )
                         
                         // 製造者
                         DetailInfoCard(
                             icon: "🏭",
-                            title: "製造者",
+                            title: NSLocalizedString("manufacturer", comment: ""),
                             value: beer.manufacturer
                         )
                         
                         // アルコール度数
                         DetailInfoCard(
                             icon: "🌡️",
-                            title: "アルコール度数",
+                            title: NSLocalizedString("abv", comment: ""),
                             value: beer.abv
                         )
                         
                         // 容量
                         DetailInfoCard(
                             icon: "📏",
-                            title: "容量",
+                            title: NSLocalizedString("capacity", comment: ""),
                             value: beer.capacity
                         )
                         
                         // ホップ
                         DetailInfoCard(
                             icon: "🌿",
-                            title: "ホップ",
+                            title: NSLocalizedString("hops", comment: ""),
                             value: beer.hops
                         )
                         
@@ -156,7 +156,7 @@ struct BeerDetailView: View {
                         if let websiteUrl = beer.websiteUrl, !websiteUrl.isEmpty {
                             DetailInfoCard(
                                 icon: "🌐",
-                                title: "公式サイト",
+                                title: NSLocalizedString("official_website", comment: ""),
                                 value: websiteUrl,
                                 isURL: true
                             )
@@ -165,7 +165,7 @@ struct BeerDetailView: View {
                         // 記録日時
                         DetailInfoCard(
                             icon: "📅",
-                            title: "記録日時",
+                            title: NSLocalizedString("recorded_date", comment: ""),
                             value: formatTimestamp(beer.timestamp)
                         )
                         
@@ -173,7 +173,7 @@ struct BeerDetailView: View {
                         if let memo = beer.memo, !memo.isEmpty {
                             DetailInfoCard(
                                 icon: "📝",
-                                title: "メモ",
+                                title: NSLocalizedString("memo", comment: ""),
                                 value: memo
                             )
                         }
@@ -210,8 +210,12 @@ struct BeerDetailView: View {
     // MARK: - 日時フォーマット関数
     private func formatTimestamp(_ timestamp: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy年MM月dd日 HH:mm"
-        formatter.locale = Locale(identifier: "ja_JP")
+        if Locale.current.language.languageCode?.identifier == "ja" {
+            formatter.dateFormat = "yyyy年MM月dd日 HH:mm"
+        } else {
+            formatter.dateFormat = "MMM dd, yyyy HH:mm"
+        }
+        formatter.locale = Locale.current
         return formatter.string(from: timestamp)
     }
     
