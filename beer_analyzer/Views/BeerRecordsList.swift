@@ -72,10 +72,16 @@ struct BeerRecordsList: View {
                 } else {
                     // ビールリスト - グリッドレイアウト
                     GeometryReader { geometry in
+                        let screenWidth = geometry.size.width
+                        let cardSpacing: CGFloat = 12
+                        let horizontalPadding: CGFloat = 16
+                        let availableWidth = screenWidth - (horizontalPadding * 2) - cardSpacing
+                        let cardSize = availableWidth / 2
+                        
                         ScrollView {
                             LazyVGrid(columns: [
-                                GridItem(.flexible(), spacing: 12),
-                                GridItem(.flexible(), spacing: 12)
+                                GridItem(.fixed(cardSize), spacing: cardSpacing),
+                                GridItem(.fixed(cardSize), spacing: cardSpacing)
                             ], spacing: 16) {
                             ForEach(beers) { beer in
                                 Button(action: {
