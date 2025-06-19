@@ -210,3 +210,6 @@
 "privacy_section_5_title" = "5. お問い合わせ";
 "privacy_section_5_content" = "プライバシーに関するご質問は以下までお問い合わせください：\nodradek38@gmail.com";
 "last_updated" = "最終更新日: 2025年6月11日";
+
+// MARK: - X (Twitter) Sharing
+"share_to_x" = "Xでシェア";

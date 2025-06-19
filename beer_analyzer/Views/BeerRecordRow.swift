@@ -131,7 +131,8 @@ struct BeerRecordRow: View {
             .padding(.vertical, 10)
             .frame(height: 120)
         }
-        .frame(width: 200, height: 260)
+        .frame(maxWidth: .infinity)
+        .aspectRatio(200.0/260.0, contentMode: .fit)
         .background(Color.white)
         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         .clipShape(RoundedRectangle(cornerRadius: 12))
