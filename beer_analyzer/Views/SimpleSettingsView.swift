@@ -183,6 +183,33 @@ struct SimpleVersionHistoryView: View {
                     .padding()
                     .background(Color(.systemGray6))
                     .cornerRadius(12)
+                    
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text(NSLocalizedString("version_updates_611_later", comment: ""))
+                            .font(.headline)
+                            .fontWeight(.bold)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(NSLocalizedString("feature_rating_system", comment: ""))
+                            Text(NSLocalizedString("feature_memo_functionality", comment: ""))
+                            Text(NSLocalizedString("feature_edit_functionality", comment: ""))
+                            Text(NSLocalizedString("feature_card_redesign", comment: ""))
+                            Text(NSLocalizedString("feature_responsive_design", comment: ""))
+                            Text(NSLocalizedString("feature_x_sharing", comment: ""))
+                            Text(NSLocalizedString("feature_square_cards", comment: ""))
+                            Text(NSLocalizedString("feature_background_improvements", comment: ""))
+                            Text(NSLocalizedString("feature_ipad_fixes", comment: ""))
+                            Text(NSLocalizedString("feature_dark_mode_support", comment: ""))
+                            Text(NSLocalizedString("feature_timestamp_formatting", comment: ""))
+                            Text(NSLocalizedString("feature_sorting_fixes", comment: ""))
+                            Text(NSLocalizedString("feature_ui_improvements", comment: ""))
+                            Text(NSLocalizedString("feature_localization", comment: ""))
+                        }
+                        .font(.body)
+                    }
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .cornerRadius(12)
                 }
                 .padding()
             }
