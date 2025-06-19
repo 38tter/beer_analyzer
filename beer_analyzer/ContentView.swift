@@ -29,6 +29,8 @@ struct ContentView: View {
     @State private var showingResultModal: Bool = false
     @State private var showingSettings: Bool = false
     @State private var showingReviewRequest: Bool = false
+    @State private var currentBeerRating: Double = 0.0
+    @State private var currentImageUrl: String?
     
     @StateObject private var geminiService = GeminiAPIService()
     @EnvironmentObject var firestoreService: FirestoreService
@@ -114,6 +116,17 @@ struct ContentView: View {
                                 },
                                 onGeneratePairing: { completion in
                                     generatePairingSuggestion(completion: completion)
+                                },
+                                onRatingSave: { rating in
+                                    currentBeerRating = rating
+                                    if let imageUrl = currentImageUrl {
+                                        Task {
+                                            await firestoreService.saveBeerRecord(analysisResult, imageUrl: imageUrl, rating: rating > 0 ? rating : nil)
+                                            
+                                            // ビール登録数を増やす
+                                            ReviewRequestService.shared.incrementBeerCount()
+                                        }
+                                    }
                                 }
                             )
                         }
@@ -208,6 +221,8 @@ struct ContentView: View {
         analysisResult = nil
         pairingSuggestion = nil
         errorMessage = nil
+        currentImageUrl = nil
+        currentBeerRating = 0.0
     }
 
     private func deleteBeerRecord(idToDelete: String) async {
@@ -264,17 +279,9 @@ struct ContentView: View {
                     } else {
                         DispatchQueue.main.async {
                             self.analysisResult = result
-                            Task {
-                                await firestoreService.saveBeerRecord(result, imageUrl: uploadedImageUrl)
-                                
-                                // ビール登録数を増やす
-                                ReviewRequestService.shared.incrementBeerCount()
-                                
-                                // Show modal after saving is complete
-                                DispatchQueue.main.async {
-                                    self.showingResultModal = true
-                                }
-                            }
+                            self.currentImageUrl = uploadedImageUrl
+                            // Show modal without saving - saving will happen when user confirms with rating
+                            self.showingResultModal = true
                         }
                     }
                 } else {

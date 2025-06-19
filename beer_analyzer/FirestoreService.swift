@@ -52,13 +52,13 @@ class FirestoreService: ObservableObject {
     }
 
     // ビール記録を保存する
-    func saveBeerRecord(_ result: BeerAnalysisResult, imageUrl: String?) async {
+    func saveBeerRecord(_ result: BeerAnalysisResult, imageUrl: String?, rating: Double? = nil) async {
         guard let userId = AuthService.shared.getCurrentUserId() else {
             print("Error: User not authenticated for Firestore saving.")
             return
         }
 
-        let beerRecord = BeerRecord(analysisResult: result, userId: userId, timestamp: Date(), imageUrl: imageUrl ?? "", hasDrunk: false, websiteUrl: result.websiteUrl)
+        let beerRecord = BeerRecord(analysisResult: result, userId: userId, timestamp: Date(), imageUrl: imageUrl ?? "", hasDrunk: false, websiteUrl: result.websiteUrl, rating: rating)
         
         print("Saving beer record to Firestore: \(beerRecord)")
 
