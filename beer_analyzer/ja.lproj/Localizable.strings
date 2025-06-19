@@ -175,6 +175,23 @@
 "feature_terms" = "• 利用規約の実装";
 "feature_settings" = "• 設定画面の追加";
 
+// MARK: - Version History Updates (6/11以降)
+"version_updates_611_later" = "6月11日以降の追加更新";
+"feature_rating_system" = "• 5段階評価システムの追加";
+"feature_memo_functionality" = "• メモ機能の実装";
+"feature_edit_functionality" = "• ビール情報編集機能";
+"feature_card_redesign" = "• カードレイアウトの再設計";
+"feature_responsive_design" = "• レスポンシブデザインの改善";
+"feature_x_sharing" = "• X(Twitter)シェア機能";
+"feature_square_cards" = "• 正方形カード対応";
+"feature_background_improvements" = "• 背景デザインの強化";
+"feature_ipad_fixes" = "• iPad表示の修正";
+"feature_dark_mode_support" = "• ダークモード対応";
+"feature_timestamp_formatting" = "• タイムスタンプ表示改善";
+"feature_sorting_fixes" = "• ソート機能の修正";
+"feature_ui_improvements" = "• UI/UX全般の改善";
+"feature_localization" = "• 国際化対応の追加";
+
 // MARK: - Contact View
 "contact_title" = "お問い合わせ";
 "contact_description" = "ご質問、ご要望、バグ報告など\nお気軽にお問い合わせください";
