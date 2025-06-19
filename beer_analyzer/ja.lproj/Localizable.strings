@@ -188,6 +188,10 @@
 // MARK: - Image Preview
 "preview" = "プレビュー";
 
+// MARK: - Rating System
+"rating" = "レーティング";
+"rating_label" = "レーティング: %@";
+
 // MARK: - API and System Messages
 "unknown" = "不明";
 "unknown_error_data" = "不明なエラーデータ";

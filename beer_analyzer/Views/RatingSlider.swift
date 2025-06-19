@@ -14,7 +14,7 @@ struct RatingSlider: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("評価")
+                Text(NSLocalizedString("rating", comment: ""))
                     .font(.headline)
                     .foregroundColor(.primary)
                 Spacer()

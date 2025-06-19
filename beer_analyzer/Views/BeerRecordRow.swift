@@ -95,7 +95,7 @@ struct BeerRecordRow: View {
                 // レーティング表示（存在する場合のみ）
                 if let rating = beer.rating, rating > 0 {
                     HStack(spacing: 4) {
-                        Text("評価:")
+                        Text(NSLocalizedString("rating", comment: "") + ":")
                             .font(.subheadline)
                             .foregroundColor(.gray)
                         
