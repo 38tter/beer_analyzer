@@ -160,19 +160,39 @@ struct BeerAnalysisResultModal: View {
                     )
                     .padding(.horizontal)
                     
-                    // 閉じるボタン
-                    Button {
-                        onRatingSave(rating)
-                        onDismiss()
-                    } label: {
-                        Text(NSLocalizedString("result_confirmed", comment: ""))
+                    // シェアボタンとXボタンを横に並べる
+                    HStack(spacing: 12) {
+                        // Xシェアボタン
+                        Button {
+                            shareToX()
+                        } label: {
+                            HStack {
+                                Image(systemName: "square.and.arrow.up")
+                                Text(NSLocalizedString("share_to_x", comment: ""))
+                            }
                             .font(.headline)
                             .fontWeight(.semibold)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.blue)
+                            .background(Color.black)
                             .foregroundColor(.white)
                             .cornerRadius(12)
+                        }
+                        
+                        // 閉じるボタン
+                        Button {
+                            onRatingSave(rating)
+                            onDismiss()
+                        } label: {
+                            Text(NSLocalizedString("result_confirmed", comment: ""))
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(12)
+                        }
                     }
                     .padding(.horizontal)
                     .padding(.bottom, 20)
@@ -192,6 +212,31 @@ struct BeerAnalysisResultModal: View {
                     }
                 }
             }
+        }
+    }
+    
+    private func shareToX() {
+        let beerName = analysisResult.beerName
+        let brand = analysisResult.brand
+        let abv = analysisResult.abv
+        
+        // シェア用のテキストを作成
+        let shareText = "🍺 \(beerName)\n📋 \(brand)\n🌡️ ABV: \(abv)\n\n#BeerAnalyzer #AIビール記録 #\(brand.replacingOccurrences(of: " ", with: ""))"
+        
+        // URL エンコード
+        let encodedText = shareText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        
+        // X（Twitter）のURLスキーム
+        let xURL = "twitter://post?message=\(encodedText)"
+        let webURL = "https://twitter.com/intent/tweet?text=\(encodedText)"
+        
+        // URLを作成して直接Xを開く
+        if let url = URL(string: xURL), UIApplication.shared.canOpenURL(url) {
+            // Xアプリがインストールされている場合
+            UIApplication.shared.open(url)
+        } else if let url = URL(string: webURL) {
+            // Xアプリがない場合はブラウザで開く
+            UIApplication.shared.open(url)
         }
     }
     
@@ -257,3 +302,4 @@ struct ResultRow: View {
         onRatingSave: { _ in }
     )
 }
+

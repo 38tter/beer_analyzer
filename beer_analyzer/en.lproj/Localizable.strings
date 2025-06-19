@@ -210,3 +210,6 @@
 "privacy_section_5_title" = "5. Contact";
 "privacy_section_5_content" = "For privacy-related questions, please contact:\nodradek38@gmail.com";
 "last_updated" = "Last updated: June 11, 2025";
+
+// MARK: - X (Twitter) Sharing
+"share_to_x" = "Share on X";
