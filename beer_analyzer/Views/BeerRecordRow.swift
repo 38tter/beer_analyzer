@@ -16,132 +16,151 @@ struct BeerRecordRow: View {
     @State private var showingWebsiteError = false
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
-            // MARK: - 画像とリンクのセクション
-            VStack(spacing: 8) {
-                // ビール画像
+        ZStack {
+            // MARK: - 背景画像（ブラー効果付き）
+            Group {
                 if let imageUrlString = beer.imageUrl, let imageUrl = URL(string: imageUrlString) {
                     KFImage(imageUrl)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(width: 80, height: 80)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                } else {
-                    Image(systemName: "photo.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 80, height: 80)
-                        .foregroundColor(.gray)
-                        .background(Color.gray.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                }
-                
-                // 公式サイトリンク（画像の下）
-                if let websiteUrlString = beer.websiteUrl, 
-                   !websiteUrlString.isEmpty,
-                   let _ = URL(string: websiteUrlString) {
-                    Button {
-                        if let websiteUrlString = beer.websiteUrl,
-                           let url = URL(string: websiteUrlString),
-                           canOpenURL(url) {
-                            showingSafari = true
-                        } else {
-                            showingWebsiteError = true
-                        }
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "link.circle.fill")
-                                .font(.system(size: 14))
-                                .foregroundColor(.blue)
-                            Text("リンク")
-                                .font(.caption2)
-                                .foregroundColor(.blue)
-                                .fontWeight(.medium)
-                        }
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.blue.opacity(0.1))
-                                .stroke(Color.blue.opacity(0.3), lineWidth: 0.5)
+                        .blur(radius: 8)
+                        .overlay(
+                            Rectangle()
+                                .fill(Color.black.opacity(0.3))
                         )
-                    }
-                    .buttonStyle(PlainButtonStyle())
+                } else {
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.2))
+                        .overlay(
+                            Image(systemName: "photo.fill")
+                                .font(.system(size: 40))
+                                .foregroundColor(.gray.opacity(0.5))
+                        )
                 }
             }
-            .frame(width: 80) // 固定幅でレイアウトを安定させる
+            .clipShape(RoundedRectangle(cornerRadius: 10))
             
-            // MARK: - ビール情報
-            VStack(alignment: .leading, spacing: 4) {
-                Text(beer.beerName)
-                    .font(.headline)
-                    .foregroundColor(.indigo)
-                Text("ブランド: \(beer.brand)")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                Text("製造者: \(beer.manufacturer)")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                Text("ABV: \(beer.abv)")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                Text("容量: \(beer.capacity)")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                Text("ホップ: \(beer.hops)")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                
-                // レーティング表示（存在する場合のみ）
-                if let rating = beer.rating, rating > 0 {
-                    HStack(spacing: 4) {
-                        Text(NSLocalizedString("rating", comment: "") + ":")
+            // MARK: - コンテンツ
+            VStack(alignment: .leading, spacing: 12) {
+                // MARK: - ビール情報
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(beer.beerName)
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .shadow(color: .black.opacity(0.8), radius: 1, x: 1, y: 1)
+                    
+                    Text("ブランド: \(beer.brand)")
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.9))
+                        .shadow(color: .black.opacity(0.8), radius: 1, x: 1, y: 1)
+                    
+                    Text("製造者: \(beer.manufacturer)")
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.9))
+                        .shadow(color: .black.opacity(0.8), radius: 1, x: 1, y: 1)
+                    
+                    HStack {
+                        Text("ABV: \(beer.abv)")
                             .font(.subheadline)
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.9))
+                            .shadow(color: .black.opacity(0.8), radius: 1, x: 1, y: 1)
                         
-                        ForEach(1...5, id: \.self) { star in
-                            Image(systemName: rating >= Double(star) ? "star.fill" : 
-                                  rating >= Double(star) - 0.5 ? "star.leadinghalf.filled" : "star")
-                                .foregroundColor(.orange)
+                        Spacer()
+                        
+                        Text("容量: \(beer.capacity)")
+                            .font(.subheadline)
+                            .foregroundColor(.white.opacity(0.9))
+                            .shadow(color: .black.opacity(0.8), radius: 1, x: 1, y: 1)
+                    }
+                    
+                    Text("ホップ: \(beer.hops)")
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.9))
+                        .shadow(color: .black.opacity(0.8), radius: 1, x: 1, y: 1)
+                    
+                    // レーティング表示（存在する場合のみ）
+                    if let rating = beer.rating, rating > 0 {
+                        HStack(spacing: 4) {
+                            Text(NSLocalizedString("rating", comment: "") + ":")
+                                .font(.subheadline)
+                                .foregroundColor(.white.opacity(0.9))
+                                .shadow(color: .black.opacity(0.8), radius: 1, x: 1, y: 1)
+                            
+                            ForEach(1...5, id: \.self) { star in
+                                Image(systemName: rating >= Double(star) ? "star.fill" : 
+                                      rating >= Double(star) - 0.5 ? "star.leadinghalf.filled" : "star")
+                                    .foregroundColor(.yellow)
+                                    .font(.caption)
+                                    .shadow(color: .black.opacity(0.8), radius: 1, x: 1, y: 1)
+                            }
+                            
+                            Text(String(format: "%.1f", rating))
                                 .font(.caption)
+                                .foregroundColor(.yellow)
+                                .fontWeight(.medium)
+                                .shadow(color: .black.opacity(0.8), radius: 1, x: 1, y: 1)
                         }
-                        
-                        Text(String(format: "%.1f", rating))
-                            .font(.caption)
-                            .foregroundColor(.orange)
-                            .fontWeight(.medium)
                     }
                 }
                 
-                Text("記録日時: \(beer.timestamp.formatted())")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-            }
-            
-            Spacer()
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 8)
-        .padding(.horizontal, 12)
-        .background(
-            ZStack {
-                Color.white
-                // 飲んだビールの場合は背景にビール絵文字を表示
-                if beer.hasDrunk {
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            Text("🍺")
-                                .font(.system(size: 60))
-                                .opacity(0.2)
-                                .padding(.trailing, 8)
-                                .padding(.bottom, 8)
+                Spacer()
+                
+                // MARK: - 下部情報（日時とリンク）
+                HStack {
+                    Text("記録日時: \(beer.timestamp.formatted())")
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.8))
+                        .shadow(color: .black.opacity(0.8), radius: 1, x: 1, y: 1)
+                    
+                    Spacer()
+                    
+                    // 公式サイトリンク
+                    if let websiteUrlString = beer.websiteUrl, 
+                       !websiteUrlString.isEmpty,
+                       let _ = URL(string: websiteUrlString) {
+                        Button {
+                            if let websiteUrlString = beer.websiteUrl,
+                               let url = URL(string: websiteUrlString),
+                               canOpenURL(url) {
+                                showingSafari = true
+                            } else {
+                                showingWebsiteError = true
+                            }
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "link.circle.fill")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.white)
+                                Text("リンク")
+                                    .font(.caption2)
+                                    .foregroundColor(.white)
+                                    .fontWeight(.medium)
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color.black.opacity(0.3))
+                                    .stroke(Color.white.opacity(0.5), lineWidth: 0.5)
+                            )
                         }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                    
+                    // 飲んだビールの場合はビール絵文字を表示
+                    if beer.hasDrunk {
+                        Text("🍺")
+                            .font(.system(size: 20))
+                            .shadow(color: .black.opacity(0.8), radius: 1, x: 1, y: 1)
                     }
                 }
             }
-        )
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+        }
+        .frame(height: 140)
+        .background(Color.clear)
         .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
         .contentShape(Rectangle())
         .swipeActions(edge: .trailing) {
