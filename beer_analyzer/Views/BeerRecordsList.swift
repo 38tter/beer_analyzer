@@ -71,11 +71,12 @@ struct BeerRecordsList: View {
                     .background(Color(.systemGroupedBackground))
                 } else {
                     // ビールリスト - グリッドレイアウト
-                    ScrollView {
-                        LazyVGrid(columns: [
-                            GridItem(.flexible(), spacing: 16),
-                            GridItem(.flexible(), spacing: 16)
-                        ], spacing: 16) {
+                    GeometryReader { geometry in
+                        ScrollView {
+                            LazyVGrid(columns: [
+                                GridItem(.flexible(), spacing: 12),
+                                GridItem(.flexible(), spacing: 12)
+                            ], spacing: 16) {
                             ForEach(beers) { beer in
                                 Button(action: {
                                     selectedBeer = beer
@@ -94,23 +95,24 @@ struct BeerRecordsList: View {
                                     }
                                 }
                             }
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 8)
-                        
-                        // ローディングインジケーター
-                        if isLoading {
-                            HStack {
-                                Spacer()
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle())
-                                    .scaleEffect(1.2)
-                                Text(NSLocalizedString("loading", comment: ""))
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                Spacer()
                             }
-                            .padding()
+                            .padding(.horizontal, 16)
+                            .padding(.top, 8)
+                            
+                            // ローディングインジケーター
+                            if isLoading {
+                                HStack {
+                                    Spacer()
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle())
+                                        .scaleEffect(1.2)
+                                    Text(NSLocalizedString("loading", comment: ""))
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                    Spacer()
+                                }
+                                .padding()
+                            }
                         }
                     }
                     .background(Color(.systemGroupedBackground))
