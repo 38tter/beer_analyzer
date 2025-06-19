@@ -95,7 +95,20 @@ struct BeerEditView: View {
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .padding(.horizontal)
                         }
+                    }
+                    
+                    // MARK: - レーティングスライダー（ブランドの後に移動）
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(String(format: NSLocalizedString("rating_label", comment: ""), originalBeer.rating != nil ? String(format: "%.1f", originalBeer.rating!) : NSLocalizedString("not_set", comment: "")))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal)
                         
+                        RatingSlider(rating: $rating)
+                            .padding(.horizontal)
+                    }
+                    
+                    Group {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(String(format: NSLocalizedString("manufacturer_label", comment: ""), originalBeer.manufacturer))
                                 .font(.caption)
@@ -161,17 +174,6 @@ struct BeerEditView: View {
                     }
                     .autocorrectionDisabled() // 自動修正を無効にする（ビール名などに不要な場合）
                     .textInputAutocapitalization(.never) // 自動大文字化を無効にする
-                    
-                    // MARK: - レーティングスライダー
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(String(format: NSLocalizedString("rating_label", comment: ""), originalBeer.rating != nil ? String(format: "%.1f", originalBeer.rating!) : NSLocalizedString("not_set", comment: "")))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal)
-                        
-                        RatingSlider(rating: $rating)
-                            .padding(.horizontal)
-                    }
 
                     // MARK: - 飲んだかどうかのトグル
                     VStack(alignment: .leading, spacing: 8) {

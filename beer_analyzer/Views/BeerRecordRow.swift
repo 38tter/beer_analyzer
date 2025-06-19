@@ -16,27 +16,90 @@ struct BeerRecordRow: View {
     @State private var showingWebsiteError = false
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
-            // MARK: - 画像とリンクのセクション
-            VStack(spacing: 8) {
-                // ビール画像
+        VStack(spacing: 0) {
+            // MARK: - 上半分：画像
+            ZStack {
                 if let imageUrlString = beer.imageUrl, let imageUrl = URL(string: imageUrlString) {
                     KFImage(imageUrl)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(width: 80, height: 80)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     Image(systemName: "photo.fill")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 80, height: 80)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .foregroundColor(.gray)
                         .background(Color.gray.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
                 
-                // 公式サイトリンク（画像の下）
+                // 飲んだビールの場合は背景にビール絵文字を表示
+                if beer.hasDrunk {
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            Text("🍺")
+                                .font(.system(size: 30))
+                                .opacity(0.3)
+                                .padding(.trailing, 8)
+                                .padding(.bottom, 8)
+                        }
+                    }
+                }
+                
+            }
+            .frame(height: 140)
+            .clipped()
+            
+            // MARK: - 下半分：情報
+            VStack(alignment: .leading, spacing: 6) {
+                // タイトル
+                Text(beer.beerName)
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.indigo)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                
+                // レーティング（星マーク付き）
+                if let rating = beer.rating, rating > 0 {
+                    HStack(spacing: 2) {
+                        ForEach(1...5, id: \.self) { star in
+                            Image(systemName: rating >= Double(star) ? "star.fill" : 
+                                  rating >= Double(star) - 0.5 ? "star.leadinghalf.filled" : "star")
+                                .foregroundColor(.orange)
+                                .font(.caption2)
+                        }
+                        
+                        Text(String(format: "%.1f", rating))
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                            .fontWeight(.medium)
+                    }
+                }
+                
+                // 製造者
+                HStack(spacing: 4) {
+                    Text("🏭")
+                        .font(.caption)
+                    Text(beer.manufacturer)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+                
+                // アルコール度数
+                HStack(spacing: 4) {
+                    Text("🍺")
+                        .font(.caption)
+                    Text(beer.abv + "%")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+                
+                // 公式サイトリンク（絵文字付き）
                 if let websiteUrlString = beer.websiteUrl, 
                    !websiteUrlString.isEmpty,
                    let _ = URL(string: websiteUrlString) {
@@ -50,101 +113,29 @@ struct BeerRecordRow: View {
                         }
                     } label: {
                         HStack(spacing: 4) {
-                            Image(systemName: "link.circle.fill")
-                                .font(.system(size: 14))
-                                .foregroundColor(.blue)
+                            Text("🔗")
+                                .font(.caption)
                             Text("リンク")
-                                .font(.caption2)
+                                .font(.caption)
                                 .foregroundColor(.blue)
                                 .fontWeight(.medium)
                         }
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.blue.opacity(0.1))
-                                .stroke(Color.blue.opacity(0.3), lineWidth: 0.5)
-                        )
                     }
                     .buttonStyle(PlainButtonStyle())
                 }
-            }
-            .frame(width: 80) // 固定幅でレイアウトを安定させる
-            
-            // MARK: - ビール情報
-            VStack(alignment: .leading, spacing: 4) {
-                Text(beer.beerName)
-                    .font(.headline)
-                    .foregroundColor(.indigo)
-                Text("ブランド: \(beer.brand)")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                Text("製造者: \(beer.manufacturer)")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                Text("ABV: \(beer.abv)")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                Text("容量: \(beer.capacity)")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                Text("ホップ: \(beer.hops)")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
                 
-                // レーティング表示（存在する場合のみ）
-                if let rating = beer.rating, rating > 0 {
-                    HStack(spacing: 4) {
-                        Text(NSLocalizedString("rating", comment: "") + ":")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                        
-                        ForEach(1...5, id: \.self) { star in
-                            Image(systemName: rating >= Double(star) ? "star.fill" : 
-                                  rating >= Double(star) - 0.5 ? "star.leadinghalf.filled" : "star")
-                                .foregroundColor(.orange)
-                                .font(.caption)
-                        }
-                        
-                        Text(String(format: "%.1f", rating))
-                            .font(.caption)
-                            .foregroundColor(.orange)
-                            .fontWeight(.medium)
-                    }
-                }
-                
-                Text("記録日時: \(beer.timestamp.formatted())")
-                    .font(.caption)
-                    .foregroundColor(.gray)
+                Spacer()
             }
-            
-            Spacer()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 10)
+            .frame(height: 120)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 8)
-        .padding(.horizontal, 12)
-        .background(
-            ZStack {
-                Color.white
-                // 飲んだビールの場合は背景にビール絵文字を表示
-                if beer.hasDrunk {
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            Text("🍺")
-                                .font(.system(size: 60))
-                                .opacity(0.2)
-                                .padding(.trailing, 8)
-                                .padding(.bottom, 8)
-                        }
-                    }
-                }
-            }
-        )
-        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
-        .contentShape(Rectangle())
-        .swipeActions(edge: .trailing) {
+        .frame(width: 200, height: 260)
+        .background(Color.white)
+        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .contextMenu {
             Button(role: .destructive) {
                 if let id = beer.id {
                     onDelete(id)
@@ -152,9 +143,7 @@ struct BeerRecordRow: View {
             } label: {
                 Label("削除", systemImage: "trash")
             }
-            .tint(.red)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 10))
         .sheet(isPresented: $showingSafari) {
             if let websiteUrlString = beer.websiteUrl,
                let url = URL(string: websiteUrlString) {

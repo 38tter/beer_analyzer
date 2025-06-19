@@ -70,29 +70,33 @@ struct BeerRecordsList: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color(.systemGroupedBackground))
                 } else {
-                    // ビールリスト
-                    List {
-                        ForEach(beers) { beer in
-                            Button(action: {
-                                selectedBeer = beer
-                            }) {
-                                BeerRecordRow(beer: beer) { idToDelete in
-                                    onDelete(idToDelete)
-                                    // ローカルのリストからも削除
-                                    beers.removeAll { $0.id == idToDelete }
+                    // ビールリスト - グリッドレイアウト
+                    ScrollView {
+                        LazyVGrid(columns: [
+                            GridItem(.flexible(), spacing: 16),
+                            GridItem(.flexible(), spacing: 16)
+                        ], spacing: 16) {
+                            ForEach(beers) { beer in
+                                Button(action: {
+                                    selectedBeer = beer
+                                }) {
+                                    BeerRecordRow(beer: beer) { idToDelete in
+                                        onDelete(idToDelete)
+                                        // ローカルのリストからも削除
+                                        beers.removeAll { $0.id == idToDelete }
+                                    }
                                 }
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color.clear)
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .onAppear {
-                                // 無限スクロールのトリガー
-                                if beer.id == beers.last?.id && hasMoreData && !isLoading {
-                                    loadMoreBeers()
+                                .buttonStyle(PlainButtonStyle())
+                                .onAppear {
+                                    // 無限スクロールのトリガー
+                                    if beer.id == beers.last?.id && hasMoreData && !isLoading {
+                                        loadMoreBeers()
+                                    }
                                 }
                             }
                         }
+                        .padding(.horizontal, 16)
+                        .padding(.top, 8)
                         
                         // ローディングインジケーター
                         if isLoading {
@@ -107,11 +111,8 @@ struct BeerRecordsList: View {
                                 Spacer()
                             }
                             .padding()
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color.clear)
                         }
                     }
-                    .listStyle(.plain)
                     .background(Color(.systemGroupedBackground))
                     .refreshable {
                         await refreshBeers()

@@ -124,6 +124,11 @@ struct BeerDetailView: View {
                             value: beer.brand
                         )
                         
+                        // レーティング（レーティングが存在する場合のみ）
+                        if let rating = beer.rating, rating > 0 {
+                            RatingDisplayCard(rating: rating)
+                        }
+                        
                         // 製造者
                         DetailInfoCard(
                             icon: "🏭",
@@ -176,11 +181,6 @@ struct BeerDetailView: View {
                                 title: NSLocalizedString("memo", comment: ""),
                                 value: memo
                             )
-                        }
-                        
-                        // レーティング（レーティングが存在する場合のみ）
-                        if let rating = beer.rating, rating > 0 {
-                            RatingDisplayCard(rating: rating)
                         }
                     }
                     
