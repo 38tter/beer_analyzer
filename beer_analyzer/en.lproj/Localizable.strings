@@ -175,6 +175,23 @@
 "feature_terms" = "• Terms of use implementation";
 "feature_settings" = "• Settings screen added";
 
+// MARK: - Version History Updates (Since 6/11)
+"version_updates_611_later" = "Additional Updates Since June 11";
+"feature_rating_system" = "• 5-star rating system added";
+"feature_memo_functionality" = "• Memo functionality implementation";
+"feature_edit_functionality" = "• Beer information editing";
+"feature_card_redesign" = "• Card layout redesign";
+"feature_responsive_design" = "• Responsive design improvements";
+"feature_x_sharing" = "• X (Twitter) sharing feature";
+"feature_square_cards" = "• Square card support";
+"feature_background_improvements" = "• Background design enhancements";
+"feature_ipad_fixes" = "• iPad display fixes";
+"feature_dark_mode_support" = "• Dark mode support";
+"feature_timestamp_formatting" = "• Timestamp display improvements";
+"feature_sorting_fixes" = "• Sorting functionality fixes";
+"feature_ui_improvements" = "• General UI/UX improvements";
+"feature_localization" = "• Enhanced internationalization support";
+
 // MARK: - Contact View
 "contact_title" = "Contact Us";
 "contact_description" = "Questions, suggestions, bug reports\nFeel free to contact us";
