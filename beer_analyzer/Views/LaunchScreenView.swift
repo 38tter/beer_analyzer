@@ -34,39 +34,6 @@ struct LaunchScreenView: View {
                             Animation.easeInOut(duration: 0.8),
                             value: opacity
                         )
-                    
-                    // アプリ名
-                    VStack(spacing: 8) {
-                        Text("Beer Analyzer")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [Color(red: 1.0, green: 0.75, blue: 0.3), Color(red: 0.85, green: 0.5, blue: 0.1)],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .opacity(opacity)
-                        
-                        Text("ビール解析アプリ")
-                            .font(.title3)
-                            .foregroundColor(.secondary)
-                            .opacity(opacity)
-                    }
-                }
-                
-                // ローディングインジケーター
-                VStack(spacing: 12) {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: Color(red: 0.85, green: 0.5, blue: 0.1)))
-                        .scaleEffect(1.2)
-                        .opacity(opacity)
-                    
-                    Text("読み込み中...")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .opacity(opacity)
                 }
             }
         }

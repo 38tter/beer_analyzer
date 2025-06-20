@@ -14,6 +14,7 @@ struct BeerRecordRow: View {
     
     @State private var showingSafari = false
     @State private var showingWebsiteError = false
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: 0) {
@@ -58,7 +59,7 @@ struct BeerRecordRow: View {
                 Text(beer.beerName)
                     .font(.headline)
                     .fontWeight(.bold)
-                    .foregroundColor(.indigo)
+                    .foregroundColor(colorScheme == .dark ? .white : .indigo)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                 
@@ -74,7 +75,7 @@ struct BeerRecordRow: View {
                         
                         Text(String(format: "%.1f", rating))
                             .font(.caption)
-                            .foregroundColor(.orange)
+                            .foregroundColor(colorScheme == .dark ? .yellow : .orange)
                             .fontWeight(.medium)
                     }
                 }
@@ -85,7 +86,7 @@ struct BeerRecordRow: View {
                         .font(.caption)
                     Text(beer.manufacturer)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(colorScheme == .dark ? .white.opacity(0.8) : .secondary)
                         .lineLimit(1)
                 }
                 
@@ -95,7 +96,7 @@ struct BeerRecordRow: View {
                         .font(.caption)
                     Text(beer.abv + "%")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(colorScheme == .dark ? .white.opacity(0.8) : .secondary)
                         .lineLimit(1)
                 }
                 
@@ -117,7 +118,7 @@ struct BeerRecordRow: View {
                                 .font(.caption)
                             Text("リンク")
                                 .font(.caption)
-                                .foregroundColor(.blue)
+                                .foregroundColor(colorScheme == .dark ? .cyan : .blue)
                                 .fontWeight(.medium)
                         }
                     }
@@ -133,7 +134,7 @@ struct BeerRecordRow: View {
         }
         .frame(maxWidth: .infinity)
         .aspectRatio(1.0, contentMode: .fit)
-        .background(Color.white)
+        .background(colorScheme == .dark ? Color(.systemGray6) : Color.white)
         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .contextMenu {
